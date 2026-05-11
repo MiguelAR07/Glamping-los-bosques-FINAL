@@ -75,7 +75,6 @@ function ReviewCard({ testimonial, index }: { testimonial: any, index: number })
 
 export function TestimonialsSection() {
   const [reviews, setReviews] = useState<any[]>(FALLBACK_TESTIMONIALS);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchReviews() {
@@ -95,8 +94,6 @@ export function TestimonialsSection() {
         }
       } catch (error) {
         console.error("Error cargando reseñas en vivo, usando respaldo:", error);
-      } finally {
-        setLoading(false);
       }
     }
 

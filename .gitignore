@@ -34,3 +34,6 @@ build/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# videos pesados
+hero video inicio/
