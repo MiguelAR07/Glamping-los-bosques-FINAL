@@ -4,9 +4,10 @@
  */
 import { motion } from "framer-motion";
 import { Star, Quote, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
 
-// 1. Datos reales de las reseñas (extraídos de Google Maps)
-const TESTIMONIALS_DATA = [
+// 1. Datos reales de las reseñas (extraídos de Google Maps) como respaldo
+const FALLBACK_TESTIMONIALS = [
   {
     name: "Karen Montoya Chaverra",
     text: "¡Una experiencia increíble! El glamping superó totalmente mis expectativas. Todo estaba muy limpio, cómodo y rodeado de naturaleza. La atención fue excelente, se nota el amor con el que manejan el lugar.",
@@ -35,7 +36,7 @@ function ReviewCard({ testimonial, index }: { testimonial: any, index: number })
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.15 }}
-      className="bg-stone-800 rounded-2xl p-8 border border-stone-700 flex flex-col relative"
+      className="bg-stone-800 rounded-2xl p-8 border border-stone-700 flex flex-col relative h-full"
     >
       <Quote className="absolute top-6 right-6 w-10 h-10 text-stone-700" />
       
@@ -55,17 +56,52 @@ function ReviewCard({ testimonial, index }: { testimonial: any, index: number })
       </p>
       
       {/* Autor */}
-      <div className="mt-auto">
-        <p className="font-bold text-white">{testimonial.name}</p>
-        <p className="text-sm text-stone-500">{testimonial.date}</p>
+      <div className="mt-auto flex items-center gap-4">
+        {testimonial.profile_photo_url && (
+          <img 
+            src={testimonial.profile_photo_url} 
+            alt={testimonial.name} 
+            className="w-10 h-10 rounded-full"
+          />
+        )}
+        <div>
+          <p className="font-bold text-white">{testimonial.name}</p>
+          <p className="text-sm text-stone-500">{testimonial.date}</p>
+        </div>
       </div>
     </motion.div>
   );
 }
 
-// 3. Sección Principal que agrupa las reseñas
 export function TestimonialsSection() {
-  const googleReviewUrl = "https://g.page/r/CRPmlkPtIcsMEAE/review";
+  const [reviews, setReviews] = useState<any[]>(FALLBACK_TESTIMONIALS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      try {
+        const res = await fetch('/api/reviews');
+        if (!res.ok) throw new Error('Error fetching reviews');
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Respuesta no es JSON (probablemente corriendo en local sin proxy)");
+        }
+        
+        const json = await res.json();
+        
+        if (json.success && json.data && json.data.length > 0) {
+          // Mostrar máximo 3 reseñas en la cuadrícula para mantener el diseño
+          setReviews(json.data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Error cargando reseñas en vivo, usando respaldo:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReviews();
+  }, []);
 
   return (
     <section id="services" className="py-24 px-4 sm:px-6 lg:px-12 bg-stone-900 relative overflow-hidden text-center">
@@ -96,7 +132,7 @@ export function TestimonialsSection() {
 
         {/* Grid Responsive de las Tarjetas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {TESTIMONIALS_DATA.map((testimonial, index) => (
+          {reviews.map((testimonial, index) => (
             <ReviewCard key={index} testimonial={testimonial} index={index} />
           ))}
         </div>
@@ -109,16 +145,17 @@ export function TestimonialsSection() {
           transition={{ delay: 0.5 }}
           className="flex flex-col items-center"
         >
-          <p className="text-stone-400 mb-6">¿Nos has visitado recientemente?</p>
-          <a 
-            href={googleReviewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-700 text-white rounded-full font-bold hover:bg-emerald-600 transition-all shadow-xl hover:scale-105"
-          >
-            Dejanos tu reseña en Google
-            <ExternalLink className="w-5 h-5" />
-          </a>
+          {/* Botones Inferiores */}
+          <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://www.google.com/maps/place/Glamping+los+bosques/@6.1566351,-75.3390442,17z/data=!3m1!4b1!4m6!3m5!1s0x8e46a1c58923f2a1:0xccb21ed4396e613!8m2!3d6.1566351!4d-75.3390442!16s%2Fg%2F11w2cyd513" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors border border-white/20 w-full sm:w-auto">
+              Ver todas las reseñas en Google
+              <ExternalLink className="w-4 h-4" />
+            </a>
+            <a href="https://www.google.com/maps/place/Glamping+los+bosques/@6.1566351,-75.3390442,17z/data=!3m1!4b1!4m6!3m5!1s0x8e46a1c58923f2a1:0xccb21ed4396e613!8m2!3d6.1566351!4d-75.3390442!16s%2Fg%2F11w2cyd513?review=1" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold shadow-lg transition-colors w-full sm:w-auto">
+              Escribir una reseña
+              <Star className="w-4 h-4" />
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>

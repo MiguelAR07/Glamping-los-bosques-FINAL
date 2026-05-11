@@ -27,6 +27,7 @@ export function AppLayout() {
 
           <nav className="hidden md:flex items-center gap-8 font-medium text-stone-600">
             <a href="#cabins" className="hover:text-emerald-700 transition-colors">Cabañas</a>
+            <a href="#location" className="hover:text-emerald-700 transition-colors">Ubicación</a>
             <Link to="/reservas" className="hover:text-emerald-700 transition-colors">Reservas</Link>
             <a href="#services" className="hover:text-emerald-700 transition-colors">Reseñas</a>
             <Link to="/reservas" className="px-5 py-2.5 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-sm font-semibold">
@@ -52,6 +53,7 @@ export function AppLayout() {
             className="fixed top-20 left-0 w-full bg-white shadow-lg border-b border-stone-200 z-40 md:hidden flex flex-col p-4 gap-4 text-center font-medium"
           >
             <a href="#cabins" onClick={() => setIsMenuOpen(false)} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Cabañas</a>
+            <a href="#location" onClick={() => setIsMenuOpen(false)} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Ubicación</a>
             <Link to="/reservas" onClick={() => setIsMenuOpen(false)} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Reservas</Link>
             <a href="#services" onClick={() => setIsMenuOpen(false)} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Reseñas</a>
             <Link to="/reservas" onClick={() => setIsMenuOpen(false)} className="py-3 mt-2 bg-emerald-700 text-white rounded-lg font-semibold">Reservar Ahora</Link>
