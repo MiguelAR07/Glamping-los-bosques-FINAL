@@ -1,63 +1,71 @@
-export default async function handler(req: any, res: any) {
-  // Configura CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+  const PLACE_ID = process.env.GOOGLE_PLACE_ID;
+
+  if (!API_KEY || !PLACE_ID) {
+    return res.status(500).json({ error: 'Faltan variables de entorno', success: false });
   }
 
   try {
-    const API_KEY = process.env.GOOGLE_PLACES_API_KEY;
-    const PLACE_ID = process.env.GOOGLE_PLACE_ID; // El usuario deberá configurarlo
+    // Intentamos con la API NUEVA (v1) que es la que Google suele activar por defecto ahora
+    const urlNew = `https://places.googleapis.com/v1/places/${PLACE_ID}?languageCode=es`;
+    
+    const response = await fetch(urlNew, {
+      method: 'GET',
+      headers: {
+        'X-Goog-Api-Key': API_KEY,
+        'X-Goog-FieldMask': 'reviews,name,formattedAddress'
+      }
+    });
 
-    if (!API_KEY || !PLACE_ID) {
-      return res.status(500).json({ 
-        error: "Faltan las variables de entorno GOOGLE_PLACES_API_KEY o GOOGLE_PLACE_ID en Vercel." 
+    const data = await response.json();
+
+    if (data && data.reviews) {
+      // Formatear las reseñas para que coincidan con nuestro diseño
+      const formattedReviews = data.reviews.map((rev: any) => ({
+        name: rev.authorAttribution?.displayName || 'Cliente',
+        text: rev.text?.text || '',
+        rating: rev.rating || 5,
+        date: rev.relativePublishTimeDescription || 'Reciente',
+        profile_photo_url: rev.authorAttribution?.photoUri || null
+      }));
+
+      return res.status(200).json({
+        success: true,
+        data: formattedReviews
       });
     }
 
-    // Usar la API de Place Details para obtener las reseñas (máximo 5)
-    // Especificamos language=es para que las reseñas (si hay traducciones) o fechas lleguen en español
-    const googleApiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=reviews&language=es&key=${API_KEY}`;
-    
-    const response = await fetch(googleApiUrl);
-    const data = await response.json();
+    // Si la nueva falla, intentamos con la antigua por si acaso (fallback)
+    const urlOld = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=reviews&key=${API_KEY}&language=es`;
+    const resOld = await fetch(urlOld);
+    const dataOld = await resOld.json();
 
-    if (data.status !== 'OK') {
-      console.error("Error from Google API:", data);
-      return res.status(500).json({ error: `Error de Google API: ${data.status}` });
+    if (dataOld.result && dataOld.result.reviews) {
+      const formattedReviews = dataOld.result.reviews.map((rev: any) => ({
+        name: rev.author_name,
+        text: rev.text,
+        rating: rev.rating,
+        date: rev.relative_time_description,
+        profile_photo_url: rev.profile_photo_url
+      }));
+
+      return res.status(200).json({
+        success: true,
+        data: formattedReviews
+      });
     }
 
-    // Formatear las reseñas para que coincidan con la estructura del frontend
-    const reviews = data.result.reviews || [];
-    
-    const formattedReviews = reviews.map((review: any) => {
-      return {
-        name: review.author_name,
-        text: review.text,
-        rating: review.rating,
-        date: review.relative_time_description, // Ej: "Hace 2 meses"
-        profile_photo_url: review.profile_photo_url
-      };
+    return res.status(404).json({
+      success: false,
+      error: 'No se encontraron reseñas o la API devolvió un error',
+      details: data
     });
 
-    // Caché para evitar agotar la cuota (Cache-Control: s-maxage=3600 -> 1 hora en caché)
-    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
-    
-    return res.status(200).json({
-      success: true,
-      data: formattedReviews
-    });
-    
   } catch (error) {
-    console.error("Server Error:", error);
-    return res.status(500).json({ error: "Error interno del servidor al obtener las reseñas." });
+    console.error('Error fetching reviews:', error);
+    return res.status(500).json({ success: false, error: 'Error interno del servidor' });
   }
 }
