@@ -1,15 +1,15 @@
-import { CABINS } from "../data";
-import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 
-/**
- * Sección de galería y listado de cabañas.
- * Renderiza tarjetas individuales de cabañas con carruseles manuales de imágenes.
- */
+// Importamos el tipo y la función de la API
+import { Cabin } from "../types.ts";
+import { getCabins } from "../api.ts";
 
-// Función auxiliar para mapear características de texto a íconos de Lucide
+/**
+ * Función auxiliar para mapear características de texto a íconos de Lucide
+ */
 const FeatureIcon = ({ feature }: { feature: string }) => {
   const f = feature.toLowerCase();
   
@@ -25,18 +25,24 @@ const FeatureIcon = ({ feature }: { feature: string }) => {
   return <Icon className="w-5 h-5 text-emerald-600 flex-shrink-0" />;
 };
 
-// 2. Componente de tarjeta de Cabaña extraído para mejor legibilidad
-const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
+/**
+ * Tarjeta de Cabaña con datos de la base de datos
+ */
+const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth;
-      scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
     }
   };
 
-
+  // Ajustamos para usar 'img_url' en lugar de 'images' según types.ts
+  const images = cabin.img_url || [];
 
   return (
     <motion.div
@@ -46,22 +52,18 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
       transition={{ delay: index * 0.1, duration: 0.5 }}
       className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col group hover:-translate-y-2 transition-transform duration-300"
     >
-      {/* Carrusel nativo con CSS (Scroll Snap) en lugar de react-slick */}
       <div className="w-full aspect-[4/3] relative overflow-hidden bg-stone-100 group/carousel">
-        {/* Flechas de navegación */}
-        {cabin.images.length > 1 && (
+        {images.length > 1 && (
           <>
             <button 
               onClick={() => scroll('left')} 
               className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Anterior imagen"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button 
               onClick={() => scroll('right')} 
               className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Siguiente imagen"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -69,38 +71,26 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
         )}
 
         <div ref={scrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full h-full">
-          {cabin.images.map((img: string, i: number) => (
+          {images.map((img: string, i: number) => (
             <div key={i} className="flex-none w-full h-full snap-center relative">
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 via-transparent to-stone-900/10 z-[1] pointer-events-none" />
-              
-              <div className="absolute top-4 right-4 z-[2] bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/20 tracking-wider">
-                {i + 1} / {cabin.images.length}
+              <div className="absolute top-4 right-4 z-[2] bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/20">
+                {i + 1} / {images.length}
               </div>
-              
               <img 
                 src={img} 
-                alt={`${cabin.name} - Vista ${i + 1}`} 
-                loading="lazy" 
-                className="w-full h-full object-cover object-center transition-transform duration-300 ease-out group-hover:scale-105" 
+                alt={`${cabin.nombre} - Vista ${i + 1}`} 
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
               />
             </div>
           ))}
         </div>
-        
-        {/* Indicador visual inferior opcional */}
-        {cabin.images.length > 1 && (
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none opacity-60">
-            {cabin.images.map((_: any, i: number) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="p-6 md:p-8 flex flex-col flex-1">
-        <h3 className="text-2xl font-bold text-stone-900 mb-3">{cabin.name}</h3>
+        <h3 className="text-2xl font-bold text-stone-900 mb-3">{cabin.nombre}</h3>
         <p className="text-stone-600 mb-6 leading-relaxed flex-1 text-sm md:text-base">
-          {cabin.description}
+          {cabin.descripcion}
         </p>
         
         <div className="mb-6">
@@ -109,7 +99,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
             {cabin.features.map((feature: string, i: number) => (
               <li key={i} className="flex items-center gap-2 text-stone-700 text-sm font-medium">
                 <FeatureIcon feature={feature} />
-                <span className="truncate" title={feature}>{feature}</span>
+                <span className="truncate">{feature}</span>
               </li>
             ))}
           </ul>
@@ -137,6 +127,24 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
 };
 
 export function CabinsSection() {
+  const [cabins, setCabins] = useState<Cabin[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Cargamos los datos reales al montar el componente
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await getCabins();
+        setCabins(data);
+      } catch (error) {
+        console.error("Error al cargar cabañas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
   return (
     <section id="cabins" className="py-20 md:py-24 px-4 sm:px-6 lg:px-12 bg-stone-50">
       <div className="max-w-7xl mx-auto">
@@ -160,22 +168,23 @@ export function CabinsSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {CABINS.map((cabin, index) => (
-            <CabinCard key={cabin.id} cabin={cabin} index={index} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
+            <p className="text-stone-500 font-medium">Cargando experiencias...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {cabins.map((cabin, index) => (
+              <CabinCard key={cabin.id} cabin={cabin} index={index} />
+            ))}
+          </div>
+        )}
       </div>
       
-      {/* Estilos locales para el comportamiento del carrusel */}
       <style>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </section>
   );

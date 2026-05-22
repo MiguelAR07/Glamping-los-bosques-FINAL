@@ -2,12 +2,12 @@
  * Subcomponente: Paso 1 del Wizard de Reservas
  * Renderiza la selección de cabaña, tipo de plan, fechas y número de huéspedes.
  */
-import { CABINS } from "../../data";
+import { Cabin } from '../../types.ts'
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 export function BookingStep1Details({
-  guests, setGuests,
+  guests, setGuests, cabins,
   selectedCabinId, setSelectedCabinId,
   planType, setPlanType,
   date, setDate,
@@ -24,7 +24,7 @@ export function BookingStep1Details({
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">Selecciona tu Cabaña</label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {CABINS.map(c => (
+          {cabins.map((c: Cabin) => (
             <button
               key={c.id}
               onClick={() => {
@@ -37,7 +37,7 @@ export function BookingStep1Details({
                   : 'border-stone-200 bg-white hover:border-emerald-200'
               }`}
             >
-              <div className="font-bold text-stone-900">{c.name}</div>
+              <div className="font-bold text-stone-900">{c.nombre}</div>
               <div className="text-xs text-stone-500 mt-1">Desde ${c.plans.occasional.toLocaleString('es-CO')}</div>
             </button>
           ))}

@@ -4,12 +4,12 @@
  */
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Users } from "lucide-react";
-import { SERVICES } from "../../data";
+import { Service } from "../../types.ts";
 
 export function BookingSummarySidebar({
   selectedCabin, planType, dateRange, date, isMultiDay, nights, timeBlock,
   guests, cabinPrice, extraGuests, extraGuestsPrice, selectedServices,
-  subtotal, deposit
+  services, subtotal, deposit
 }: any) {
   return (
     <div className="w-full lg:w-[400px]">
@@ -17,9 +17,9 @@ export function BookingSummarySidebar({
         <h3 className="text-xl font-bold text-stone-900 mb-6 border-b border-stone-100 pb-4">Resumen de Reserva</h3>
         
         <div className="flex items-center gap-4 mb-6">
-          <img src={selectedCabin.images[0]} alt={selectedCabin.name} className="w-20 h-20 rounded-xl object-cover" />
+          <img src={selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover" />
           <div>
-            <h4 className="font-bold text-stone-900">{selectedCabin.name}</h4>
+            <h4 className="font-bold text-stone-900">{selectedCabin.nombre}</h4>
             <div className="text-sm text-stone-500 capitalize">{planType.replace('_', ' ')}</div>
           </div>
         </div>
@@ -58,12 +58,12 @@ export function BookingSummarySidebar({
           )}
           
           {selectedServices.map((id: string) => {
-            const s = SERVICES.find(x => x.id === id);
+            const s = services.find((service: Service) => service.id === id)
             if (!s) return null;
             return (
               <div key={id} className="flex justify-between text-stone-600">
-                <span className="truncate pr-4">{s.name}</span>
-                <span>{s.price === 0 ? '0' : `$${s.price.toLocaleString('es-CO')}`}</span>
+                <span className="truncate pr-4">{s.nombre}</span>
+                <span>{s.precio === 0 ? '0' : `$${s.precio.toLocaleString('es-CO')}`}</span>
               </div>
             )
           })}

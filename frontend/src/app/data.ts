@@ -81,4 +81,3 @@ export const SERVICES = [
   { id: 'aniv_sencillo', name: 'Decoración Aniversario (Sencilla)', price: 50000, desc: 'Luces, pétalos, letrero' },
   { id: 'aniv_especial', name: 'Decoración Aniversario (Especial)', price: 180000, desc: 'Letrero, bombas, luces, vino, torta, pétalos' }
 ];
-
