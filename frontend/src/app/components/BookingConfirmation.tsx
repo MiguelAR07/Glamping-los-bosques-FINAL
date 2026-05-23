@@ -32,6 +32,7 @@ export function BookingConfirmation() {
     dateRange, 
     date, 
     planType, 
+    planName,
     guests 
   } = state;
 
@@ -134,7 +135,7 @@ export function BookingConfirmation() {
                 <MapPin className="w-5 h-5 text-emerald-600" />
                 <div>
                 <p className="font-semibold text-stone-900">{cabinName}</p>
-                <p className="text-sm text-stone-500 capitalize">Plan {planType.replace('_', ' ')}</p>
+                <p className="text-sm text-stone-500 capitalize">Plan {planName || planType.replace('_', ' ')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

@@ -7,10 +7,12 @@ import { Calendar as CalendarIcon, Users } from "lucide-react";
 import { Service } from "../../types.ts";
 
 export function BookingSummarySidebar({
-  selectedCabin, planType, dateRange, date, isMultiDay, nights, timeBlock,
+  selectedCabin, planType, planName, dateRange, date, isMultiDay, nights, timeBlock,
   guests, cabinPrice, extraGuests, extraGuestsPrice, selectedServices,
   services, subtotal, deposit
 }: any) {
+  const displayPlanName = planName || planType?.replace('_', ' ');
+
   return (
     <div className="w-full lg:w-[400px]">
       <div className="bg-white rounded-3xl border border-stone-200 shadow-xl shadow-stone-100 p-6 sm:p-8 sticky top-28">
@@ -20,10 +22,10 @@ export function BookingSummarySidebar({
           <img src={selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover" />
           <div>
             <h4 className="font-bold text-stone-900">{selectedCabin.nombre}</h4>
-            <div className="text-sm text-stone-500 capitalize">{planType.replace('_', ' ')}</div>
+            <div className="text-sm text-stone-500 capitalize">{displayPlanName}</div>
           </div>
         </div>
-
+ 
         <div className="space-y-4 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between">
             <span className="text-stone-500 flex items-center gap-2"><CalendarIcon className="w-4 h-4"/> Fecha</span>
@@ -44,10 +46,10 @@ export function BookingSummarySidebar({
             <span className="font-medium">{guests} personas</span>
           </div>
         </div>
-
+ 
         <div className="space-y-3 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between font-medium">
-            <span className="text-stone-700">Estadía ({planType})</span>
+            <span className="text-stone-700">Estadía ({displayPlanName})</span>
             <span>${cabinPrice.toLocaleString('es-CO')}</span>
           </div>
           {extraGuests > 0 && (

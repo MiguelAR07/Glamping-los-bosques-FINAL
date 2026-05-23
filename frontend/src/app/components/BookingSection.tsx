@@ -9,18 +9,17 @@ import { BookingStep2Extras } from "./booking/BookingStep2Extras";
 import { BookingStep3Form } from "./booking/BookingStep3Form";
 import { BookingSummarySidebar } from "./booking/BookingSummarySidebar";
 
-import { Cabin, Package, Service, Product, BookingPayload } from "../types.ts";
-import { createReservation, getCabins, getServices, getPackages, getProducts } from "../api.ts";
+import { Cabin, Service, BookingPayload } from "../types.ts";
+import { createReservation, getCabins, getServices, getPackages, getProducts, getPackageTypes } from "../api.ts";
 
 export function BookingSection() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cabins, setCabins] = useState<Cabin[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [product, setProduct] = useState<Product[]>([]);
+  const [packageTypes, setPackageTypes] = useState<any[]>([]);
   const [selectedCabinId, setSelectedCabinId] = useState<string>("");
-  const [planType, setPlanType] = useState<"week" | "weekend" | "sun_day" | "occasional">("week");
+  const [selectedPlanTypeId, setSelectedPlanTypeId] = useState<number>(2);
   const [timeBlock, setTimeBlock] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -46,21 +45,27 @@ export function BookingSection() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const [loadedCabins, loadedServices, loadedPackages, loadedProducts] = await Promise.all([
+        const [loadedCabins, loadedServices, , , loadedTypes] = await Promise.all([
           getCabins(),
           getServices(),
           getPackages(),
-          getProducts()
+          getProducts(),
+          getPackageTypes()
         ]);
 
         setCabins(loadedCabins);
         setServices(loadedServices);
-        setPackages(loadedPackages);
-        setProduct(loadedProducts);
+        setPackageTypes(loadedTypes);
 
         // Si quieres, puedes setear por defecto la primera cabaña:
         if (loadedCabins.length > 0) {
           setSelectedCabinId(loadedCabins[0].id);
+        }
+
+        // Setear plan por defecto:
+        if (loadedTypes.length > 0) {
+          const defaultType = loadedTypes.find(t => t.tipo_id === 2) || loadedTypes[0];
+          setSelectedPlanTypeId(defaultType.tipo_id);
         }
       } catch (error) {
         console.error("Error cargando datos:", error);
@@ -75,8 +80,68 @@ export function BookingSection() {
     );
   };
 
+  // --- Mapeo de Tipo de Plan ---
+  const getPlanTypeProperties = (type: { tipo_id: number; nombre: string }) => {
+    const tipoId = Number(type.tipo_id);
+    const nombre = type.nombre.toLowerCase();
+    
+    if (tipoId === 2 || nombre.includes("semana") || nombre.includes("hospedaje")) {
+      return {
+        key: "week" as const,
+        isMultiDay: true,
+        hasTimeBlock: false,
+      };
+    }
+    if (tipoId === 3 || nombre.includes("fin de semana") || nombre.includes("festivo")) {
+      return {
+        key: "weekend" as const,
+        isMultiDay: true,
+        hasTimeBlock: false,
+      };
+    }
+    if (tipoId === 4 || nombre.includes("ocasional") || nombre.includes("hora")) {
+      return {
+        key: "occasional" as const,
+        isMultiDay: false,
+        hasTimeBlock: true,
+      };
+    }
+    if (tipoId === 5 || nombre.includes("sol") || nombre.includes("propio")) {
+      return {
+        key: "sun_day" as const,
+        isMultiDay: false,
+        hasTimeBlock: false,
+      };
+    }
+    // Por defecto, tratar como pasadía/día único
+    return {
+      key: "sun_day" as const,
+      isMultiDay: false,
+      hasTimeBlock: false,
+    };
+  };
+
+  const planProperties = useMemo(() => {
+    const current = packageTypes.find(t => t.tipo_id === selectedPlanTypeId);
+    if (!current) {
+      return {
+        key: "week" as const,
+        isMultiDay: true,
+        hasTimeBlock: false,
+        nombre: "Semana (L-V)"
+      };
+    }
+    return {
+      ...getPlanTypeProperties(current),
+      nombre: current.nombre
+    };
+  }, [packageTypes, selectedPlanTypeId]);
+
+  const planType = planProperties.key;
+  const isMultiDay = planProperties.isMultiDay;
+  const planName = planProperties.nombre;
+
   // --- LÓGICA DE CÁLCULO ---
-  const isMultiDay = planType === "week" || planType === "weekend";
 
   const nights = useMemo(() => {
     if (isMultiDay && dateRange.from && dateRange.to) {
@@ -106,22 +171,10 @@ export function BookingSection() {
   const handleCheckout = async () => {
     setErrors({});
     try {
-      // 1. Mapeamos el tipo de plan (planType) al ID de tipo correspondiente en la base de datos
-      let dbTipoId = 2; // Por defecto: Semana (L - V)
-      let planName = "Semana (L-V)";
-      if (planType === "week") {
-        dbTipoId = 2;
-        planName = "Semana (L-V)";
-      } else if (planType === "weekend") {
-        dbTipoId = 3;
-        planName = "Fin de Semana / Festivo";
-      } else if (planType === "occasional") {
-        dbTipoId = 4;
-        planName = "Ocasional (5 horas)";
-      } else if (planType === "sun_day") {
-        dbTipoId = 5;
-        planName = "Día de Sol";
-      }
+      // 1. Mapeamos el tipo de plan de la base de datos
+      const currentPlanType = packageTypes.find(t => t.tipo_id === selectedPlanTypeId) || { tipo_id: 2, nombre: "Semana (L-V)" };
+      const dbTipoId = currentPlanType.tipo_id;
+      const dbPlanName = currentPlanType.nombre;
 
       // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
@@ -149,7 +202,7 @@ export function BookingSection() {
         paquete: {
           cabana_id: Number(selectedCabinId),
           dias_estadia: nights,
-          descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planName}`,
+          descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${dbPlanName}`,
           tipo_id: dbTipoId
         }
       };
@@ -174,6 +227,7 @@ export function BookingSection() {
           dateRange: dateRange, 
           date: date,
           planType: planType,
+          planName: dbPlanName,
           guests: guests
         },
       });
@@ -265,7 +319,9 @@ export function BookingSection() {
                 selectedCabinId={selectedCabinId}
                 setSelectedCabinId={setSelectedCabinId}
                 planType={planType}
-                setPlanType={setPlanType}
+                packageTypes={packageTypes}
+                selectedPlanTypeId={selectedPlanTypeId}
+                setSelectedPlanTypeId={setSelectedPlanTypeId}
                 date={date}
                 setDate={setDate}
                 dateRange={dateRange}
@@ -305,6 +361,7 @@ export function BookingSection() {
         <BookingSummarySidebar
           selectedCabin={selectedCabin}
           planType={planType}
+          planName={planName}
           dateRange={dateRange}
           date={date}
           isMultiDay={isMultiDay}

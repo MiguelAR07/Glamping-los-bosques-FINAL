@@ -166,3 +166,12 @@ export async function createInvoice(payload: BookingPayload) {
 
   return await response.json();
 }
+
+export interface PackageType {
+  tipo_id: number;
+  nombre: string;
+}
+
+export async function getPackageTypes(): Promise<PackageType[]> {
+  return fetchFromApi<PackageType>("packages/types");
+}

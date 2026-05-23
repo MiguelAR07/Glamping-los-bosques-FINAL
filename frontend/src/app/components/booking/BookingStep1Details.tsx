@@ -9,7 +9,10 @@ import "react-day-picker/dist/style.css";
 export function BookingStep1Details({
   guests, setGuests, cabins,
   selectedCabinId, setSelectedCabinId,
-  planType, setPlanType,
+  planType,
+  packageTypes = [],
+  selectedPlanTypeId,
+  setSelectedPlanTypeId,
   date, setDate,
   dateRange, setDateRange,
   timeBlock, setTimeBlock,
@@ -47,10 +50,19 @@ export function BookingStep1Details({
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">Tipo de Plan</label>
         <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setPlanType("week")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "week" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Semana (L-V)</button>
-          <button onClick={() => setPlanType("weekend")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "weekend" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Fin de Semana / Festivo</button>
-          <button onClick={() => setPlanType("sun_day")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "sun_day" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Día de Sol</button>
-          <button onClick={() => setPlanType("occasional")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "occasional" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Ocasional (5 Horas)</button>
+          {packageTypes.map((type: any) => (
+            <button
+              key={type.tipo_id}
+              onClick={() => setSelectedPlanTypeId(type.tipo_id)}
+              className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                selectedPlanTypeId === type.tipo_id
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-stone-300"
+              }`}
+            >
+              {type.nombre}
+            </button>
+          ))}
         </div>
       </div>
 
