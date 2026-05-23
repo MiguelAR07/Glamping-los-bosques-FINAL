@@ -77,4 +77,10 @@ export interface BookingPayload {
     subtotal: Number;
     descuento: Number;
   };
+  paquete?: {
+    cabana_id: number;
+    dias_estadia: number;
+    descripcion: string;
+    tipo_id: number;
+  };
 }

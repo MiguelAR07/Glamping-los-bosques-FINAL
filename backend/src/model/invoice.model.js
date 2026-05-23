@@ -8,7 +8,7 @@ export const invoice = {
             $2
         FROM reservas r
         WHERE r.reserva_id = $3
-            AND r.estado = 'Activo'
+            AND r.estado IN ('Activo', 'Por validar', 'Confirmado')
         RETURNING *;
     `
 }

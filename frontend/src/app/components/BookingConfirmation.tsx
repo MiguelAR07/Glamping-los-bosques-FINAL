@@ -54,7 +54,7 @@ export function BookingConfirmation() {
   };
 
   const handleSubmit = async () => {
-    if (!preview) {
+    if (!file) {
       setError("Por favor, sube un comprobante de pago.");
       return;
     }
@@ -63,23 +63,23 @@ export function BookingConfirmation() {
     setError(null);
 
     try {
-      // Aquí llamarías a un endpoint que asocie el comprobante a la reserva
-      // Por ahora simularemos la subida exitosa ya que la reserva YA existe en DB
+      const formData = new FormData();
+      formData.append("comprobante", file);
+
       const response = await fetch(`http://localhost:3000/api/reservations/${reservaId}/payment`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          comprobante: preview // Base64 de la imagen
-        })
+        body: formData
       });
 
-      if (!response.ok) throw new Error("Error al subir el comprobante");
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.message || "Error al subir el comprobante");
+      }
 
       setIsSuccess(true);
     } catch (err: any) {
-      // Si el endpoint de pago aún no está listo, simulamos éxito para no trabar al usuario
-      console.warn("Endpoint de pago no configurado, simulando éxito...");
-      setTimeout(() => setIsSuccess(true), 1500);
+      console.error("Error al subir comprobante:", err);
+      setError(err.message || "Error al subir el comprobante");
     } finally {
       setIsSubmitting(false);
     }
@@ -217,6 +217,12 @@ export function BookingConfirmation() {
                 </div>
               )}
             </div>
+
+            {error && (
+              <p className="text-red-500 text-sm font-semibold mt-3 text-center">
+                {error}
+              </p>
+            )}
 
             <button
               onClick={handleSubmit}

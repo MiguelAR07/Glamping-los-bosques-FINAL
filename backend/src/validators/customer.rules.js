@@ -22,5 +22,10 @@ export const rulesCreateReservation = [
 
     // validaciones para reserva
     body("reserva.paquete_id")
-        .notEmpty().withMessage("El paquete es obligatorio"),
+        .custom((value, { req }) => {
+            if (!value && (!req.body.paquete || Object.keys(req.body.paquete).length === 0)) {
+                throw new Error("El paquete es obligatorio");
+            }
+            return true;
+        }),
 ];

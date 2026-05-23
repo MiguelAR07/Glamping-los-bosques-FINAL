@@ -106,17 +106,24 @@ export function BookingSection() {
   const handleCheckout = async () => {
     setErrors({});
     try {
-      // 1. Buscamos el paquete que pertenece a la cabaña seleccionada
-      // Según tu lógica: El paquete contiene la cabana_id
-      const selectedPackage = packages.find(
-        (pkg) => pkg.cabana_id === selectedCabinId
-      );
-
-      if (!selectedPackage) {
-        throw new Error("No se encontró un paquete configurado para esta cabaña.");
+      // 1. Mapeamos el tipo de plan (planType) al ID de tipo correspondiente en la base de datos
+      let dbTipoId = 2; // Por defecto: Semana (L - V)
+      let planName = "Semana (L-V)";
+      if (planType === "week") {
+        dbTipoId = 2;
+        planName = "Semana (L-V)";
+      } else if (planType === "weekend") {
+        dbTipoId = 3;
+        planName = "Fin de Semana / Festivo";
+      } else if (planType === "occasional") {
+        dbTipoId = 4;
+        planName = "Ocasional (5 horas)";
+      } else if (planType === "sun_day") {
+        dbTipoId = 5;
+        planName = "Día de Sol";
       }
 
-      // 2. Preparamos el payload con la estructura requerida
+      // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
         cliente: {
           nombre: formData.name,
@@ -127,8 +134,8 @@ export function BookingSection() {
           tipo_identificacion: formData.documentType,
         },
         reserva: {
-          paquete_id: selectedPackage.id, // ID obtenido del hallazgo anterior
-          cliente_id: "", // Se deja vacío porque el backend lo genera en la transacción
+          paquete_id: "", // Se deja vacío para que el backend cree el paquete e inserte su ID generado
+          cliente_id: "", // Se genera en la transacción del backend
           plan_type: planType,
           llegada: isMultiDay ? (dateRange.from as Date).toISOString() : (date as Date).toISOString(),
           salida: isMultiDay ? (dateRange.to as Date).toISOString() : (date as Date).toISOString(),
@@ -138,6 +145,12 @@ export function BookingSection() {
           reserva_id: "",
           subtotal: subtotal,
           descuento: 0,
+        },
+        paquete: {
+          cabana_id: Number(selectedCabinId),
+          dias_estadia: nights,
+          descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planName}`,
+          tipo_id: dbTipoId
         }
       };
 
