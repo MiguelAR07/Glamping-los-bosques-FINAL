@@ -3,7 +3,7 @@
  * Muestra las reseñas de Google Maps en un diseño de cuadrícula.
  */
 import { motion } from "framer-motion";
-import { Star, Quote, ExternalLink, X, Loader2 } from "lucide-react";
+import { Star, Quote, X, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createReview, getReviews } from "../api";
 
@@ -76,6 +76,7 @@ function ReviewCard({ testimonial, index }: { testimonial: any, index: number })
 
 export function TestimonialsSection() {
   const [reviews, setReviews] = useState<any[]>(FALLBACK_TESTIMONIALS);
+  const [showAll, setShowAll] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -97,8 +98,7 @@ export function TestimonialsSection() {
             rating: r.rating,
             date: "Reciente"
           }));
-          // Mostrar máximo 3 reseñas en la cuadrícula para mantener el diseño
-          setReviews(formattedReviews.slice(0, 3));
+          setReviews(formattedReviews);
         }
       } catch (error) {
         console.error("Error cargando reseñas en vivo, usando respaldo:", error);
@@ -120,7 +120,7 @@ export function TestimonialsSection() {
         texto: formData.texto
       });
       
-      // Añadir la reseña al principio de la lista y mantener solo 3 visibles
+      // Añadir la reseña al principio de la lista
       setReviews(prev => [
         {
           name: res.data.nombre,
@@ -129,7 +129,7 @@ export function TestimonialsSection() {
           date: "Justo ahora"
         },
         ...prev
-      ].slice(0, 3));
+      ]);
       
       // Cerrar modal y limpiar
       setIsModalOpen(false);
@@ -141,6 +141,8 @@ export function TestimonialsSection() {
       setIsSubmitting(false);
     }
   };
+
+  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
 
   return (
     <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-12 bg-stone-900 relative overflow-hidden text-center">
@@ -171,7 +173,7 @@ export function TestimonialsSection() {
 
         {/* Grid Responsive de las Tarjetas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {reviews.map((testimonial, index) => (
+          {displayedReviews.map((testimonial, index) => (
             <ReviewCard key={index} testimonial={testimonial} index={index} />
           ))}
         </div>
@@ -186,10 +188,14 @@ export function TestimonialsSection() {
         >
           {/* Botones Inferiores */}
           <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://www.google.com/maps/place/Glamping+los+bosques/@6.1566351,-75.3390442,17z/data=!3m1!4b1!4m6!3m5!1s0x8e46a1c58923f2a1:0xccb21ed4396e613!8m2!3d6.1566351!4d-75.3390442!16s%2Fg%2F11w2cyd513" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors border border-white/20 w-full sm:w-auto">
-              Ver todas las reseñas en Google
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            {!showAll && reviews.length > 3 && (
+              <button 
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors border border-white/20 w-full sm:w-auto"
+              >
+                Ver todas las reseñas
+              </button>
+            )}
             <button 
               onClick={() => setIsModalOpen(true)}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold shadow-lg transition-colors w-full sm:w-auto"

@@ -30,25 +30,13 @@ export function Home() {
         {/* Background Video: YouTube for Desktop, Native HTML5 for Mobile */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-stone-900">
           
-          {/* YouTube Video - Hidden on mobile (sm and down), visible on medium screens (md) and up */}
+          {/* YouTube Video - Visible on all screens */}
           <iframe
             src="https://www.youtube.com/embed/cTxwBo-iqfI?autoplay=1&mute=1&loop=1&playlist=cTxwBo-iqfI&controls=0&disablekb=1&modestbranding=1&playsinline=1&vq=hd1080"
-            title="Hero Video Desktop"
+            title="Hero Video"
             allow="autoplay; encrypted-media"
-            className="hidden md:block absolute top-1/2 left-1/2 w-[100vw] h-[56.25vw] min-h-[100vh] min-w-[177.77vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            className="absolute top-1/2 left-1/2 w-[250vw] h-[140.625vw] md:w-[100vw] md:h-[56.25vw] min-h-[100vh] min-w-[177.77vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           ></iframe>
-
-          {/* Native HTML5 Video - Visible on mobile, hidden on medium screens (md) and up */}
-          {/* IMPORTANTE: Colocar el video comprimido en la carpeta 'public' con el nombre 'hero-mobile.mp4' */}
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
-            className="block md:hidden absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/hero-mobile.mp4" type="video/mp4" />
-          </video>
         </div>
         
         {/* Dark overlay specifically needed to keep the white text readable against the video */}

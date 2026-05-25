@@ -28,9 +28,6 @@ const FeatureIcon = ({ feature }: { feature: string }) => {
 interface CabinCardProps {
   cabin: Cabin;
   index?: number;
-  showDescription?: boolean;
-  showFeatures?: boolean;
-  maxFeatures?: number;
 }
 
 /**
@@ -38,10 +35,7 @@ interface CabinCardProps {
  */
 export const CabinCard = ({ 
   cabin, 
-  index = 0, 
-  showDescription = true, 
-  showFeatures = true,
-  maxFeatures = 4
+  index = 0
 }: CabinCardProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const images = cabin.img_url || [];
@@ -215,6 +209,11 @@ export function CabinsSection() {
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mb-3" />
             <p className="text-stone-400 text-sm font-medium">Cargando experiencias...</p>
+          </div>
+        ) : cabins.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-stone-500 text-base sm:text-lg">No se encontraron cabañas disponibles.</p>
+            <p className="text-stone-400 text-sm mt-2">Verifica la configuración de tu base de datos o contacta al administrador.</p>
           </div>
         ) : (
           /* El ancho de las tarjetas ahora se decide de manera exacta aquí */

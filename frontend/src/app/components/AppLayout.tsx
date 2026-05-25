@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import logoImg from "../../../logo/logo.jpeg";
 import { ChatBot } from "./ChatBot";
+import { TermsModal } from "./TermsModal";
 
 /**
  * Contenedor principal del diseño de la aplicación.
@@ -12,6 +13,7 @@ import { ChatBot } from "./ChatBot";
  */
 export function AppLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -95,17 +97,17 @@ export function AppLayout() {
               Una experiencia única de desconexión en medio de la naturaleza con todas las comodidades.
             </p>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 items-center md:items-start">
             <h4 className="text-white font-semibold mb-2">Contacto</h4>
-            <a href="https://wa.me/573103599065" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="https://wa.me/573103599065" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
               <MessageCircle className="w-5 h-5 text-emerald-500" />
               <span className="text-sm">WhatsApp: 3103599065</span>
             </a>
-            <a href="https://www.instagram.com/glampinglosbosques/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="https://www.instagram.com/glampinglosbosques/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
               <Instagram className="w-5 h-5 text-pink-500" />
               <span className="text-sm">Instagram: @glampinglosbosques</span>
             </a>
-            <a href="https://www.tiktok.com/@glampinglosbosques" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="https://www.tiktok.com/@glampinglosbosques" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
               <svg 
                 className="w-5 h-5 fill-current text-white" 
                 viewBox="0 0 24 24" 
@@ -115,22 +117,28 @@ export function AppLayout() {
               </svg>
               <span className="text-sm">TikTok: glampinglosbosques</span>
             </a>
-            <p className="text-sm flex items-center gap-2">
+            <p className="text-sm flex items-center justify-center md:justify-start gap-2">
               <span className="text-emerald-500">@</span>
               glampinglosbosques@gmail.com
             </p>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3 items-center md:items-start">
             <h4 className="text-white font-semibold mb-2">Enlaces</h4>
-            <a href="#cabins" className="text-sm hover:text-white transition-colors">Nuestras Cabañas</a>
-            <Link to="/reservas" className="text-sm hover:text-white transition-colors">Reserva tu estadía</Link>
-            <Link to="/" className="text-sm hover:text-white transition-colors">Términos y Condiciones</Link>
+            <a href="#cabins" className="text-sm hover:text-white transition-colors text-center md:text-left">Nuestras Cabañas</a>
+            <Link to="/reservas" className="text-sm hover:text-white transition-colors text-center md:text-left">Reserva tu estadía</Link>
+            <button
+              onClick={() => setIsTermsOpen(true)}
+              className="text-sm hover:text-white transition-colors text-center md:text-left"
+            >
+              Términos y Condiciones
+            </button>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-sm">
           <p>© {new Date().getFullYear()} Glamping Los Bosques. Todos los derechos reservados.</p>
         </div>
       </footer>
+      <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       <ChatBot />
     </div>
   );

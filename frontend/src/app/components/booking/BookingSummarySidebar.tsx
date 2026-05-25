@@ -7,9 +7,21 @@ import { Calendar as CalendarIcon, Users } from "lucide-react";
 import { Service } from "../../types.ts";
 
 export function BookingSummarySidebar({
-  selectedCabin, planType, planName, dateRange, date, isMultiDay, nights, timeBlock,
-  guests, cabinPrice, extraGuests, extraGuestsPrice, selectedServices,
-  services, subtotal, deposit
+  selectedCabin,
+  planType,
+  dateRange,
+  date,
+  isMultiDay,
+  nights,
+  timeBlock,
+  guests,
+  cabinPrice,
+  extraGuests,
+  extraGuestsPrice,
+  selectedServices,
+  services,
+  subtotal,
+  deposit,
 }: any) {
   const planDisplay = planType || "Sin plan";
 

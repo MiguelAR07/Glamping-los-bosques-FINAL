@@ -4,6 +4,7 @@
  */
 import { useState } from "react";
 import { FileText, Loader2 } from "lucide-react";
+import { TermsModal } from "../TermsModal";
 
 export function BookingStep3Form({
   formData,
@@ -18,6 +19,8 @@ export function BookingStep3Form({
 }: any) {
   // Estado local para manejar el feedback visual durante el POST a la base de datos
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   // Validación de seguridad para habilitar el botón
   const isFormValid =
@@ -26,7 +29,8 @@ export function BookingStep3Form({
     formData.phone &&
     formData.document &&
     formData.country &&
-    (isMultiDay ? dateRange.from && dateRange.to : date);
+    (isMultiDay ? dateRange.from && dateRange.to : date) &&
+    acceptedTerms;
 
   // Wrapper para manejar el estado de carga durante la transacción
   const onConfirm = async () => {
@@ -165,6 +169,28 @@ export function BookingStep3Form({
         </div>
       </div>
 
+      {/* Términos y condiciones */}
+      <div className="flex items-center gap-2 mt-4">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={acceptedTerms}
+          onChange={(e) => setAcceptedTerms(e.target.checked)}
+          className="w-4 h-4 text-emerald-600 bg-stone-100 border-stone-300 rounded focus:ring-emerald-500 focus:ring-2 accent-emerald-600"
+          disabled={isSubmitting}
+        />
+        <label htmlFor="terms" className="text-sm text-stone-600">
+          Acepto los{" "}
+          <button
+            type="button"
+            onClick={() => setIsTermsOpen(true)}
+            className="text-emerald-600 underline hover:text-emerald-700 focus:outline-none"
+          >
+            términos y condiciones
+          </button>
+        </label>
+      </div>
+
       <div className="mt-8 pt-8 border-t border-stone-200">
         <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 flex items-start gap-4 mb-6">
           <div className="bg-emerald-500 text-white p-2 rounded-lg shrink-0">
@@ -206,6 +232,8 @@ export function BookingStep3Form({
           </button>
         </div>
       </div>
+      
+      <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
     </div>
   );
 }

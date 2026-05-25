@@ -1,6 +1,6 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-const API_BASE_URL = `http://localhost:3000/api`; // ajusta según tu backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : `http://localhost:3000/api`; // ajusta según tu backend
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
@@ -18,7 +18,13 @@ export async function getCabins(): Promise<Cabin[]> {
     fetchFromApi<any>("cabins/images") // <-- Pon aquí el endpoint exacto de tu tabla Imagenes_Cabanas
   ]);
 
-  return cabins.map((cabin) => {
+  const allowedCabinTerms = ["palmas", "bamb", "roble"];
+  const filteredCabins = cabins.filter((cabin: any) => {
+    const name = String(cabin.nombre ?? "").toLowerCase();
+    return allowedCabinTerms.some((term) => name.includes(term));
+  });
+
+  return filteredCabins.map((cabin) => {
     const currentCabinId = Number(cabin.cabana_id);
 
     // 2. Filtramos las imágenes que le pertenecen a ESTA cabaña en específico
