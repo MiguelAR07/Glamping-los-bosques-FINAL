@@ -32,6 +32,7 @@ export function BookingConfirmation() {
     dateRange, 
     date, 
     planType, 
+    planName,
     guests 
   } = state;
 

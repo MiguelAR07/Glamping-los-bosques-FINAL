@@ -8,7 +8,7 @@ import { Cabin } from "../types.ts";
 import { getCabins } from "../api.ts";
 
 /**
- * Función auxiliar para mapear características de texto a íconos de Lucide
+ * Componente de Icono optimizado
  */
 const FeatureIcon = ({ feature }: { feature: string }) => {
   const f = feature.toLowerCase();
@@ -22,16 +22,32 @@ const FeatureIcon = ({ feature }: { feature: string }) => {
   else if (f.includes('parqueadero')) Icon = Car;
   else if (f.includes('bbq')) Icon = Utensils;
 
-  return <Icon className="w-5 h-5 text-emerald-600 flex-shrink-0" />;
+  return <Icon className="w-4 h-4 text-emerald-600 flex-shrink-0" />;
 };
 
-/**
- * Tarjeta de Cabaña con datos de la base de datos
- */
-const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+interface CabinCardProps {
+  cabin: Cabin;
+  index?: number;
+  showDescription?: boolean;
+  showFeatures?: boolean;
+  maxFeatures?: number;
+}
 
-  const scroll = (direction: 'left' | 'right') => {
+/**
+ * Tarjeta de Cabaña Altamente Reutilizable y Proporcionada
+ */
+export const CabinCard = ({ 
+  cabin, 
+  index = 0, 
+  showDescription = true, 
+  showFeatures = true,
+  maxFeatures = 4
+}: CabinCardProps) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const images = cabin.img_url || [];
+
+  const scroll = (e: React.MouseEvent, direction: 'left' | 'right') => {
+    e.preventDefault(); // Evita comportamientos extraños si la card está dentro de un link
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth;
       scrollRef.current.scrollBy({ 
@@ -41,31 +57,29 @@ const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
     }
   };
 
-  // Ajustamos para usar 'img_url' en lugar de 'images' según types.ts
-  const images = cabin.img_url || [];
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col group hover:-translate-y-2 transition-transform duration-300"
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{ delay: index * 0.05, duration: 0.4 }}
+      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl border border-stone-100 flex flex-col group transition-all duration-300 h-full w-full"
     >
-      <div className="w-full aspect-[4/3] relative overflow-hidden bg-stone-100 group/carousel">
+      {/* Carrusel de Imágenes Proporcionado */}
+      <div className="w-full aspect-[16/10] relative overflow-hidden bg-stone-100 group/carousel">
         {images.length > 1 && (
           <>
             <button 
-              onClick={() => scroll('left')} 
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
+              onClick={(e) => scroll(e, 'left')} 
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-1.5 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button 
-              onClick={() => scroll('right')} 
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
+              onClick={(e) => scroll(e, 'right')} 
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-1.5 bg-black/30 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </>
         )}
@@ -73,14 +87,17 @@ const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
         <div ref={scrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full h-full">
           {images.map((img: string, i: number) => (
             <div key={i} className="flex-none w-full h-full snap-center relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 via-transparent to-stone-900/10 z-[1] pointer-events-none" />
-              <div className="absolute top-4 right-4 z-[2] bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/20">
-                {i + 1} / {images.length}
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/30 via-transparent to-stone-900/5 z-[1] pointer-events-none" />
+              {images.length > 1 && (
+                <div className="absolute top-2.5 right-2.5 z-[2] bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full text-white text-[10px] font-medium border border-white/10">
+                  {i + 1} / {images.length}
+                </div>
+              )}
               <img 
                 src={img} 
                 alt={`${cabin.nombre} - Vista ${i + 1}`} 
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                loading="lazy"
               />
             </div>
           ))}
@@ -115,10 +132,10 @@ const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
             </div>
           </div>
           <Link 
-            to="/reservas"
-            className="w-full flex justify-center items-center py-3.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-200"
+            to={`/reservas?cabin=${cabin.id}`}
+            className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-500 transition-colors shadow-sm shadow-emerald-100 flex-shrink-0"
           >
-            Reservar ahora
+            Reservar
           </Link>
         </div>
       </div>
@@ -126,11 +143,14 @@ const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
   );
 };
 
+/**
+ * Sección de visualización contenedora
+ */
 export function CabinsSection() {
   const [cabins, setCabins] = useState<Cabin[]>([]);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Cargamos los datos reales al montar el componente
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -145,38 +165,71 @@ export function CabinsSection() {
     loadData();
   }, []);
 
+  const scrollContainer = (direction: 'left' | 'right') => {
+    if (containerRef.current) {
+      const scrollAmount = containerRef.current.clientWidth * 0.7;
+      containerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <section id="cabins" className="py-20 md:py-24 px-4 sm:px-6 lg:px-12 bg-stone-50">
+    <section id="cabins" className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-stone-50 overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 md:mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-stone-900 mb-4"
-          >
-            Nuestras Cabañas
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto"
-          >
-            Cada cabaña está diseñada para ofrecer el máximo confort integrándose armoniosamente con el entorno natural.
-          </motion.p>
+        
+        {/* Header de la sección simplificado */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
+          <div className="text-left max-w-xl">
+            <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-2">
+              Nuestras Cabañas
+            </h2>
+            <p className="text-sm md:text-base text-stone-600">
+              Cada cabaña está diseñada para ofrecer el máximo confort integrándose con el entorno natural.
+            </p>
+          </div>
+
+          {!loading && cabins.length > 0 && (
+            <div className="flex gap-2 mt-4 sm:mt-0">
+              <button 
+                onClick={() => scrollContainer('left')} 
+                className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-emerald-50 text-stone-600 hover:text-emerald-700 transition-all shadow-sm active:scale-95"
+                aria-label="Anterior cabaña"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => scrollContainer('right')} 
+                className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-emerald-50 text-stone-600 hover:text-emerald-700 transition-all shadow-sm active:scale-95"
+                aria-label="Siguiente cabaña"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Renderizado de contenido */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
-            <p className="text-stone-500 font-medium">Cargando experiencias...</p>
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mb-3" />
+            <p className="text-stone-400 text-sm font-medium">Cargando experiencias...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          /* El ancho de las tarjetas ahora se decide de manera exacta aquí */
+          <div 
+            ref={containerRef}
+            className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory scroll-smooth hide-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+          >
             {cabins.map((cabin, index) => (
-              <CabinCard key={cabin.id} cabin={cabin} index={index} />
+              <div 
+                key={cabin.id} 
+                // Modificado: Ahora las columnas miden exactamente lo que tú decidas según el viewport
+                className="w-[78vw] sm:w-[320px] md:w-[350px] flex-none snap-center snap-always"
+              >
+                <CabinCard cabin={cabin} index={index} />
+              </div>
             ))}
           </div>
         )}

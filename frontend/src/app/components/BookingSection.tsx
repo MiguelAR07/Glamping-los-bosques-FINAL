@@ -113,7 +113,6 @@ export function BookingSection() {
     try {
       // 1. Usamos el tipo de plan seleccionado directamente
       const dbTipoId = selectedPlanTypeId;
-      const planName = planType;
 
       // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
@@ -141,13 +140,10 @@ export function BookingSection() {
         paquete: {
           cabana_id: Number(selectedCabinId),
           dias_estadia: nights,
-          descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planName}`,
+          descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planType}`,
           tipo_id: dbTipoId
         }
       };
-
-      // eliminar al terminar correcciones
-      // console.log("Payload enviado:", JSON.stringify(bookingData, null, 2));
       
       // 3. Llamamos a la API (Transacción MVC)
       const response = await createReservation(bookingData);
@@ -170,8 +166,6 @@ export function BookingSection() {
         },
       });
 
-      // alert("¡Reserva creada con éxito!");
-
     } catch (error: any) {
         console.log("Error recibido del server:", error);
 
@@ -183,9 +177,6 @@ export function BookingSection() {
           });
 
           setErrors(errorMap);
-          
-          // Opcional: Scrollear hacia arriba para que el usuario vea los errores
-          // window.scrollTo({ top: 200, behavior: 'smooth' });
       } else {
           alert(error.message || "Ocurrió un error inesperado");
         }
@@ -300,6 +291,7 @@ export function BookingSection() {
         <BookingSummarySidebar
           selectedCabin={selectedCabin}
           planType={planType}
+          planName={planType}
           dateRange={dateRange}
           date={date}
           isMultiDay={isMultiDay}

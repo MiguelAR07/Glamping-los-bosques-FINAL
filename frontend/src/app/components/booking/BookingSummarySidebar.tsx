@@ -7,7 +7,7 @@ import { Calendar as CalendarIcon, Users } from "lucide-react";
 import { Service } from "../../types.ts";
 
 export function BookingSummarySidebar({
-  selectedCabin, planType, dateRange, date, isMultiDay, nights, timeBlock,
+  selectedCabin, planType, planName, dateRange, date, isMultiDay, nights, timeBlock,
   guests, cabinPrice, extraGuests, extraGuestsPrice, selectedServices,
   services, subtotal, deposit
 }: any) {
@@ -25,7 +25,7 @@ export function BookingSummarySidebar({
             <div className="text-sm text-stone-500 capitalize">{planDisplay}</div>
           </div>
         </div>
-
+ 
         <div className="space-y-4 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between">
             <span className="text-stone-500 flex items-center gap-2"><CalendarIcon className="w-4 h-4"/> Fecha</span>
@@ -46,7 +46,7 @@ export function BookingSummarySidebar({
             <span className="font-medium">{guests} personas</span>
           </div>
         </div>
-
+ 
         <div className="space-y-3 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between font-medium">
             <span className="text-stone-700">Estadía ({planDisplay})</span>

@@ -1,7 +1,7 @@
 export const cabin = {
     getCabins: `
         SELECT * FROM cabanas
-        WHERE estado = 'Activo'
+        WHERE estado <> 'Inactivo'
     `,
     getCabinImgs: `
         SELECT * 
