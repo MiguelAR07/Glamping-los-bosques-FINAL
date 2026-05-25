@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { CabinsSection } from "../components/CabinsSection";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TestimonialsSection } from "../components/TestimonialsSection";
 import { LocationSection } from "../components/LocationSection";
 
@@ -8,6 +9,21 @@ import { LocationSection } from "../components/LocationSection";
  * Renderiza la sección principal (hero) y sirve como el punto de entrada principal.
  */
 export function Home() {
+  const location = useLocation();
+
+  // Handle scroll-to when navigating from another page (e.g., /reservas -> /#cabins)
+  useEffect(() => {
+    const scrollTo = (location.state as any)?.scrollTo;
+    if (scrollTo) {
+      // Small delay to let the page render first
+      setTimeout(() => {
+        const el = document.getElementById(scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      // Clean the state so it doesn't scroll again on re-renders
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
   return (
     <div>
       <div className="relative w-full h-[80vh] min-h-[600px] flex flex-col items-center justify-center border-b border-stone-800 overflow-hidden">

@@ -2,19 +2,53 @@
  * Subcomponente: Paso 1 del Wizard de Reservas
  * Renderiza la selección de cabaña, tipo de plan, fechas y número de huéspedes.
  */
-import { Cabin } from '../../types.ts'
+import { Cabin, PlanType } from '../../types.ts'
 import { DayPicker } from "react-day-picker";
+import { es } from 'date-fns/locale';
+import { isBefore, startOfDay, isSameDay, isWithinInterval } from 'date-fns';
 import "react-day-picker/dist/style.css";
 
 export function BookingStep1Details({
   guests, setGuests, cabins,
   selectedCabinId, setSelectedCabinId,
   planType, setPlanType,
+  selectedPlanTypeId, setSelectedPlanTypeId,
+  planTypes,
   date, setDate,
   dateRange, setDateRange,
   timeBlock, setTimeBlock,
   isMultiDay, selectedCabin, handleNext
 }: any) {
+  // Determinar si el plan actual es de tipo "ocasional" (basado en el nombre)
+  const isOccasional = planType.toLowerCase().includes('ocasional') || planType.toLowerCase().includes('hora');
+
+  // --- LÓGICA DE FECHAS DESHABILITADAS ---
+  const isDateDisabled = (date: Date) => {
+    // 1. Bloquear fechas pasadas
+    if (isBefore(date, startOfDay(new Date()))) {
+      return true;
+    }
+
+    const isPalmas = selectedCabin?.nombre?.toLowerCase().includes('palmas');
+
+    // 2. Bloquear fechas específicas para Palmas (25 y 27 de mayo 2026)
+    if (isPalmas) {
+      if (isSameDay(date, new Date(2026, 4, 25))) return true; // Mes 4 = Mayo
+      if (isSameDay(date, new Date(2026, 4, 27))) return true;
+    }
+
+    // 3. Bloquear 30 de mayo 2026 para TODAS las cabañas
+    if (isSameDay(date, new Date(2026, 4, 30))) return true;
+
+    // 4. Bloquear del 5 al 11 de junio 2026 para TODAS las cabañas
+    const inJuneBlock = isWithinInterval(date, {
+      start: new Date(2026, 5, 5), // Mes 5 = Junio
+      end: new Date(2026, 5, 11)
+    });
+    if (inJuneBlock) return true;
+
+    return false;
+  };
   return (
     <div className="space-y-8">
       <div className="bg-rose-50 text-rose-700 p-4 rounded-xl border border-rose-100 text-sm font-medium">
@@ -38,7 +72,7 @@ export function BookingStep1Details({
               }`}
             >
               <div className="font-bold text-stone-900">{c.nombre}</div>
-              <div className="text-xs text-stone-500 mt-1">Desde ${c.plans.occasional.toLocaleString('es-CO')}</div>
+              <div className="text-xs text-stone-500 mt-1">Desde ${c.precio_noche.toLocaleString('es-CO')}</div>
             </button>
           ))}
         </div>
@@ -47,10 +81,22 @@ export function BookingStep1Details({
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">Tipo de Plan</label>
         <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setPlanType("week")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "week" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Semana (L-V)</button>
-          <button onClick={() => setPlanType("weekend")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "weekend" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Fin de Semana / Festivo</button>
-          <button onClick={() => setPlanType("sun_day")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "sun_day" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Día de Sol</button>
-          <button onClick={() => setPlanType("occasional")} className={`p-3 rounded-xl border text-sm font-medium ${planType === "occasional" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"}`}>Ocasional (5 Horas)</button>
+          {planTypes.map((pt: PlanType) => (
+            <button
+              key={pt.id}
+              onClick={() => {
+                setSelectedPlanTypeId(pt.id);
+                setPlanType(pt.nombre);
+              }}
+              className={`p-3 rounded-xl border text-sm font-medium ${
+                selectedPlanTypeId === pt.id
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
+              }`}
+            >
+              {pt.nombre}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -59,9 +105,11 @@ export function BookingStep1Details({
         <div className="bg-white p-4 rounded-xl border border-stone-200 flex justify-center">
           {isMultiDay ? (
             <DayPicker 
+              locale={es}
               mode="range" 
               selected={dateRange as any} 
               onSelect={setDateRange as any} 
+              disabled={isDateDisabled}
               className="bg-transparent"
               classNames={{
                 day_selected: "bg-emerald-600 text-white hover:bg-emerald-700",
@@ -70,9 +118,11 @@ export function BookingStep1Details({
             />
           ) : (
             <DayPicker 
+              locale={es}
               mode="single" 
               selected={date} 
               onSelect={setDate} 
+              disabled={isDateDisabled}
               className="bg-transparent"
               classNames={{
                 day_selected: "bg-emerald-600 text-white hover:bg-emerald-700",
@@ -83,7 +133,7 @@ export function BookingStep1Details({
         </div>
       </div>
 
-      {planType === "occasional" && (
+      {isOccasional && (
         <div>
           <label className="block text-sm font-semibold text-stone-700 mb-3">Bloque de Horario (Ocasional)</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -119,7 +169,7 @@ export function BookingStep1Details({
 
       <button 
         onClick={handleNext} 
-        disabled={isMultiDay ? (!dateRange.from || !dateRange.to) : (!date || (planType === "occasional" && !timeBlock))}
+        disabled={isMultiDay ? (!dateRange.from || !dateRange.to) : (!date || (isOccasional && !timeBlock))}
         className="w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 transition-colors mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Continuar a Extras

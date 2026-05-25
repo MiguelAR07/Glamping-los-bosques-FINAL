@@ -1,4 +1,4 @@
-import { Cabin, Package, Product, Service, Reservation, BookingPayload } from './types'
+import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
 const API_BASE_URL = `http://localhost:3000/api`; // ajusta según tu backend
 
@@ -36,6 +36,8 @@ export async function getCabins(): Promise<Cabin[]> {
       img_url: cabinImages.length > 0 ? cabinImages : [],
 
       features: [],
+
+      precio_noche: Number(cabin.precio_noche ?? 0),
 
       plans: {
         occasional: Number(cabin.precio_noche ?? 0),
@@ -76,6 +78,15 @@ export async function getPackages(): Promise<Package[]> {
     descripcion: packages.descripcion,
 
     precio: Number(packages.precio),
+  }));
+}
+
+export async function getPackageTypes(): Promise<PlanType[]> {
+  const types = await fetchFromApi<any>("packages/types");
+
+  return types.map((type: any) => ({
+    id: type.tipo_id,
+    nombre: type.nombre,
   }));
 }
 
@@ -162,6 +173,29 @@ export async function createInvoice(payload: BookingPayload) {
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.error || "Error al procesar la factura");
+  }
+
+  return await response.json();
+}
+
+export async function getReviews() {
+  const response = await fetch(`${API_BASE_URL}/reviews`);
+  if (!response.ok) throw new Error('Error fetching reviews');
+  return await response.json();
+}
+
+export async function createReview(data: { nombre: string, texto: string, rating: number }) {
+  const response = await fetch(`${API_BASE_URL}/reviews`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Error al crear reseña");
   }
 
   return await response.json();

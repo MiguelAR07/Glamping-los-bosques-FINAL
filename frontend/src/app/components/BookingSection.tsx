@@ -9,18 +9,18 @@ import { BookingStep2Extras } from "./booking/BookingStep2Extras";
 import { BookingStep3Form } from "./booking/BookingStep3Form";
 import { BookingSummarySidebar } from "./booking/BookingSummarySidebar";
 
-import { Cabin, Package, Service, Product, BookingPayload } from "../types.ts";
-import { createReservation, getCabins, getServices, getPackages, getProducts } from "../api.ts";
+import { Cabin, Service, BookingPayload, PlanType } from "../types.ts";
+import { createReservation, getCabins, getServices, getPackageTypes } from "../api.ts";
 
 export function BookingSection() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cabins, setCabins] = useState<Cabin[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [product, setProduct] = useState<Product[]>([]);
+  const [planTypes, setPlanTypes] = useState<PlanType[]>([]);
   const [selectedCabinId, setSelectedCabinId] = useState<string>("");
-  const [planType, setPlanType] = useState<"week" | "weekend" | "sun_day" | "occasional">("week");
+  const [selectedPlanTypeId, setSelectedPlanTypeId] = useState<number>(0);
+  const [planType, setPlanType] = useState<string>("");
   const [timeBlock, setTimeBlock] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -46,21 +46,24 @@ export function BookingSection() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const [loadedCabins, loadedServices, loadedPackages, loadedProducts] = await Promise.all([
+        const [loadedCabins, loadedServices, loadedPlanTypes] = await Promise.all([
           getCabins(),
           getServices(),
-          getPackages(),
-          getProducts()
+          getPackageTypes()
         ]);
 
         setCabins(loadedCabins);
         setServices(loadedServices);
-        setPackages(loadedPackages);
-        setProduct(loadedProducts);
+        setPlanTypes(loadedPlanTypes);
 
-        // Si quieres, puedes setear por defecto la primera cabaña:
+        // Setear por defecto la primera cabaña:
         if (loadedCabins.length > 0) {
           setSelectedCabinId(loadedCabins[0].id);
+        }
+        // Setear por defecto el primer tipo de plan:
+        if (loadedPlanTypes.length > 0) {
+          setSelectedPlanTypeId(loadedPlanTypes[0].id);
+          setPlanType(loadedPlanTypes[0].nombre);
         }
       } catch (error) {
         console.error("Error cargando datos:", error);
@@ -76,7 +79,9 @@ export function BookingSection() {
   };
 
   // --- LÓGICA DE CÁLCULO ---
-  const isMultiDay = planType === "week" || planType === "weekend";
+  // Determinar si es multi-día basado en el nombre del plan
+  const planNameLower = planType.toLowerCase();
+  const isMultiDay = planNameLower.includes('semana') || planNameLower.includes('fin de semana');
 
   const nights = useMemo(() => {
     if (isMultiDay && dateRange.from && dateRange.to) {
@@ -86,7 +91,7 @@ export function BookingSection() {
     return 1;
   }, [dateRange, isMultiDay]);
 
-  const cabinPrice = selectedCabin ? selectedCabin.plans[planType] * nights : 0;
+  const cabinPrice = selectedCabin ? selectedCabin.precio_noche * nights : 0;
   const extraGuests = Math.max(0, guests - 2);
   const extraGuestsPrice =
     extraGuests * (selectedCabin?.additionalPersonPrice || 0) * nights;
@@ -106,22 +111,9 @@ export function BookingSection() {
   const handleCheckout = async () => {
     setErrors({});
     try {
-      // 1. Mapeamos el tipo de plan (planType) al ID de tipo correspondiente en la base de datos
-      let dbTipoId = 2; // Por defecto: Semana (L - V)
-      let planName = "Semana (L-V)";
-      if (planType === "week") {
-        dbTipoId = 2;
-        planName = "Semana (L-V)";
-      } else if (planType === "weekend") {
-        dbTipoId = 3;
-        planName = "Fin de Semana / Festivo";
-      } else if (planType === "occasional") {
-        dbTipoId = 4;
-        planName = "Ocasional (5 horas)";
-      } else if (planType === "sun_day") {
-        dbTipoId = 5;
-        planName = "Día de Sol";
-      }
+      // 1. Usamos el tipo de plan seleccionado directamente
+      const dbTipoId = selectedPlanTypeId;
+      const planName = planType;
 
       // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
@@ -266,6 +258,9 @@ export function BookingSection() {
                 setSelectedCabinId={setSelectedCabinId}
                 planType={planType}
                 setPlanType={setPlanType}
+                selectedPlanTypeId={selectedPlanTypeId}
+                setSelectedPlanTypeId={setSelectedPlanTypeId}
+                planTypes={planTypes}
                 date={date}
                 setDate={setDate}
                 dateRange={dateRange}

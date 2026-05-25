@@ -11,6 +11,8 @@ export function BookingSummarySidebar({
   guests, cabinPrice, extraGuests, extraGuestsPrice, selectedServices,
   services, subtotal, deposit
 }: any) {
+  const planDisplay = planType || "Sin plan";
+
   return (
     <div className="w-full lg:w-[400px]">
       <div className="bg-white rounded-3xl border border-stone-200 shadow-xl shadow-stone-100 p-6 sm:p-8 sticky top-28">
@@ -20,7 +22,7 @@ export function BookingSummarySidebar({
           <img src={selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover" />
           <div>
             <h4 className="font-bold text-stone-900">{selectedCabin.nombre}</h4>
-            <div className="text-sm text-stone-500 capitalize">{planType.replace('_', ' ')}</div>
+            <div className="text-sm text-stone-500 capitalize">{planDisplay}</div>
           </div>
         </div>
 
@@ -47,7 +49,7 @@ export function BookingSummarySidebar({
 
         <div className="space-y-3 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between font-medium">
-            <span className="text-stone-700">Estadía ({planType})</span>
+            <span className="text-stone-700">Estadía ({planDisplay})</span>
             <span>${cabinPrice.toLocaleString('es-CO')}</span>
           </div>
           {extraGuests > 0 && (

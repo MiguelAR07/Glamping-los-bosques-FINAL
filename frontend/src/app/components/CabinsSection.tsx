@@ -110,7 +110,7 @@ const CabinCard = ({ cabin, index }: { cabin: Cabin, index: number }) => {
             <div>
               <span className="block text-xs text-stone-500 font-medium mb-1">Desde</span>
               <span className="text-2xl font-bold text-emerald-700">
-                ${cabin.plans.occasional.toLocaleString('es-CO')}
+                ${cabin.precio_noche.toLocaleString('es-CO')}
               </span>
             </div>
           </div>

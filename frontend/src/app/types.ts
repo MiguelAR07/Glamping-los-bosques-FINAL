@@ -4,6 +4,7 @@ export type Cabin = {
   descripcion: string;
   img_url: string[];
   features: string[];
+  precio_noche: number;
   plans: {
     occasional: number,
     week: number,
@@ -19,6 +20,11 @@ export type Service = {
   nombre: string;
   precio: number;
   descripcion: string;
+};
+
+export type PlanType = {
+  id: number;
+  nombre: string;
 };
 
 export type Package = {

@@ -114,6 +114,14 @@ export function BookingConfirmation() {
     );
   }
 
+  {/* Definición de nombres de planes en español */}
+  const planNames: Record<string, string> = {
+    week: "Semana",
+    weekend: "Fin de Semana / Festivo",
+    sun_day: "Día de Sol",
+    occasional: "Ocasional"
+  };
+
   return (
     <div className="min-h-screen bg-stone-50 py-12 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-200">
@@ -134,7 +142,7 @@ export function BookingConfirmation() {
                 <MapPin className="w-5 h-5 text-emerald-600" />
                 <div>
                 <p className="font-semibold text-stone-900">{cabinName}</p>
-                <p className="text-sm text-stone-500 capitalize">Plan {planType.replace('_', ' ')}</p>
+                <p className="text-sm text-stone-500 capitalize">Plan {planNames[planType] || planType}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -219,7 +227,7 @@ export function BookingConfirmation() {
             </div>
 
             {error && (
-              <p className="text-red-500 text-sm font-semibold mt-3 text-center">
+              <p className="text-red-500 text-sm mt-3 text-center font-medium bg-red-50 border border-red-100 py-2 px-4 rounded-xl">
                 {error}
               </p>
             )}
