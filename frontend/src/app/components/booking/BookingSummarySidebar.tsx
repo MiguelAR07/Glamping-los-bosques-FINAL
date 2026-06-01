@@ -31,10 +31,19 @@ export function BookingSummarySidebar({
         <h3 className="text-xl font-bold text-stone-900 mb-6 border-b border-stone-100 pb-4">Resumen de Reserva</h3>
         
         <div className="flex items-center gap-4 mb-6">
-          <img src={selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover" />
+          {selectedCabin.img_url && selectedCabin.img_url.length > 0 ? (
+            <img src={selectedCabin.img_url[1] || selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover shrink-0" />
+          ) : (
+            <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-400 shrink-0" />
+          )}
           <div>
             <h4 className="font-bold text-stone-900">{selectedCabin.nombre}</h4>
             <div className="text-sm text-stone-500 capitalize">{planDisplay}</div>
+            {selectedCabin.es_promocion && cabinPrice > 0 && (
+              <div className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mt-1 inline-block">
+                Precio Especial Aplicado
+              </div>
+            )}
           </div>
         </div>
  

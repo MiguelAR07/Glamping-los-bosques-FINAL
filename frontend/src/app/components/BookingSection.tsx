@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { differenceInDays } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { BookingStep1Details } from "./booking/BookingStep1Details";
 import { BookingStep2Extras } from "./booking/BookingStep2Extras";
@@ -43,30 +43,95 @@ export function BookingSection() {
     return cabins.find((c) => c.id === selectedCabinId) || cabins[0];
   }, [cabins, selectedCabinId]);
 
+  const [searchParams] = useSearchParams();
+  const urlCabinId = searchParams.get("cabin");
+  const urlPromo = searchParams.get("promo");
+
+  useEffect(() => {
+    if (cabins.length > 0 && urlCabinId) {
+      const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const matchedCabin = cabins.find(
+        (c: any) => String(c.id) === String(urlCabinId) || normalize(c.nombre || "").includes(normalize(urlCabinId))
+      );
+      if (matchedCabin && matchedCabin.id !== selectedCabinId) {
+        setSelectedCabinId(matchedCabin.id);
+      }
+    }
+  }, [urlCabinId, cabins, selectedCabinId]);
+
+  useEffect(() => {
+    if (planTypes.length > 0 && urlPromo === "true") {
+      const promoPlan = planTypes.find((p: any) => p.isPromo);
+      if (promoPlan && promoPlan.id !== selectedPlanTypeId) {
+        setSelectedPlanTypeId(promoPlan.id);
+        setPlanType(promoPlan.nombre);
+      }
+    }
+  }, [urlPromo, planTypes, selectedPlanTypeId]);
+
   useEffect(() => {
     const loadInitialData = async () => {
       try {
+        // Cargamos cabañas, servicios y tipos de plan en paralelo.
+        // Las promociones se cargan de forma independiente para que si el endpoint falla,
+        // no bloquee la carga principal de las cabañas.
         const [loadedCabins, loadedServices, loadedPlanTypes] = await Promise.all([
           getCabins(),
           getServices(),
-          getPackageTypes()
+          getPackageTypes(),
         ]);
+
+        // Intentamos cargar las promociones sin bloquear lo demás
+        let activePromos: any[] = [];
+        try {
+          const resPromos = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/promociones`).then(res => {
+            if (!res.ok) throw new Error('Promociones no disponibles');
+            return res.json();
+          });
+          activePromos = resPromos
+            .filter((p: any) => p.estado?.toLowerCase() === "activo")
+            .map((p: any) => ({
+              id: `promo_${p.id}`,
+              nombre: `🌟 Promoción: ${p.nombre}`,
+              isPromo: true,
+              precio_promocional: p.precio,
+              cabanas_permitidas: p.cabanas.map((c: any) => String(c.id))
+            }));
+        } catch {
+          // Si el endpoint de promociones falla, simplemente no mostramos promos
+          console.warn("No se pudieron cargar las promociones.");
+        }
+
+        const combinedPlanTypes = [...loadedPlanTypes, ...activePromos];
 
         setCabins(loadedCabins);
         setServices(loadedServices);
-        setPlanTypes(loadedPlanTypes);
+        setPlanTypes(combinedPlanTypes);
 
-        // Setear por defecto la primera cabaña:
-        if (loadedCabins.length > 0) {
+        // Setear por defecto la primera cabaña o la de la URL:
+        if (urlCabinId) {
+          const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+          const matchedCabin = loadedCabins.find((c: any) => String(c.id) === String(urlCabinId) || normalize(c.nombre || "").includes(normalize(urlCabinId)));
+          if (matchedCabin) {
+            setSelectedCabinId(matchedCabin.id);
+          } else if (loadedCabins.length > 0) {
+            setSelectedCabinId(loadedCabins[0].id);
+          }
+        } else if (loadedCabins.length > 0) {
           setSelectedCabinId(loadedCabins[0].id);
         }
-        // Setear por defecto el primer tipo de plan:
-        if (loadedPlanTypes.length > 0) {
+
+        // Setear por defecto el tipo de plan de la URL promo o el primero:
+        if (urlPromo === "true" && combinedPlanTypes.some((p: any) => p.isPromo)) {
+          const promoPlan = combinedPlanTypes.find((p: any) => p.isPromo);
+          setSelectedPlanTypeId(promoPlan.id);
+          setPlanType(promoPlan.nombre);
+        } else if (loadedPlanTypes.length > 0) {
           setSelectedPlanTypeId(loadedPlanTypes[0].id);
           setPlanType(loadedPlanTypes[0].nombre);
         }
       } catch (error) {
-        console.error("Error cargando datos:", error);
+        console.error("Error cargando datos de reserva:", error);
       }
     };
     loadInitialData();
@@ -79,9 +144,14 @@ export function BookingSection() {
   };
 
   // --- LÓGICA DE CÁLCULO ---
-  // Determinar si es multi-día basado en el nombre del plan
+  // isMultiDay: los planes "Semana" y "Fin de Semana / Festivo" usan selector de rango
   const planNameLower = planType.toLowerCase();
-  const isMultiDay = planNameLower.includes('semana') || planNameLower.includes('fin de semana');
+  const isMultiDay =
+    !planNameLower.includes('ocasional') &&
+    (planNameLower.includes('semana') ||
+     planNameLower.includes('fin de semana') ||
+     planNameLower.includes('festivo') ||
+     planNameLower.includes('weekend'));
 
   const nights = useMemo(() => {
     if (isMultiDay && dateRange.from && dateRange.to) {
@@ -91,7 +161,25 @@ export function BookingSection() {
     return 1;
   }, [dateRange, isMultiDay]);
 
-  const cabinPrice = selectedCabin ? selectedCabin.precio_noche * nights : 0;
+  const selectedPlanObj = useMemo(() => planTypes.find(p => p.id === selectedPlanTypeId) as any, [planTypes, selectedPlanTypeId]);
+
+  const basePrice = selectedPlanObj?.isPromo ? Number(selectedPlanObj.precio_promocional) : (selectedCabin?.precio_noche || 0);
+
+  // Filtrar cabañas basado en la promoción seleccionada
+  const filteredCabins = useMemo(() => {
+    if (selectedPlanObj?.isPromo && selectedPlanObj.cabanas_permitidas?.length > 0) {
+      return cabins.filter(c => selectedPlanObj.cabanas_permitidas.includes(String(c.id)));
+    }
+    return cabins;
+  }, [cabins, selectedPlanObj]);
+
+  // Si la cabaña seleccionada ya no es válida por el filtro, seleccionar la primera válida
+  useEffect(() => {
+    if (filteredCabins.length > 0 && !filteredCabins.find(c => c.id === selectedCabinId)) {
+      setSelectedCabinId(filteredCabins[0].id);
+    }
+  }, [filteredCabins, selectedCabinId]);
+  const cabinPrice = basePrice * nights;
   const extraGuests = Math.max(0, guests - 2);
   const extraGuestsPrice =
     extraGuests * (selectedCabin?.additionalPersonPrice || 0) * nights;
@@ -138,6 +226,7 @@ export function BookingSection() {
           descuento: 0,
         },
         paquete: {
+          nombre: `Reserva - ${selectedCabin ? selectedCabin.nombre : "Cabaña"}`,
           cabana_id: Number(selectedCabinId),
           dias_estadia: nights,
           descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planType}`,
@@ -148,21 +237,32 @@ export function BookingSection() {
       // 3. Llamamos a la API (Transacción MVC)
       const response = await createReservation(bookingData);
 
-      // 4. Navegación al éxito
+      // 4. Navegación al éxito — se pasan todos los datos que necesita BookingConfirmation
       navigate("/confirmacion", {
         state: {
           reservaId: response.reserva_id,
           facturaId: response.factura_id,
-          nombreCliente: formData.name,
-          documento: formData.document,
-          tipoDocumento: formData.documentType,
+          // Objeto cabaña completo (nombre + imagen)
+          cabin: {
+            name: selectedCabin.nombre,
+            img_url: selectedCabin.img_url && selectedCabin.img_url.length > 0
+              ? selectedCabin.img_url[0]
+              : null,
+          },
+          // Datos del formulario como objeto
+          formData: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            documentType: formData.documentType,
+            document: formData.document,
+            country: formData.country,
+          },
           total: subtotal,
-          deposito: deposit,
-          cabinName: selectedCabin.nombre,
-          dateRange: dateRange, 
-          date: date,
+          deposit: deposit,
+          dateRange: isMultiDay ? dateRange : { from: date, to: date },
           planType: planType,
-          guests: guests
+          guests: guests,
         },
       });
 
@@ -244,7 +344,7 @@ export function BookingSection() {
               <BookingStep1Details
                 guests={guests}
                 setGuests={setGuests}
-                cabins={cabins}
+                cabins={filteredCabins}
                 selectedCabinId={selectedCabinId}
                 setSelectedCabinId={setSelectedCabinId}
                 planType={planType}

@@ -32,16 +32,26 @@ export async function getCabins(): Promise<Cabin[]> {
       .filter((img: any) => Number(img.cabana_id) === currentCabinId)
       .map((img: any) => img.img_url); // Nos quedamos solo con el string de la URL
 
+    let extractedFeatures: string[] = [];
+    let descText = cabin.descripcion ?? "";
+    if (descText.includes("Incluye:")) {
+      const parts = descText.split("Incluye:");
+      descText = parts[0].trim();
+      extractedFeatures = parts[1].split(",").map((f: string) => f.trim());
+    }
+
+    // 3. Le pasamos el array de URLs que recolectamos (incluyendo la imagen principal)
+    const mainImage = cabin.img_url ? [cabin.img_url] : [];
+    const allCabinImages = [...mainImage, ...cabinImages];
+      
     return {
       id: String(cabin.cabana_id),
       nombre: cabin.nombre,
-      descripcion: cabin.descripcion ?? "",
+      descripcion: descText,
       
-      // 3. Le pasamos el array de URLs que recolectamos. 
-      // Si no tiene imágenes, le dejamos un array vacío para que no rompa el .map() del componente.
-      img_url: cabinImages.length > 0 ? cabinImages : [],
+      img_url: allCabinImages,
 
-      features: [],
+      features: extractedFeatures,
 
       precio_noche: Number(cabin.precio_noche ?? 0),
 

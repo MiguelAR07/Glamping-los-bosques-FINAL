@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { CabinsSection } from "../components/CabinsSection";
+import PromotionsSection from "../components/PromotionsSection";
 import { Link, useLocation } from "react-router-dom";
 import { TestimonialsSection } from "../components/TestimonialsSection";
 import { LocationSection } from "../components/LocationSection";
@@ -27,16 +28,18 @@ export function Home() {
   return (
     <div>
       <div className="relative w-full h-[80vh] min-h-[600px] flex flex-col items-center justify-center border-b border-stone-800 overflow-hidden">
-        {/* Background Video: YouTube for Desktop, Native HTML5 for Mobile */}
+        {/* Background Video: Cloudinary HTML5 Video */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-stone-900">
           
-          {/* YouTube Video - Visible on all screens */}
-          <iframe
-            src="https://www.youtube.com/embed/cTxwBo-iqfI?autoplay=1&mute=1&loop=1&playlist=cTxwBo-iqfI&controls=0&disablekb=1&modestbranding=1&playsinline=1&vq=hd1080"
-            title="Hero Video"
-            allow="autoplay; encrypted-media"
-            className="absolute top-1/2 left-1/2 w-[250vw] h-[140.625vw] md:w-[100vw] md:h-[56.25vw] min-h-[100vh] min-w-[177.77vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          ></iframe>
+          {/* HTML5 Video - Visible on all screens */}
+          <video
+            src="https://res.cloudinary.com/di1xs8vma/video/upload/v1779983021/glamping/hero-video.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          ></video>
         </div>
         
         {/* Dark overlay specifically needed to keep the white text readable against the video */}
@@ -56,6 +59,8 @@ export function Home() {
       </div>
 
       <CabinsSection />
+
+      <PromotionsSection />
 
       <LocationSection />
 

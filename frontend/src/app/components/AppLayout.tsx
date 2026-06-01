@@ -1,11 +1,12 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Instagram, MessageCircle } from "lucide-react";
+import { Menu, X, Instagram, MessageCircle, Mail } from "lucide-react";
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import logoImg from "../../../logo/logo.jpeg";
 import { ChatBot } from "./ChatBot";
 import { TermsModal } from "./TermsModal";
+
 
 /**
  * Contenedor principal del diseño de la aplicación.
@@ -104,12 +105,12 @@ export function AppLayout() {
               <span className="text-sm">WhatsApp: 3103599065</span>
             </a>
             <a href="https://www.instagram.com/glampinglosbosques/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
-              <Instagram className="w-5 h-5 text-pink-500" />
+              <Instagram className="w-5 h-5 text-emerald-500" />
               <span className="text-sm">Instagram: @glampinglosbosques</span>
             </a>
             <a href="https://www.tiktok.com/@glampinglosbosques" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
               <svg 
-                className="w-5 h-5 fill-current text-white" 
+                className="w-4 h-4 fill-current text-emerald-500" 
                 viewBox="0 0 24 24" 
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -117,10 +118,10 @@ export function AppLayout() {
               </svg>
               <span className="text-sm">TikTok: glampinglosbosques</span>
             </a>
-            <p className="text-sm flex items-center justify-center md:justify-start gap-2">
-              <span className="text-emerald-500">@</span>
-              glampinglosbosques@gmail.com
-            </p>
+            <a href="mailto:glampinglosbosques@gmail.com" className="text-sm flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
+              <Mail className="w-5 h-5 text-emerald-500" />
+              <span>glampinglosbosques@gmail.com</span>
+            </a>
           </div>
           <div className="flex flex-col gap-3 items-center md:items-start">
             <h4 className="text-white font-semibold mb-2">Enlaces</h4>

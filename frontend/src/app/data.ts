@@ -8,12 +8,12 @@ export const CABINS = [
     name: "Cabaña Palmas",
     description: "Ideal para parejas, con todas las comodidades de lujo en medio del bosque para una experiencia inolvidable.",
     images: [
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254234/DSC09553_vtda1c.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254234/DSC09548_sebpai.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254231/DSC09513_imkzjs.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777251610/DSC09492_yuxljp.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254232/DSC09531-HDR_j7ukxa.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777219404/DSC09478-HDR_2_qj3liq.jpg"
+      "/cabins/palmas/3.webp",
+      "/cabins/palmas/1.webp",
+      "/cabins/palmas/2.webp",
+      "/cabins/palmas/4.webp",
+      "/cabins/palmas/5.webp",
+      "/cabins/palmas/6.webp"
     ],
     features: ["Jacuzzi privado", "Nevera mini bar", "TV con TDT", "Wifi", "BBQ", "Maya catamaran", "Parqueadero", "Zona de fogata", "Zona verde"],
     plans: {
@@ -30,12 +30,12 @@ export const CABINS = [
     name: "Cabaña Bambú",
     description: "Una inmersión rústica con acabados en bambú, perfecta para quienes buscan conexión profunda con la naturaleza.",
     images: [
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254839/DSC09445-HDR_mcq8gg.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254841/DSC09460-HDR_bp7kh1.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254841/DSC09457-HDR_oczwwj.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254840/DSC09463-HDR_newrcz.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254840/DSC09471_huy3bm.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777254841/DSC09543_y1t1mc.jpg"
+      "/cabins/bambu/3.webp",
+      "/cabins/bambu/2.webp",
+      "/cabins/bambu/1.webp",
+      "/cabins/bambu/4.webp",
+      "/cabins/bambu/5.webp",
+      "/cabins/bambu/6.webp"
     ],
     features: ["Jacuzzi privado", "Nevera mini bar", "TV con TDT", "Wifi", "BBQ", "Parqueadero", "Zona de fogata", "Zona verde"],
     plans: {
@@ -52,12 +52,12 @@ export const CABINS = [
     name: "Cabaña Roble",
     description: "Estructura de madera noble con vistas panorámicas, pozo de fuego y jacuzzi privado para veladas románticas.",
     images: [
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255338/DSC09540_meuzol.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255337/DSC09429-HDR_kiszgx.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255337/DSC09439-HDR_v3r5e6.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255337/DSC09539_eaec0a.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255338/DSC09418-HDR_ztqtk5.jpg",
-      "https://res.cloudinary.com/dzziwcmwd/image/upload/v1777255336/DSC09426-HDR_mcrrad.jpg"
+      "/cabins/roble/3.webp",
+      "/cabins/roble/2.webp",
+      "/cabins/roble/1.webp",
+      "/cabins/roble/4.webp",
+      "/cabins/roble/5.webp",
+      "/cabins/roble/6.webp"
     ],
     features: ["Jacuzzi privado", "Nevera mini bar", "TV con TDT", "Wifi", "BBQ", "Parqueadero", "Pozo de fuego", "Zona verde"],
     plans: {
@@ -81,3 +81,4 @@ export const SERVICES = [
   { id: 'aniv_sencillo', name: 'Decoración Aniversario (Sencilla)', price: 50000, desc: 'Luces, pétalos, letrero' },
   { id: 'aniv_especial', name: 'Decoración Aniversario (Especial)', price: 180000, desc: 'Letrero, bombas, luces, vino, torta, pétalos' }
 ];
+
