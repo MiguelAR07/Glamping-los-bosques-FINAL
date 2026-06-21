@@ -12,7 +12,7 @@ export default function PromotionsSection() {
   useEffect(() => {
     const fetchPromos = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/promociones`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/promociones`);
         if (!res.ok) throw new Error("Error cargando promociones");
         const data = await res.json();
         // El backend ya filtra solo activos, pero hacemos doble check
@@ -92,7 +92,7 @@ export default function PromotionsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="relative group bg-white rounded-3xl overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col hover:-translate-y-2 transition-transform duration-300"
+              className="relative group bg-white rounded-none overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col hover:-translate-y-2 transition-transform duration-300"
             >
               {/* Etiqueta de promo flotante */}
               <div className="absolute top-4 left-4 z-30 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-pulse">
@@ -101,15 +101,15 @@ export default function PromotionsSection() {
               </div>
 
               {/* Imagen / placeholder */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-emerald-100 to-stone-100">
+              <div className="relative overflow-hidden bg-gradient-to-br from-emerald-100 to-stone-100 min-h-[200px] flex items-center justify-center">
                 {promo.img_url ? (
                   <img
                     src={promo.img_url}
                     alt={promo.nombre}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-emerald-300 gap-3">
+                  <div className="w-full py-16 flex flex-col items-center justify-center text-emerald-300 gap-3">
                     <Sparkles className="w-16 h-16" />
                     <span className="text-emerald-600 font-semibold text-lg">{promo.nombre}</span>
                   </div>
@@ -163,7 +163,7 @@ export default function PromotionsSection() {
                     <span className="text-xs text-stone-400">/noche</span>
                   </div>
                   <Link
-                    to={`/reservas?promo=true${promo.cabanas && promo.cabanas.length > 0 ? `&cabin=${promo.cabanas[0].id}` : ''}`}
+                    to={`/reservas?promo=promo_${promo.id}${promo.cabanas && promo.cabanas.length > 0 ? `&cabin=${promo.cabanas[0].id}` : ''}`}
                     className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2"
                   >
                     <Sparkles className="w-4 h-4" />

@@ -25,6 +25,7 @@ export type Service = {
 export type PlanType = {
   id: number;
   nombre: string;
+  dias_estadia?: number;
 };
 
 export type Package = {
@@ -66,27 +67,32 @@ export interface BookingPayload {
     nombre: string;
     email: string;
     contacto: string;
-    numero_identificacion: string;
     tipo_identificacion: string;
+    numero_identificacion: string;
     pais_residencia: string;
   };
   reserva: {
-    paquete_id: string;
-    cliente_id: string;
-    plan_type: string;
-    llegada: string | Date;
-    salida: string | Date;
+    paquete_id: number | string;
+    cliente_id: number | string;
+    plan_type?: string;
+    llegada: string;
+    salida: string;
     por_pagar: number;
   };
   factura: {
-    reserva_id: string;
-    subtotal: Number;
-    descuento: Number;
+    reserva_id: number | string;
+    subtotal: number;
+    descuento: number;
   };
-  paquete?: {
+  paquete: {
+    nombre: string;
     cabana_id: number;
     dias_estadia: number;
     descripcion: string;
     tipo_id: number;
   };
+  servicios?: {
+    servicio_id: number;
+    cantidad_personas: number;
+  }[];
 }

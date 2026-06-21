@@ -62,16 +62,17 @@ const COLOMBIAN_HOLIDAYS: Date[] = [
 const isColombianoHoliday = (date: Date): boolean =>
   COLOMBIAN_HOLIDAYS.some((h) => isSameDay(date, h));
 
-/** Retorna true si la fecha es sábado o domingo */
-const isWeekend = (date: Date): boolean => {
-  const day = getDay(date); // 0 = Dom, 6 = Sáb
-  return day === 0 || day === 6;
+/** Retorna true si la fecha es considerada Fin de Semana (Viernes o Sábado) para check-in */
+const isWeekendCheckin = (date: Date): boolean => {
+  const day = getDay(date); // 5 = Vie, 6 = Sáb
+  return day === 5 || day === 6;
 };
 
-/** Retorna true si la fecha es día de semana (Lun-Vie), NO festivo */
-const isWeekday = (date: Date): boolean => {
+/** Retorna true si la fecha es considerada Semana (Domingo a Jueves), NO festivo */
+const isWeekdayCheckin = (date: Date): boolean => {
   const day = getDay(date);
-  return day >= 1 && day <= 5;
+  // 0 = Dom, 1 = Lun, 2 = Mar, 3 = Mié, 4 = Jue
+  return day >= 0 && day <= 4;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -103,18 +104,34 @@ export function BookingStep1Details({
   date, setDate,
   dateRange, setDateRange,
   timeBlock, setTimeBlock,
-  isMultiDay, selectedCabin, handleNext
+  isMultiDay, selectedCabin, handleNext, blockedDates,
+  fixedDays
 }: any) {
   const planCategory = getPlanCategory(planType);
   const isOccasional = planCategory === 'occasional' || planCategory === 'occasional_weekend';
 
   // ─── HINT visible bajo el calendario ──────────────────────────────────────
   const calendarHint: Record<typeof planCategory, string> = {
-    weekend: '📅 Solo puedes seleccionar sábados, domingos y festivos colombianos.',
-    week:    '📅 Solo puedes seleccionar días de semana (lunes a viernes).',
+    weekend: '📅 Solo puedes seleccionar viernes, sábados y festivos colombianos.',
+    week:    '📅 Solo puedes seleccionar de domingo a jueves.',
     occasional: '📅 Selecciona el día de tu visita y el bloque de horario.',
     occasional_weekend: '📅 Selecciona un sábado, domingo o festivo y tu bloque de horario.',
     sundayOrOther: '📅 Selecciona la fecha de tu llegada.',
+  };
+
+  const handleRangeSelect = (range: any) => {
+    if (!range) {
+      setDateRange({ from: undefined, to: undefined });
+      return;
+    }
+    if (fixedDays && fixedDays > 0 && range?.from) {
+      // Si la promo tiene días de estadía fijos, configuramos la salida automáticamente
+      const from = range.from;
+      const to = new Date(from.getTime() + fixedDays * 24 * 60 * 60 * 1000);
+      setDateRange({ from, to });
+    } else {
+      setDateRange(range);
+    }
   };
 
   // ─── FECHAS DESHABILITADAS ─────────────────────────────────────────────────
@@ -122,7 +139,26 @@ export function BookingStep1Details({
     // 1. Siempre bloquear el pasado
     if (isBefore(d, startOfDay(new Date()))) return true;
 
-    // 2. Bloqueos específicos por cabaña / temporada
+    // 2. Bloqueos dinámicos desde la base de datos (Admin Panel)
+    if (blockedDates && blockedDates.length > 0) {
+      const isBlocked = blockedDates.some((b: any) => {
+        // Aplica a todas las cabañas o a la seleccionada
+        if (!b.cabana_id || String(b.cabana_id) === String(selectedCabinId) || b.cabana_id === "all") {
+          const start = startOfDay(new Date(b.fecha_inicio));
+          const end = startOfDay(new Date(b.fecha_fin));
+          
+          // Bloqueamos si el día D es mayor o igual a START y MENOR estricto que END
+          // Esto permite que el día de salida (END) pueda ser seleccionado como día de entrada
+          // por otro cliente.
+          const current = startOfDay(d);
+          return current.getTime() >= start.getTime() && current.getTime() < end.getTime();
+        }
+        return false;
+      });
+      if (isBlocked) return true;
+    }
+
+    // 3. Bloqueos específicos por cabaña / temporada (Hardcoded legacy)
     const isPalmas = selectedCabin?.nombre?.toLowerCase().includes('palmas');
     if (isPalmas) {
       if (isSameDay(d, new Date(2026, 4, 25))) return true;
@@ -131,14 +167,14 @@ export function BookingStep1Details({
     if (isSameDay(d, new Date(2026, 4, 30))) return true;
     if (isWithinInterval(d, { start: new Date(2026, 5, 5), end: new Date(2026, 5, 11) })) return true;
 
-    // 3. Restricciones por tipo de plan
+    // 4. Restricciones por tipo de plan
     if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
-      // Solo permitir fines de semana y festivos
-      return !isWeekend(d) && !isColombianoHoliday(d);
+      // Solo permitir fines de semana (Viernes y Sábado) y festivos
+      return !isWeekendCheckin(d) && !isColombianoHoliday(d);
     }
     if (planCategory === 'week') {
-      // Solo permitir lunes a viernes (festivos también quedan bloqueados)
-      return !isWeekday(d) || isColombianoHoliday(d);
+      // Solo permitir semana (Domingo a Jueves) y bloquear festivos
+      return !isWeekdayCheckin(d) || isColombianoHoliday(d);
     }
 
     return false; // Ocasional normal y Día de sol: cualquier día
@@ -194,7 +230,7 @@ export function BookingStep1Details({
                   : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
               }`}
             >
-              {pt.nombre}
+              {pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}
             </button>
           ))}
         </div>
@@ -208,15 +244,15 @@ export function BookingStep1Details({
           {isMultiDay ? (
             <DayPicker
               locale={es}
-              mode="range"
-              selected={dateRange as any}
-              onSelect={setDateRange as any}
+              mode={fixedDays && fixedDays > 0 ? "single" : "range"}
+              selected={fixedDays && fixedDays > 0 ? dateRange.from : (dateRange as any)}
+              onSelect={fixedDays && fixedDays > 0 ? ((d: Date | undefined) => handleRangeSelect({from: d})) : (handleRangeSelect as any)}
               disabled={isDateDisabled}
               className="bg-transparent"
               classNames={{
-                day_selected: "bg-emerald-600 text-white hover:bg-emerald-700",
-                day_today: "font-bold text-emerald-600",
-                day_disabled: "opacity-25 cursor-not-allowed",
+                selected: "!bg-emerald-600 !text-white hover:!bg-emerald-700",
+                today: "font-bold text-emerald-600",
+                disabled: "opacity-25 cursor-not-allowed",
               }}
             />
           ) : (
@@ -228,9 +264,9 @@ export function BookingStep1Details({
               disabled={isDateDisabled}
               className="bg-transparent"
               classNames={{
-                day_selected: "bg-emerald-600 text-white hover:bg-emerald-700",
-                day_today: "font-bold text-emerald-600",
-                day_disabled: "opacity-25 cursor-not-allowed",
+                selected: "!bg-emerald-600 !text-white hover:!bg-emerald-700",
+                today: "font-bold text-emerald-600",
+                disabled: "opacity-25 cursor-not-allowed",
               }}
             />
           )}

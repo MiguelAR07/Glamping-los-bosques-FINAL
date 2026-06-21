@@ -9,7 +9,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary, // Pasamos el paquete raíz que contiene v2
   params: {
     folder: "comprobantes",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf"],
   },
 });
 

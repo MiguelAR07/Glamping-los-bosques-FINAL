@@ -1,4 +1,5 @@
-import { CABINS } from "../data";
+import { getCabins } from "../api";
+import { Cabin } from "../types";
 import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
@@ -30,6 +31,9 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  const images = cabin.img_url || cabin.images || [];
+  const name = cabin.nombre || cabin.name;
+
   const scroll = (direction: 'left' | 'right') => {
     setIsAutoPlaying(false);
     if (scrollRef.current) {
@@ -39,7 +43,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
   };
 
   useEffect(() => {
-    if (cabin.images.length <= 1 || !isAutoPlaying) return;
+    if (images.length <= 1 || !isAutoPlaying) return;
     const intervalId = setInterval(() => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -53,7 +57,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
     }, 5000); // 5 segundos
 
     return () => clearInterval(intervalId);
-  }, [cabin.images.length, isAutoPlaying]);
+  }, [images.length, isAutoPlaying]);
 
   return (
     <motion.div
@@ -61,7 +65,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col group hover:-translate-y-2 transition-transform duration-300"
+      className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-stone-200/50 border border-stone-100 flex flex-col group hover:-translate-y-2 transition-transform duration-300 h-full w-full"
     >
       {/* Carrusel nativo con CSS (Scroll Snap) en lugar de react-slick */}
       <div 
@@ -69,7 +73,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
         onPointerDown={() => setIsAutoPlaying(false)}
       >
         {/* Flechas de navegación */}
-        {cabin.images.length > 1 && (
+        {images.length > 1 && (
           <>
             <button 
               onClick={() => scroll('left')} 
@@ -92,17 +96,17 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
           ref={scrollRef} 
           className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full h-full"
         >
-          {cabin.images.map((img: string, i: number) => (
+          {images.map((img: string, i: number) => (
             <div key={i} className="flex-none w-full h-full snap-center relative">
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 via-transparent to-stone-900/10 z-[1] pointer-events-none" />
               
               <div className="absolute top-4 right-4 z-[2] bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/20 tracking-wider">
-                {i + 1} / {cabin.images.length}
+                {i + 1} / {images.length}
               </div>
               
               <img 
                 src={img} 
-                alt={`${cabin.name} - Vista ${i + 1}`} 
+                alt={`${name} - Vista ${i + 1}`} 
                 loading="lazy" 
                 className="w-full h-full object-cover object-center transition-transform duration-300 ease-out group-hover:scale-105" 
               />
@@ -111,9 +115,9 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
         </div>
         
         {/* Indicador visual inferior opcional */}
-        {cabin.images.length > 1 && (
+        {images.length > 1 && (
           <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none opacity-80">
-            {cabin.images.map((_: any, i: number) => (
+            {images.map((_: any, i: number) => (
               <div key={i} className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
             ))}
           </div>
@@ -121,15 +125,15 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
       </div>
 
       <div className="p-6 md:p-8 flex flex-col flex-1">
-        <h3 className="text-2xl font-bold text-stone-900 mb-3">{cabin.name}</h3>
+        <h3 className="text-2xl font-bold text-stone-900 mb-3">{name}</h3>
         <p className="text-stone-600 mb-6 leading-relaxed text-sm md:text-base min-h-[4.5rem]">
-          {cabin.description}
+          {cabin.descripcion || cabin.description}
         </p>
         
         <div className="mb-6 flex-1">
           <h4 className="text-xs md:text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Comodidades</h4>
           <ul className="grid grid-cols-2 gap-y-3 gap-x-2">
-            {cabin.features.map((feature: string, i: number) => (
+            {(cabin.features || []).map((feature: string, i: number) => (
               <li key={i} className="flex items-center gap-2 text-stone-700 text-sm font-medium">
                 <FeatureIcon feature={feature} />
                 <span className="truncate" title={feature}>{feature}</span>
@@ -143,7 +147,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
             <div>
               <span className="block text-xs text-stone-500 font-medium mb-1">Desde</span>
               <span className="text-2xl font-bold text-emerald-700">
-                ${cabin.plans.occasional.toLocaleString('es-CO')}
+                ${(cabin.precio_noche || cabin.plans?.occasional || 0).toLocaleString('es-CO')}
               </span>
             </div>
           </div>
@@ -160,6 +164,20 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
 };
 
 export function CabinsSection() {
+  const [cabins, setCabins] = useState<Cabin[]>([]);
+
+  useEffect(() => {
+    async function loadCabins() {
+      try {
+        const loaded = await getCabins();
+        setCabins(loaded);
+      } catch (err) {
+        console.error("Error cargando cabañas", err);
+      }
+    }
+    loadCabins();
+  }, []);
+
   return (
     <section id="cabins" className="py-20 md:py-24 px-4 sm:px-6 lg:px-12 bg-stone-50">
       <div className="max-w-7xl mx-auto">
@@ -183,9 +201,12 @@ export function CabinsSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {CABINS.map((cabin, index) => (
-            <CabinCard key={cabin.id} cabin={cabin} index={index} />
+        {/* Carrusel horizontal de cabañas */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {cabins.map((cabin, index) => (
+            <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[400px] flex">
+              <CabinCard cabin={cabin} index={index} />
+            </div>
           ))}
         </div>
       </div>

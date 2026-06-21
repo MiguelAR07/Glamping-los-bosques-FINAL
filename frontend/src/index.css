@@ -6,4 +6,44 @@
   html {
     scroll-behavior: smooth;
   }
+  
+  /* Sobrescribir colores por defecto de react-day-picker v9 (azul -> verde esmeralda) */
+  :root, .rdp-root, .rdp {
+    --rdp-accent-color: #059669 !important;
+    --rdp-background-color: #d1fae5 !important;
+    --rdp-accent-background-color: #d1fae5 !important;
+    --rdp-selected-color: #ffffff !important;
+    --rdp-selected-background: #059669 !important;
+    --rdp-focus-color: transparent !important;
+  }
+  
+  /* Forzar estado seleccionado circular y sin outlines cuadrados */
+  .rdp-day_selected, 
+  .rdp-day_selected:hover, 
+  .rdp-day_selected:focus-visible,
+  [aria-selected="true"],
+  .rdp-day[aria-selected="true"] {
+    background-color: #059669 !important;
+    color: white !important;
+    border-color: #059669 !important;
+    border-radius: 100% !important; /* Mantener la forma circular */
+    outline: none !important; /* Quitar recuadro cuadrado de enfoque */
+  }
+  
+  /* Para rangos intermedios no hacerlo circular sino rectangular pero clarito */
+  .rdp-day_selected.rdp-day_range_middle,
+  [aria-selected="true"].rdp-day_range_middle {
+    background-color: #d1fae5 !important;
+    color: #059669 !important;
+    border-radius: 0 !important; /* Rangos medios son rectangulares que conectan */
+    outline: none !important;
+  }
+
+  /* Eliminar recuadros al dar clic */
+  .rdp-day:focus-visible, 
+  .rdp-day:focus,
+  .rdp-day:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }

@@ -2,11 +2,12 @@ import pg from 'pg';
 
 const { Pool } = pg;
 
+// Si la URL apunta a localhost, no usamos SSL (PostgreSQL local)
+const isLocal = (process.env.DATABASE_URL || '').includes('localhost');
+
 const config = {
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } })
 };
 
 // Creamos una instancia del Pool (maneja múltiples conexiones de forma eficiente)
