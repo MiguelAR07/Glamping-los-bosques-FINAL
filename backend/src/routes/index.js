@@ -7,6 +7,8 @@ import serviceRouter from './services.routes.js';
 import reservationRouter from './reservations.routes.js';
 import invoiceRouter from './invoices.routes.js';
 import reviewsRouter from './reviews.routes.js';
+import promocionesRouter from './promociones.routes.js';
+import availabilityRouter from './availability.routes.js';
 
 const router = Router();
 
@@ -17,5 +19,7 @@ router.use('/services', serviceRouter);
 router.use('/reservations', reservationRouter);
 router.use('/invoices', invoiceRouter);
 router.use('/reviews', reviewsRouter);
+router.use('/promociones', promocionesRouter);
+router.use('/availability', availabilityRouter);
 
-export default router;
+export default router;

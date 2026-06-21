@@ -14,7 +14,8 @@ const FAQS = [
   { id: '3', question: '3. Precios' },
   { id: '4', question: '4. Reservas' },
   { id: '5', question: '5. Ubicación' },
-  { id: '6', question: '6. Servicios' }
+  { id: '6', question: '6. Servicios' },
+  { id: '7', question: '7. Contacto' }
 ];
 
 const getFAQResponse = (text: string): string => {
@@ -27,7 +28,7 @@ const getFAQResponse = (text: string): string => {
     return `🐶 **Mascotas (Pet Friendly):**\n\nSí, se permiten mascotas con un costo adicional de **$50.000** por estadía.`;
   }
   if (normalized === '3') {
-    return `💸 **Precios y Planes por Cabaña:**\n\nManejamos diferentes planes según la cabaña que elijas:\n\n🏡 **Cabañas Palmas y Bambú** (Capacidad máx. 4 y 3 personas respectivamente):\n• **Plan Ocasional** (3 horas): **$160.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$220.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$280.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$350.000 COP**\n*(Tarifa base para 2 personas. Persona adicional: $70.000 COP por noche)*\n\n🏡 **Cabaña Roble** (Exclusiva para parejas - Capacidad máx. 2 personas):\n• **Plan Ocasional** (3 horas): **$150.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$180.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$250.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$290.000 COP**\n\n*Nota: Todos los hospedajes y días de sol incluyen el acceso al jacuzzi privado y las comodidades descritas en cada cabaña.*`;
+    return `💸 **Precios y Planes por Cabaña:**\n\nManejamos diferentes planes según la cabaña que elijas:\n\n🏡 **Cabañas Palmas y Bambú** (Capacidad máx. 4 y 3 personas respectivamente):\n• **Plan Ocasional** (6 horas): **$160.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$220.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$280.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$350.000 COP**\n*(Tarifa base para 2 personas. Persona adicional: $70.000 COP por noche)*\n\n🏡 **Cabaña Roble** (Exclusiva para parejas - Capacidad máx. 2 personas):\n• **Plan Ocasional** (6 horas): **$150.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$180.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$250.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$290.000 COP**\n\n*Nota: Todos los hospedajes y días de sol incluyen el acceso al jacuzzi privado y las comodidades descritas en cada cabaña.*`;
   }
   if (normalized === '4') {
     return `📅 **¿Cómo reservar paso a paso?**\n\nReservar es muy sencillo y lo puedes hacer directamente desde nuestra plataforma:\n\n1️⃣ **Ingresa a la sección de Reservas:** Ve a la pestaña **"Reservas"** en el menú de navegación superior.\n2️⃣ **Elige los detalles:** Selecciona la cabaña (Palmas, Bambú o Roble), el tipo de plan, las fechas de tu estadía y la cantidad de huéspedes.\n3️⃣ **Selecciona servicios adicionales (opcional):** Puedes agregar decoraciones especiales de cumpleaños o aniversario si lo deseas.\n4️⃣ **Completa tus datos:** Llena el formulario con tu nombre, teléfono y documento de identidad.\n5️⃣ **Realiza el pago del anticipo:** Para asegurar tu reserva, debes transferir el **50% del valor total** a través de:\n   • **Bancolombia (Ahorros):** 123-456789-00 (Glamping Los Bosques SAS)\n   • **Nequi:** 310 359 9065\n6️⃣ **Sube tu comprobante:** Toma una captura de pantalla del pago y súbela en el paso final de la página de reservas.\n7️⃣ **¡Listo!** Verificaremos tu pago y te enviaremos la confirmación oficial a tu correo.`;
@@ -38,8 +39,11 @@ const getFAQResponse = (text: string): string => {
   if (normalized === '6') {
     return `🍽️ **Servicios (Restaurante y Transporte):**\n\n• **Servicio de restaurante:** Las comidas se venden siempre y cuando el administrador confirme que hay servicio para ese día. Consúltanos antes de tu llegada para coordinar tu alimentación.\n• **Servicio de transporte:** Para coordinar el servicio de transporte, por favor comunícate directamente al número:\n📞 **314822970**`;
   }
+  if (normalized === '7') {
+    return `📞 **Contacto:**\n\nPara dudas adicionales, comunícate con nosotros vía WhatsApp al:\n📱 **310 359 9065**`;
+  }
   
-  return `❌ **Opción no válida.**\n\nPor favor, escribe un número del **1 al 6** o escoge una de las siguientes opciones:\n\n1️⃣ Horarios de Check-in/out\n2️⃣ Mascotas (Pet Friendly)\n3️⃣ Precios de cabañas\n4️⃣ Reservas paso a paso\n5️⃣ Ubicación\n6️⃣ Servicios (Restaurante/Transporte)`;
+  return `❌ **Opción no válida.**\n\nPor favor, escribe un número del **1 al 7** o escoge una de las siguientes opciones:\n\n1️⃣ Horarios de Check-in/out\n2️⃣ Mascotas (Pet Friendly)\n3️⃣ Precios de cabañas\n4️⃣ Reservas paso a paso\n5️⃣ Ubicación\n6️⃣ Servicios (Restaurante/Transporte)\n7️⃣ Contacto (WhatsApp)`;
 };
 
 export function ChatBot() {
@@ -48,7 +52,7 @@ export function ChatBot() {
     {
       id: 'welcome',
       sender: 'bot',
-      text: '¡Hola! Soy el asistente virtual de Glamping Los Bosques 🌲.\n\nSelecciona una pregunta escribiendo su número (1, 2, 3, 4, 5, 6) o haz clic en los botones de abajo:\n\n1️⃣ Horarios de Check-in/out\n2️⃣ Mascotas (Pet Friendly)\n3️⃣ Precios de cabañas\n4️⃣ Reservas paso a paso\n5️⃣ Ubicación\n6️⃣ Servicios (Restaurante/Transporte)'
+      text: '¡Hola! Soy el asistente virtual de Glamping Los Bosques 🌲.\n\nSelecciona una pregunta escribiendo su número (1, 2, 3, 4, 5, 6, 7) o haz clic en los botones de abajo:\n\n1️⃣ Horarios de Check-in/out\n2️⃣ Mascotas (Pet Friendly)\n3️⃣ Precios de cabañas\n4️⃣ Reservas paso a paso\n5️⃣ Ubicación\n6️⃣ Servicios (Restaurante/Transporte)\n7️⃣ Contacto (WhatsApp)'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -74,8 +78,14 @@ export function ChatBot() {
     setIsTyping(true);
     // Simular tiempo de respuesta de 600ms para realismo
     setTimeout(() => {
-      const responseText = getFAQResponse(text);
-      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: responseText }]);
+      const normalized = text.toLowerCase().trim();
+      if (normalized === '7') {
+        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: 'Abriendo WhatsApp para que hables directamente con nosotros...' }]);
+        window.open('https://wa.me/573103599065', '_blank');
+      } else {
+        const responseText = getFAQResponse(text);
+        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: responseText }]);
+      }
       setIsTyping(false);
     }, 600);
   };
@@ -190,11 +200,11 @@ export function ChatBot() {
                   value={inputValue}
                   onChange={(e) => {
                     const val = e.target.value;
-                    if (/^[1-6]?$/.test(val)) {
+                    if (/^[1-7]?$/.test(val)) {
                       setInputValue(val);
                     }
                   }}
-                  placeholder="Escribe un número del 1 al 6..."
+                  placeholder="Escribe un número del 1 al 7..."
                   disabled={isTyping}
                   className="flex-1 bg-stone-100 border border-stone-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
                 />

@@ -4,7 +4,13 @@ import routes from './src/routes/index.js';
 
 app.use('/api', routes);
 
-const PORT = 3000;
+// Manejador de errores global
+app.use((err, req, res, next) => {
+    console.error('EXPRESS ERROR:', err);
+    res.status(500).json({ success: false, error: err.message || "Error interno del servidor", detalle: err });
+});
+
+const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
     connectDB();

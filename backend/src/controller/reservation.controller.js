@@ -4,6 +4,7 @@ import { reservation } from '../model/reservation.model.js';
 import { packages } from "../model/packages.model.js";
 import { customer } from "../model/customer.model.js";
 import { invoice } from "../model/invoice.model.js";
+import { sendWhatsAppNotification } from "../services/whatsapp.service.js";
 
 // tomar los datos del paquete y del cliente y generar la reserva
 export const createReservation = async (req, res) => {
@@ -41,11 +42,13 @@ export const createReservation = async (req, res) => {
             }
 
             // Crear el paquete
+            const nombrePaquete = paquete.nombre || 'Reserva Web';
             const packageResult = await pool.query(packages.createPackage, [
                 paquete.cabana_id,
                 paquete.dias_estadia,
                 paquete.descripcion,
-                paquete.tipo_id
+                paquete.tipo_id,
+                nombrePaquete
             ]);
 
             if (packageResult.rowCount === 0) {
@@ -67,6 +70,19 @@ export const createReservation = async (req, res) => {
         const nuevo_cliente_id = customerResult.rows[0].cliente_id;
 
         const facturaUrl = req.file ? req.file.path : null;
+
+        // Insertar servicios seleccionados
+        let servicios = req.body.servicios;
+        if (typeof servicios === "string") servicios = JSON.parse(servicios);
+        
+        if (servicios && Array.isArray(servicios) && servicios.length > 0) {
+            for (const s of servicios) {
+                await pool.query(
+                    "INSERT INTO servicios_por_paquete (paquete_id, servicio_id, cantidad_personas) VALUES ($1, $2, $3)",
+                    [nuevo_paquete_id, s.servicio_id, s.cantidad_personas || 1]
+                );
+            }
+        }
 
         const reservationResult = await pool.query(reservation.createReservation, [
             reserva.llegada,    // $1
@@ -90,6 +106,41 @@ export const createReservation = async (req, res) => {
         ]);
 
         await pool.query("COMMIT");
+
+        // Insertar notificación en el sistema
+        const tituloNotificacion = "¡Nueva Reserva Recibida!";
+        const asuntoNotificacion = `Reserva de ${cliente.nombre}`;
+        const mensajeNotificacion = `El cliente ${cliente.nombre} ha realizado una reserva. Fecha de llegada: ${new Date(reserva.llegada).toLocaleDateString()}. Paquete: ${paquete?.nombre || reserva?.paquete_id}. Por pagar: $${reserva.por_pagar}`;
+        await pool.query(
+            "INSERT INTO notificaciones (titulo, asunto, mensaje) VALUES ($1, $2, $3)",
+            [tituloNotificacion, asuntoNotificacion, mensajeNotificacion]
+        );
+
+        // Enviar notificación por correo al panel y al cliente
+        import('../services/nodemailer.service.js')
+            .then(({ sendNewReservationEmail, sendClientConfirmationEmail }) => {
+                const paqueteName = paquete?.nombre || reserva?.paquete_id;
+                
+                // Correo al administrador
+                sendNewReservationEmail(
+                    cliente.nombre, 
+                    reserva.llegada, 
+                    reserva.salida, 
+                    paqueteName
+                );
+
+                // Correo al cliente
+                sendClientConfirmationEmail(
+                    cliente.email,
+                    cliente.nombre,
+                    reserva.llegada,
+                    reserva.salida,
+                    paqueteName,
+                    factura.subtotal,
+                    reserva.por_pagar
+                );
+            })
+            .catch(err => console.error("Error cargando nodemailer:", err));
 
         res.status(201).json({
             success: true,
@@ -133,6 +184,9 @@ export const uploadPaymentReceipt = async (req, res) => {
         }
 
         await pool.query("COMMIT");
+
+        // Enviar notificación por WhatsApp al administrador de forma asíncrona
+        sendWhatsAppNotification(`🔔 *Nueva Reserva Recibida*\nSe ha subido el comprobante para la reserva ID: ${id}.\nPor favor, ingresa al Panel de Control para validarla.`);
 
         res.status(200).json({
             success: true,

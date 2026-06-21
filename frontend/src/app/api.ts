@@ -1,6 +1,6 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : `http://localhost:3000/api`; // ajusta según tu backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : `http://localhost:3002/api`; // backend de landing ahora está en 3002
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
@@ -18,19 +18,15 @@ export async function getCabins(): Promise<Cabin[]> {
     fetchFromApi<any>("cabins/images") // <-- Pon aquí el endpoint exacto de tu tabla Imagenes_Cabanas
   ]);
 
-  const allowedCabinTerms = ["palmas", "bamb", "roble"];
-  const filteredCabins = cabins.filter((cabin: any) => {
-    const name = String(cabin.nombre ?? "").toLowerCase();
-    return allowedCabinTerms.some((term) => name.includes(term));
-  });
-
-  return filteredCabins.map((cabin) => {
+  return cabins.map((cabin) => {
     const currentCabinId = Number(cabin.cabana_id);
 
     // 2. Filtramos las imágenes que le pertenecen a ESTA cabaña en específico
+    const cleanUrl = (url: string) => url ? url.replace('http://localhost:3000', API_BASE_URL.replace('/api', '')) : '';
+
     const cabinImages = allImages
       .filter((img: any) => Number(img.cabana_id) === currentCabinId)
-      .map((img: any) => img.img_url); // Nos quedamos solo con el string de la URL
+      .map((img: any) => cleanUrl(img.img_url)); // Nos quedamos solo con el string de la URL limpo
 
     let extractedFeatures: string[] = [];
     let descText = cabin.descripcion ?? "";
@@ -41,7 +37,7 @@ export async function getCabins(): Promise<Cabin[]> {
     }
 
     // 3. Le pasamos el array de URLs que recolectamos (incluyendo la imagen principal)
-    const mainImage = cabin.img_url ? [cabin.img_url] : [];
+    const mainImage = cabin.img_url ? [cleanUrl(cabin.img_url)] : [];
     const allCabinImages = [...mainImage, ...cabinImages];
       
     return {
@@ -120,7 +116,7 @@ export async function getProducts(): Promise<Product[]> {
 
     descripcion: product.descripcion,
 
-    img_url: product.img_url ? [product.img_url] : [],
+    img_url: product.img_url ? [product.img_url.replace('http://localhost:3000', API_BASE_URL.replace('/api', ''))] : [],
   }));
 }
 
@@ -214,5 +210,11 @@ export async function createReview(data: { nombre: string, texto: string, rating
     throw new Error(errorData.message || "Error al crear reseña");
   }
 
+  return await response.json();
+}
+
+export async function getBlockedDates() {
+  const response = await fetch(`${API_BASE_URL}/availability`);
+  if (!response.ok) return [];
   return await response.json();
 }

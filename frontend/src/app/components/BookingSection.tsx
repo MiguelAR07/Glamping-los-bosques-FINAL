@@ -22,6 +22,7 @@ export function BookingSection() {
   const [selectedPlanTypeId, setSelectedPlanTypeId] = useState<number>(0);
   const [planType, setPlanType] = useState<string>("");
   const [timeBlock, setTimeBlock] = useState<string>("");
+  const [blockedDates, setBlockedDates] = useState<any[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
@@ -60,8 +61,8 @@ export function BookingSection() {
   }, [urlCabinId, cabins, selectedCabinId]);
 
   useEffect(() => {
-    if (planTypes.length > 0 && urlPromo === "true") {
-      const promoPlan = planTypes.find((p: any) => p.isPromo);
+    if (planTypes.length > 0 && urlPromo) {
+      const promoPlan = planTypes.find((p: any) => String(p.id) === String(urlPromo));
       if (promoPlan && promoPlan.id !== selectedPlanTypeId) {
         setSelectedPlanTypeId(promoPlan.id);
         setPlanType(promoPlan.nombre);
@@ -75,16 +76,17 @@ export function BookingSection() {
         // Cargamos cabañas, servicios y tipos de plan en paralelo.
         // Las promociones se cargan de forma independiente para que si el endpoint falla,
         // no bloquee la carga principal de las cabañas.
-        const [loadedCabins, loadedServices, loadedPlanTypes] = await Promise.all([
+        const [loadedCabins, loadedServices, loadedPlanTypes, loadedBlockedDates] = await Promise.all([
           getCabins(),
           getServices(),
           getPackageTypes(),
+          import("../api.ts").then(m => m.getBlockedDates())
         ]);
 
         // Intentamos cargar las promociones sin bloquear lo demás
         let activePromos: any[] = [];
         try {
-          const resPromos = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/promociones`).then(res => {
+          const resPromos = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/promociones`).then(res => {
             if (!res.ok) throw new Error('Promociones no disponibles');
             return res.json();
           });
@@ -95,6 +97,7 @@ export function BookingSection() {
               nombre: `🌟 Promoción: ${p.nombre}`,
               isPromo: true,
               precio_promocional: p.precio,
+              dias_estadia: p.dias_estadia,
               cabanas_permitidas: p.cabanas.map((c: any) => String(c.id))
             }));
         } catch {
@@ -107,6 +110,7 @@ export function BookingSection() {
         setCabins(loadedCabins);
         setServices(loadedServices);
         setPlanTypes(combinedPlanTypes);
+        setBlockedDates(loadedBlockedDates);
 
         // Setear por defecto la primera cabaña o la de la URL:
         if (urlCabinId) {
@@ -122,10 +126,12 @@ export function BookingSection() {
         }
 
         // Setear por defecto el tipo de plan de la URL promo o el primero:
-        if (urlPromo === "true" && combinedPlanTypes.some((p: any) => p.isPromo)) {
-          const promoPlan = combinedPlanTypes.find((p: any) => p.isPromo);
-          setSelectedPlanTypeId(promoPlan.id);
-          setPlanType(promoPlan.nombre);
+        if (urlPromo && combinedPlanTypes.some((p: any) => String(p.id) === String(urlPromo))) {
+          const promoPlan = combinedPlanTypes.find((p: any) => String(p.id) === String(urlPromo));
+          if (promoPlan) {
+            setSelectedPlanTypeId(promoPlan.id);
+            setPlanType(promoPlan.nombre);
+          }
         } else if (loadedPlanTypes.length > 0) {
           setSelectedPlanTypeId(loadedPlanTypes[0].id);
           setPlanType(loadedPlanTypes[0].nombre);
@@ -143,15 +149,25 @@ export function BookingSection() {
     );
   };
 
+  const displayedPlanTypes = useMemo(() => {
+    if (urlPromo) {
+      const selectedPromo = planTypes.find((p: any) => String(p.id) === String(urlPromo));
+      if (selectedPromo) return [selectedPromo];
+    }
+    // Si no viene con código de promo, mostrar solo los planes normales
+    return planTypes.filter(p => !p.isPromo);
+  }, [planTypes, urlPromo]);
+
   // --- LÓGICA DE CÁLCULO ---
-  // isMultiDay: los planes "Semana" y "Fin de Semana / Festivo" usan selector de rango
   const planNameLower = planType.toLowerCase();
+  const selectedPlanObj = useMemo(() => planTypes.find(p => p.id === selectedPlanTypeId) as any, [planTypes, selectedPlanTypeId]);
+
   const isMultiDay =
-    !planNameLower.includes('ocasional') &&
+    (!planNameLower.includes('ocasional') &&
     (planNameLower.includes('semana') ||
      planNameLower.includes('fin de semana') ||
      planNameLower.includes('festivo') ||
-     planNameLower.includes('weekend'));
+     planNameLower.includes('weekend'))) || (selectedPlanObj?.dias_estadia > 0);
 
   const nights = useMemo(() => {
     if (isMultiDay && dateRange.from && dateRange.to) {
@@ -161,7 +177,6 @@ export function BookingSection() {
     return 1;
   }, [dateRange, isMultiDay]);
 
-  const selectedPlanObj = useMemo(() => planTypes.find(p => p.id === selectedPlanTypeId) as any, [planTypes, selectedPlanTypeId]);
 
   const basePrice = selectedPlanObj?.isPromo ? Number(selectedPlanObj.precio_promocional) : (selectedCabin?.precio_noche || 0);
 
@@ -231,7 +246,11 @@ export function BookingSection() {
           dias_estadia: nights,
           descripcion: `Paquete ${selectedCabin ? selectedCabin.nombre : "Cabaña"} - Plan ${planType}`,
           tipo_id: dbTipoId
-        }
+        },
+        servicios: selectedServices.map(s => ({
+          servicio_id: s,
+          cantidad_personas: guests
+        }))
       };
       
       // 3. Llamamos a la API (Transacción MVC)
@@ -351,7 +370,7 @@ export function BookingSection() {
                 setPlanType={setPlanType}
                 selectedPlanTypeId={selectedPlanTypeId}
                 setSelectedPlanTypeId={setSelectedPlanTypeId}
-                planTypes={planTypes}
+                planTypes={displayedPlanTypes}
                 date={date}
                 setDate={setDate}
                 dateRange={dateRange}
@@ -361,6 +380,8 @@ export function BookingSection() {
                 isMultiDay={isMultiDay}
                 selectedCabin={selectedCabin}
                 handleNext={handleNext}
+                blockedDates={blockedDates}
+                fixedDays={selectedPlanObj?.dias_estadia}
               />
             )}
             {step === 2 && (
