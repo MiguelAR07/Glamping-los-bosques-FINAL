@@ -26,6 +26,9 @@ export type PlanType = {
   id: number;
   nombre: string;
   dias_estadia?: number;
+  isPromo?: boolean;
+  precio_promocional?: number;
+  cabanas_permitidas?: string[];
 };
 
 export type Package = {

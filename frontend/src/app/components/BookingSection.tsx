@@ -248,7 +248,7 @@ export function BookingSection() {
           tipo_id: dbTipoId
         },
         servicios: selectedServices.map(s => ({
-          servicio_id: s,
+          servicio_id: parseInt(s, 10),
           cantidad_personas: guests
         }))
       };
