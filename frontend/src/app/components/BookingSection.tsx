@@ -24,9 +24,9 @@ export function BookingSection() {
   const [timeBlock, setTimeBlock] = useState<string>("");
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: new Date(),
+    from: undefined,
     to: undefined,
   });
   const [guests, setGuests] = useState(2);
