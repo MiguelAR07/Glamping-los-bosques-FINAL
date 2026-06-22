@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CabinsSection } from "../components/CabinsSection";
 import PromotionsSection from "../components/PromotionsSection";
 import { Link, useLocation } from "react-router-dom";
@@ -11,6 +11,16 @@ import { LocationSection } from "../components/LocationSection";
  */
 export function Home() {
   const location = useLocation();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Force autoplay for iOS / Mobile devices where autoPlay attribute might be ignored
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
+    }
+  }, []);
 
   // Handle scroll-to when navigating from another page (e.g., /reservas -> /#cabins)
   useEffect(() => {
@@ -33,6 +43,7 @@ export function Home() {
           
           {/* HTML5 Video - Optimized for mobile loading */}
           <video
+            ref={videoRef}
             src="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.mp4"
             poster="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.jpg"
             autoPlay
