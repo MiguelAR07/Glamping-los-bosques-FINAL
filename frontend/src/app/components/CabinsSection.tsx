@@ -181,8 +181,24 @@ export function CabinsSection() {
 
   const scrollCabins = (direction: 'left' | 'right') => {
     if (cabinsScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = cabinsScrollRef.current;
       const scrollAmount = window.innerWidth > 768 ? 400 : window.innerWidth * 0.85;
-      cabinsScrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+
+      if (direction === 'right') {
+        // Si estamos al final del carrusel, volver al principio
+        if (Math.ceil(scrollLeft + clientWidth) >= scrollWidth - 10) {
+          cabinsScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          cabinsScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+      } else {
+        // Si estamos al principio del carrusel, ir al final
+        if (scrollLeft <= 10) {
+          cabinsScrollRef.current.scrollTo({ left: scrollWidth, behavior: 'smooth' });
+        } else {
+          cabinsScrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        }
+      }
     }
   };
 
