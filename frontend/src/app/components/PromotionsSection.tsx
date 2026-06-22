@@ -38,8 +38,8 @@ export default function PromotionsSection() {
     );
   }
 
-  // Ocultar la sección si no hay promociones activas
-  if (promotions.length === 0) return null;
+  // Si no hay promociones, mostraremos un mensaje dentro de la sección
+  const hasPromotions = promotions.length > 0;
 
   return (
     <section
@@ -83,8 +83,29 @@ export default function PromotionsSection() {
           </motion.p>
         </div>
 
-        {/* Grid de cards de promociones */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {!hasPromotions ? (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-xl mx-auto bg-white rounded-3xl p-8 sm:p-12 text-center border border-stone-100 shadow-xl shadow-stone-200/50"
+          >
+            <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calendar className="w-8 h-8 text-stone-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-stone-800 mb-3">No hay promociones en el momento</h3>
+            <p className="text-stone-500 mb-8 leading-relaxed">
+              Actualmente no tenemos ofertas especiales activas, pero nuestras cabañas siempre están disponibles para brindarte la mejor experiencia de glamping. ¡Revisa nuestra disponibilidad regular!
+            </p>
+            <Link 
+              to="/reservas"
+              className="inline-flex items-center justify-center px-8 py-3.5 bg-stone-800 text-white rounded-xl font-bold hover:bg-stone-700 transition-colors shadow-lg shadow-stone-200"
+            >
+              Ver Disponibilidad Regular
+            </Link>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {promotions.map((promo, index) => (
             <motion.div
               key={promo.id}
@@ -174,6 +195,7 @@ export default function PromotionsSection() {
             </motion.div>
           ))}
         </div>
+        )}
 
       </div>
     </section>
