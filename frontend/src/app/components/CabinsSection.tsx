@@ -225,7 +225,6 @@ export function CabinsSection() {
           </motion.p>
         </div>
 
-        {/* Carrusel horizontal de cabañas con controles laterales (SOLO MÓVIL) */}
         <div className="relative group/slider">
           <button 
             onClick={() => scrollCabins('left')} 
@@ -235,9 +234,9 @@ export function CabinsSection() {
             <ChevronLeft className="w-5 h-5" />
           </button>
 
-          <div ref={cabinsScrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div ref={cabinsScrollRef} className="flex overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible snap-x snap-mandatory hide-scrollbar gap-6 lg:gap-8 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
             {cabins.map((cabin, index) => (
-              <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[400px] flex">
+              <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[400px] flex h-full">
                 <CabinCard cabin={cabin} index={index} />
               </div>
             ))}
