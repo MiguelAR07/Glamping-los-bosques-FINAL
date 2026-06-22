@@ -209,14 +209,14 @@ export function CabinsSection() {
           </motion.p>
         </div>
 
-        {/* Carrusel horizontal de cabañas con controles laterales */}
+        {/* Carrusel horizontal de cabañas con controles laterales (SOLO MÓVIL) */}
         <div className="relative group/slider">
           <button 
             onClick={() => scrollCabins('left')} 
-            className="absolute left-1 sm:-left-4 top-[45%] -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95"
+            className="absolute left-1 top-[45%] -translate-y-1/2 z-10 p-2 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95 md:hidden"
             aria-label="Ver cabaña anterior"
           >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
 
           <div ref={cabinsScrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -229,10 +229,10 @@ export function CabinsSection() {
 
           <button 
             onClick={() => scrollCabins('right')} 
-            className="absolute right-1 sm:-right-4 top-[45%] -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95"
+            className="absolute right-1 top-[45%] -translate-y-1/2 z-10 p-2 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95 md:hidden"
             aria-label="Ver siguiente cabaña"
           >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
