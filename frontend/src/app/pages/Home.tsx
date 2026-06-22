@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { CabinsSection } from "../components/CabinsSection";
 import PromotionsSection from "../components/PromotionsSection";
 import { Link, useLocation } from "react-router-dom";
