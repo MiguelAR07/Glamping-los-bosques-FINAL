@@ -68,6 +68,14 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
           </div>
           
           <p>Te esperamos pronto para que disfrutes de una experiencia inolvidable en la naturaleza.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="margin-bottom: 10px; color: #166534; font-weight: bold;">¿Tienes alguna pregunta o necesitas ayuda?</p>
+            <a href="https://wa.me/573103599065" style="background-color: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+              💬 Contáctanos por WhatsApp
+            </a>
+          </div>
+
           <p style="color: #666; font-size: 12px; text-align: center; margin-top: 30px;">
             Glamping Los Bosques<br>
             Este es un correo automático, por favor no respondas a esta dirección.
