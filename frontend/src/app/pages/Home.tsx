@@ -11,16 +11,6 @@ import { LocationSection } from "../components/LocationSection";
  */
 export function Home() {
   const location = useLocation();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Force autoplay for iOS / Mobile devices where autoPlay attribute might be ignored
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
-    }
-  }, []);
 
   // Handle scroll-to when navigating from another page (e.g., /reservas -> /#cabins)
   useEffect(() => {
@@ -39,21 +29,23 @@ export function Home() {
     <div>
       <div className="relative w-full h-[80vh] min-h-[600px] flex flex-col items-center justify-center border-b border-stone-800 overflow-hidden">
         {/* Background Video: Cloudinary HTML5 Video */}
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-stone-900">
-          
-          {/* HTML5 Video - Optimized for mobile loading */}
-          <video
-            ref={videoRef}
-            src="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.mp4"
-            poster="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-          ></video>
-        </div>
+        <div 
+          className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-stone-900"
+          dangerouslySetInnerHTML={{
+            __html: `
+              <video
+                src="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.mp4"
+                poster="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.jpg"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="auto"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;"
+              ></video>
+            `
+          }}
+        />
         
         {/* Dark overlay specifically needed to keep the white text readable against the video */}
         <div className="absolute inset-0 bg-stone-900/40 z-10" />

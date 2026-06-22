@@ -203,37 +203,37 @@ export function CabinsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-6"
+            className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto"
           >
             Cada cabaña está diseñada para ofrecer el máximo confort integrándose armoniosamente con el entorno natural.
           </motion.p>
-          
-          {/* Controles de navegación manuales para el carrusel de cabañas */}
-          <div className="flex justify-center gap-4">
-            <button 
-              onClick={() => scrollCabins('left')} 
-              className="p-3 rounded-full bg-white shadow-md border border-stone-200 text-stone-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all active:scale-95"
-              aria-label="Ver cabaña anterior"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={() => scrollCabins('right')} 
-              className="p-3 rounded-full bg-white shadow-md border border-stone-200 text-stone-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all active:scale-95"
-              aria-label="Ver siguiente cabaña"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
         </div>
 
-        {/* Carrusel horizontal de cabañas */}
-        <div ref={cabinsScrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-          {cabins.map((cabin, index) => (
-            <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[400px] flex">
-              <CabinCard cabin={cabin} index={index} />
-            </div>
-          ))}
+        {/* Carrusel horizontal de cabañas con controles laterales */}
+        <div className="relative group/slider">
+          <button 
+            onClick={() => scrollCabins('left')} 
+            className="absolute left-1 sm:-left-4 top-[45%] -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95"
+            aria-label="Ver cabaña anterior"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+
+          <div ref={cabinsScrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {cabins.map((cabin, index) => (
+              <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[400px] flex">
+                <CabinCard cabin={cabin} index={index} />
+              </div>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => scrollCabins('right')} 
+            className="absolute right-1 sm:-right-4 top-[45%] -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white/40 backdrop-blur-md border border-stone-200/50 text-stone-600 shadow-sm opacity-70 hover:opacity-100 hover:bg-white/90 hover:text-emerald-700 transition-all active:scale-95"
+            aria-label="Ver siguiente cabaña"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
         </div>
       </div>
       
