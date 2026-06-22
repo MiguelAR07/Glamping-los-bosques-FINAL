@@ -241,7 +241,7 @@ export function BookingStep1Details({
         <label className="block text-sm font-semibold text-stone-700 mb-1">Fechas</label>
         <p className="text-xs text-stone-500 mb-3">{calendarHint[planCategory]}</p>
         <div className="bg-white p-4 rounded-xl border border-stone-200 flex justify-center">
-          {isMultiDay ? (
+          {isMultiDay || (fixedDays && fixedDays > 0) ? (
             <DayPicker
               locale={es}
               mode={fixedDays && fixedDays > 0 ? "single" : "range"}
@@ -254,6 +254,7 @@ export function BookingStep1Details({
                 today: "font-bold text-emerald-600",
                 disabled: "opacity-25 cursor-not-allowed",
               }}
+              required={false}
             />
           ) : (
             <DayPicker
@@ -268,6 +269,7 @@ export function BookingStep1Details({
                 today: "font-bold text-emerald-600",
                 disabled: "opacity-25 cursor-not-allowed",
               }}
+              required={false}
             />
           )}
         </div>
