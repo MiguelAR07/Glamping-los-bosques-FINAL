@@ -158,7 +158,7 @@ export default function PromotionsSection() {
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-xs text-stone-500 font-medium">Precio promocional</span>
                     <span className="text-2xl font-bold text-emerald-700">
-                      ${Number(promo.precio).toLocaleString("es-CO")}
+                      ${(Number(promo.precio) < 1000 ? Number(promo.precio) * 1000 : Number(promo.precio)).toLocaleString("es-CO")}
                     </span>
                     <span className="text-xs text-stone-400">/noche</span>
                   </div>
