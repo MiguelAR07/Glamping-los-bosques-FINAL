@@ -215,7 +215,11 @@ export function BookingSection() {
     setErrors({});
     try {
       // 1. Usamos el tipo de plan seleccionado directamente
-      const dbTipoId = selectedPlanTypeId;
+      let dbTipoId: any = selectedPlanTypeId;
+      if (typeof dbTipoId === 'string' && dbTipoId.startsWith('promo_')) {
+        // Fallback to a valid integer type ID for the database
+        dbTipoId = planTypes.find(p => !p.isPromo)?.id || 4;
+      }
 
       // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
