@@ -168,16 +168,36 @@ export function BookingStep1Details({
     if (isWithinInterval(d, { start: new Date(2026, 5, 5), end: new Date(2026, 5, 11) })) return true;
 
     // 4. Restricciones por tipo de plan
+    // Comportamiento base (para check-in)
+    let isBaseDisabled = false;
     if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
-      // Solo permitir fines de semana (Viernes y Sábado) y festivos
-      return !isWeekendCheckin(d) && !isColombianoHoliday(d);
-    }
-    if (planCategory === 'week') {
-      // Solo permitir semana (Domingo a Jueves) y bloquear festivos
-      return !isWeekdayCheckin(d) || isColombianoHoliday(d);
+      isBaseDisabled = !isWeekendCheckin(d) && !isColombianoHoliday(d);
+    } else if (planCategory === 'week') {
+      isBaseDisabled = !isWeekdayCheckin(d) || isColombianoHoliday(d);
     }
 
-    return false; // Ocasional normal y Día de sol: cualquier día
+    // Si hay un 'from' seleccionado, evaluamos las reglas de rango para fechas posteriores a 'from'
+    if (dateRange?.from) {
+      const daysDiff = (startOfDay(d).getTime() - startOfDay(dateRange.from).getTime()) / (1000 * 60 * 60 * 24);
+      
+      // Si es una fecha posterior al check-in (buscando checkout o ya seleccionado)
+      if (daysDiff > 0) {
+        if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
+          // Máximo 3 noches, permitir checkout en días deshabilitados para check-in
+          return daysDiff > 3;
+        }
+        if (planCategory === 'week') {
+          // Máximo 5 noches, no cruzar fin de semana
+          if (daysDiff > 5) return true;
+          if (isWeekendCheckin(d)) return true;
+          return false;
+        }
+      }
+      // Si es anterior o igual a 'from', usamos la regla base (para poder reiniciar la selección)
+      return isBaseDisabled;
+    }
+
+    return isBaseDisabled;
   };
 
   return (
