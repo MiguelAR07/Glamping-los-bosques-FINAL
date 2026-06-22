@@ -31,13 +31,15 @@ export function Home() {
         {/* Background Video: Cloudinary HTML5 Video */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-stone-900">
           
-          {/* HTML5 Video - Visible on all screens */}
+          {/* HTML5 Video - Optimized for mobile loading */}
           <video
-            src="https://res.cloudinary.com/di1xs8vma/video/upload/v1779983021/glamping/hero-video.mp4"
+            src="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.mp4"
+            poster="https://res.cloudinary.com/di1xs8vma/video/upload/q_auto,f_auto/v1779983021/glamping/hero-video.jpg"
             autoPlay
             muted
             loop
             playsInline
+            preload="auto"
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           ></video>
         </div>
