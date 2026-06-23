@@ -33,7 +33,7 @@ export function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-stone-800 bg-stone-50">
       <header className="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <img 
               src={logoImg} 
@@ -43,7 +43,7 @@ export function AppLayout() {
             <span className="text-xl font-bold tracking-tight text-stone-900">Glamping Los Bosques</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 font-medium text-stone-600">
+          <nav className="hidden md:flex items-center gap-6 font-medium text-stone-600">
             <a href="/#cabins" onClick={(e) => handleSectionClick(e, 'cabins')} className="hover:text-emerald-700 transition-colors">Cabañas</a>
             <a href="/#promociones" onClick={(e) => handleSectionClick(e, 'promociones')} className="hover:text-emerald-700 transition-colors flex items-center gap-1">Promociones</a>
             <a href="/#location" onClick={(e) => handleSectionClick(e, 'location')} className="hover:text-emerald-700 transition-colors">Ubicación</a>
