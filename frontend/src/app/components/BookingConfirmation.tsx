@@ -19,9 +19,26 @@ export function BookingConfirmation() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const [cuentasBancarias, setCuentasBancarias] = useState<any[]>([]);
+
   // Hacer scroll al inicio al cargar la página para que el usuario vea el resumen
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Cargar cuentas bancarias
+    const fetchCuentas = async () => {
+      try {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
+        const response = await fetch(`${API_BASE_URL}/api/cuentas-bancarias`);
+        if (response.ok) {
+          const data = await response.json();
+          setCuentasBancarias(data);
+        }
+      } catch (err) {
+        console.error("Error cargando cuentas bancarias:", err);
+      }
+    };
+    fetchCuentas();
   }, []);
 
   // Si alguien entra a la URL directamente sin haber reservado, lo mandamos al inicio
@@ -192,21 +209,22 @@ export function BookingConfirmation() {
               
               {/* Cuentas */}
               <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-4 p-4 rounded-xl border border-emerald-100 bg-emerald-50/50">
-                  <Building2 className="w-6 h-6 text-emerald-600 shrink-0" />
-                  <div>
-                    <p className="font-bold text-stone-900">Bancolombia (Ahorros)</p>
-                    <p className="text-lg font-mono text-stone-700 my-1">123-456789-00</p>
-                    <p className="text-xs text-stone-500">A nombre de Glamping Los Bosques SAS</p>
+                {cuentasBancarias.length > 0 ? cuentasBancarias.map((cuenta, index) => (
+                  <div key={index} className={`flex items-start gap-4 p-4 rounded-xl border ${cuenta.banco.toLowerCase().includes('nequi') ? 'border-purple-100 bg-purple-50/50' : 'border-emerald-100 bg-emerald-50/50'}`}>
+                    {cuenta.banco.toLowerCase().includes('nequi') ? (
+                      <div className="w-6 h-6 rounded bg-purple-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">N</div>
+                    ) : (
+                      <Building2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                    )}
+                    <div>
+                      <p className="font-bold text-stone-900">{cuenta.banco} ({cuenta.tipo_cuenta})</p>
+                      <p className="text-lg font-mono text-stone-700 my-1">{cuenta.numero_cuenta}</p>
+                      {cuenta.titular && <p className="text-xs text-stone-500">A nombre de {cuenta.titular}</p>}
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4 p-4 rounded-xl border border-stone-200 bg-stone-50">
-                  <div className="w-6 h-6 rounded bg-purple-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">N</div>
-                  <div>
-                    <p className="font-bold text-stone-900">Nequi</p>
-                    <p className="text-lg font-mono text-stone-700 my-1">310 359 9065</p>
-                  </div>
-                </div>
+                )) : (
+                  <p className="text-sm text-stone-500 italic">Cargando métodos de pago...</p>
+                )}
               </div>
 
               {/* Upload Zone */}

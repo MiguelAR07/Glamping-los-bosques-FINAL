@@ -9,6 +9,7 @@ import invoiceRouter from './invoices.routes.js';
 import reviewsRouter from './reviews.routes.js';
 import promocionesRouter from './promociones.routes.js';
 import availabilityRouter from './availability.routes.js';
+import cuentasBancariasRouter from './cuentasBancarias.routes.js';
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use('/invoices', invoiceRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/promociones', promocionesRouter);
 router.use('/availability', availabilityRouter);
+router.use('/cuentas-bancarias', cuentasBancariasRouter);
 
 export default router;
