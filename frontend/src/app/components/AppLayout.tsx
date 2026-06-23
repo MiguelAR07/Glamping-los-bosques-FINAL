@@ -33,37 +33,32 @@ export function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-stone-800 bg-stone-50">
       <header className="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img 
-              src={logoImg} 
-              alt="Logo Glamping Los Bosques" 
-              className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover bg-white ring-2 ring-emerald-700/20 group-hover:ring-emerald-700/50 transition-all shadow-sm"
-            />
-            <span className="text-xl font-bold tracking-tight text-stone-900">Glamping Los Bosques</span>
-          </Link>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-6 lg:gap-10">
+            <Link to="/" className="flex items-center gap-3 group shrink-0">
+              <img src={logoImg} alt="Logo Glamping Los Bosques" className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover bg-white ring-2 ring-emerald-700/20 group-hover:ring-emerald-700/50 transition-all shadow-sm" />
+              <span className="text-xl font-bold tracking-tight text-stone-900">Glamping Los Bosques</span>
+            </Link>
 
-          <nav className="hidden md:flex items-center gap-6 font-medium text-stone-600">
-            <a href="/#cabins" onClick={(e) => handleSectionClick(e, 'cabins')} className="hover:text-emerald-700 transition-colors">Cabañas</a>
-            <a href="/#promociones" onClick={(e) => handleSectionClick(e, 'promociones')} className="hover:text-emerald-700 transition-colors flex items-center gap-1">Promociones</a>
-            <a href="/#location" onClick={(e) => handleSectionClick(e, 'location')} className="hover:text-emerald-700 transition-colors">Ubicación</a>
-            <Link to="/reservas" className="hover:text-emerald-700 transition-colors">Reservas</Link>
-            <a href="/#testimonials" onClick={(e) => handleSectionClick(e, 'testimonials')} className="hover:text-emerald-700 transition-colors">Reseñas</a>
-            <Link to="/reservas" className="px-5 py-2.5 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-sm font-semibold">
+            <nav className="hidden lg:flex items-center gap-4 lg:gap-6 font-medium text-stone-600">
+              <a href="/#cabins" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Cabañas</a>
+              <a href="/#promociones" className="hover:text-emerald-700 transition-colors flex items-center gap-1 whitespace-nowrap">Promociones</a>
+              <a href="/#location" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Ubicación</a>
+              <Link to="/reservas" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Reservas</Link>
+              <a href="/#testimonials" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Reseñas</a>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0">
+            <Link to="/reservas" className="hidden md:flex px-5 py-2.5 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-sm font-semibold whitespace-nowrap">
               Reservar Ahora
             </Link>
-          </nav>
-
-          <button 
-            className="md:hidden p-2 text-stone-600 hover:bg-stone-100 rounded-lg"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+            <button className="lg:hidden p-2 text-stone-600 hover:bg-stone-100 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
-      </header>
 
-      <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
