@@ -33,14 +33,18 @@ export function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-stone-800 bg-stone-50">
       <header className="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6 lg:gap-10">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 h-20 flex items-center justify-between">
+          {/* Lado izquierdo: Logo */}
+          <div className="flex-1 flex justify-start">
             <Link to="/" className="flex items-center gap-3 group shrink-0">
               <img src={logoImg} alt="Logo Glamping Los Bosques" className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover bg-white ring-2 ring-emerald-700/20 group-hover:ring-emerald-700/50 transition-all shadow-sm" />
-              <span className="text-xl font-bold tracking-tight text-stone-900">Glamping Los Bosques</span>
+              <span className="text-xl font-bold tracking-tight text-stone-900 hidden sm:block">Glamping Los Bosques</span>
             </Link>
+          </div>
 
-            <nav className="hidden lg:flex items-center gap-4 lg:gap-6 font-medium text-stone-600">
+          {/* Centro: Navegación */}
+          <div className="hidden lg:flex flex-none justify-center">
+            <nav className="flex items-center gap-6 xl:gap-8 font-medium text-stone-600">
               <a href="/#cabins" onClick={(e) => handleSectionClick(e, 'cabins')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Cabañas</a>
               <a href="/#promociones" onClick={(e) => handleSectionClick(e, 'promociones')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Promociones</a>
               <a href="/#location" onClick={(e) => handleSectionClick(e, 'location')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Ubicación</a>
@@ -49,8 +53,9 @@ export function AppLayout() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-4 shrink-0">
-            <Link to="/reservas" className="hidden md:flex px-5 py-2.5 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-sm font-semibold whitespace-nowrap">
+          {/* Lado derecho: Botón */}
+          <div className="flex-1 flex justify-end items-center gap-4">
+            <Link to="/reservas" className="hidden md:flex px-6 py-2.5 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-sm font-semibold whitespace-nowrap">
               Reservar Ahora
             </Link>
             <button className="lg:hidden p-2 text-stone-600 hover:bg-stone-100 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
