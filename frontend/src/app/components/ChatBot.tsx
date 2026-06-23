@@ -18,7 +18,7 @@ const FAQS = [
   { id: '7', question: '7. Contacto' }
 ];
 
-const getFAQResponse = (text: string): string => {
+const getFAQResponse = (text: string, cuentasBancarias: any[] = []): string => {
   const normalized = text.toLowerCase().trim();
   
   if (normalized === '1') {
@@ -31,7 +31,14 @@ const getFAQResponse = (text: string): string => {
     return `💸 **Precios y Planes por Cabaña:**\n\nManejamos diferentes planes según la cabaña que elijas:\n\n🏡 **Cabañas Palmas y Bambú** (Capacidad máx. 4 y 3 personas respectivamente):\n• **Plan Ocasional** (6 horas): **$160.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$220.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$280.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$350.000 COP**\n*(Tarifa base para 2 personas. Persona adicional: $70.000 COP por noche)*\n\n🏡 **Cabaña Roble** (Exclusiva para parejas - Capacidad máx. 2 personas):\n• **Plan Ocasional** (6 horas): **$150.000 COP**\n• **Plan Día de Sol** (Pasadía 10:00 AM - 5:00 PM): **$180.000 COP**\n• **Plan Hospedaje Semana** (Lunes a Jueves, por noche): **$250.000 COP**\n• **Plan Hospedaje Fin de Semana** (Viernes a Domingo / Festivos, por noche): **$290.000 COP**\n\n*Nota: Todos los hospedajes y días de sol incluyen el acceso al jacuzzi privado y las comodidades descritas en cada cabaña.*`;
   }
   if (normalized === '4') {
-    return `📅 **¿Cómo reservar paso a paso?**\n\nReservar es muy sencillo y lo puedes hacer directamente desde nuestra plataforma:\n\n1️⃣ **Ingresa a la sección de Reservas:** Ve a la pestaña **"Reservas"** en el menú de navegación superior.\n2️⃣ **Elige los detalles:** Selecciona la cabaña (Palmas, Bambú o Roble), el tipo de plan, las fechas de tu estadía y la cantidad de huéspedes.\n3️⃣ **Selecciona servicios adicionales (opcional):** Puedes agregar decoraciones especiales de cumpleaños o aniversario si lo deseas.\n4️⃣ **Completa tus datos:** Llena el formulario con tu nombre, teléfono y documento de identidad.\n5️⃣ **Realiza el pago del anticipo:** Para asegurar tu reserva, debes transferir el **50% del valor total** a través de:\n   • **Bancolombia (Ahorros):** 123-456789-00 (Glamping Los Bosques SAS)\n   • **Nequi:** 310 359 9065\n6️⃣ **Sube tu comprobante:** Toma una captura de pantalla del pago y súbela en el paso final de la página de reservas.\n7️⃣ **¡Listo!** Verificaremos tu pago y te enviaremos la confirmación oficial a tu correo.`;
+    let metodosTexto = "";
+    if (cuentasBancarias.length > 0) {
+      metodosTexto = cuentasBancarias.map(c => `   • **${c.banco} (${c.tipo_cuenta}):** ${c.numero_cuenta} ${c.titular ? `(${c.titular})` : ''}`).join('\n');
+    } else {
+      metodosTexto = `   • **Bancolombia (Ahorros):** 123-456789-00 (Glamping Los Bosques SAS)\n   • **Nequi:** 310 359 9065`;
+    }
+    
+    return `📅 **¿Cómo reservar paso a paso?**\n\nReservar es muy sencillo y lo puedes hacer directamente desde nuestra plataforma:\n\n1️⃣ **Ingresa a la sección de Reservas:** Ve a la pestaña **"Reservas"** en el menú de navegación superior.\n2️⃣ **Elige los detalles:** Selecciona la cabaña (Palmas, Bambú o Roble), el tipo de plan, las fechas de tu estadía y la cantidad de huéspedes.\n3️⃣ **Selecciona servicios adicionales (opcional):** Puedes agregar decoraciones especiales de cumpleaños o aniversario si lo deseas.\n4️⃣ **Completa tus datos:** Llena el formulario con tu nombre, teléfono y documento de identidad.\n5️⃣ **Realiza el pago del anticipo:** Para asegurar tu reserva, debes transferir el **50% del valor total** a través de:\n${metodosTexto}\n6️⃣ **Sube tu comprobante:** Toma una captura de pantalla del pago y súbela en el paso final de la página de reservas.\n7️⃣ **¡Listo!** Verificaremos tu pago y te enviaremos la confirmación oficial a tu correo.`;
   }
   if (normalized === '5') {
     return `📍 **Ubicación:**\n\nEstamos ubicados en **Marinilla, Antioquia**, a 10 minutos del parque principal en carro. ¡Un paraíso rodeado de naturaleza!`;
@@ -59,6 +66,8 @@ export function ChatBot() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
+  const [cuentasBancarias, setCuentasBancarias] = useState<any[]>([]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -66,6 +75,22 @@ export function ChatBot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping, isOpen]);
+
+  useEffect(() => {
+    const fetchCuentas = async () => {
+      try {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
+        const response = await fetch(`${API_BASE_URL}/api/cuentas-bancarias`);
+        if (response.ok) {
+          const data = await response.json();
+          setCuentasBancarias(data);
+        }
+      } catch (err) {
+        console.error("Error cargando cuentas bancarias:", err);
+      }
+    };
+    fetchCuentas();
+  }, []);
   
   const handleSendMessage = (text: string) => {
     if (!text.trim()) return;
@@ -83,7 +108,7 @@ export function ChatBot() {
         setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: 'Abriendo WhatsApp para que hables directamente con nosotros...' }]);
         window.open('https://wa.me/573103599065', '_blank');
       } else {
-        const responseText = getFAQResponse(text);
+        const responseText = getFAQResponse(text, cuentasBancarias);
         setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: responseText }]);
       }
       setIsTyping(false);
