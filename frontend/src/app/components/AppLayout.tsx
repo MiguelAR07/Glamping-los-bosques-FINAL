@@ -41,11 +41,11 @@ export function AppLayout() {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-4 lg:gap-6 font-medium text-stone-600">
-              <a href="/#cabins" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Cabañas</a>
-              <a href="/#promociones" className="hover:text-emerald-700 transition-colors flex items-center gap-1 whitespace-nowrap">Promociones</a>
-              <a href="/#location" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Ubicación</a>
+              <a href="/#cabins" onClick={(e) => handleSectionClick(e, 'cabins')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Cabañas</a>
+              <a href="/#promociones" onClick={(e) => handleSectionClick(e, 'promociones')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Promociones</a>
+              <a href="/#location" onClick={(e) => handleSectionClick(e, 'location')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Ubicación</a>
               <Link to="/reservas" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Reservas</Link>
-              <a href="/#testimonials" className="hover:text-emerald-700 transition-colors whitespace-nowrap">Reseñas</a>
+              <a href="/#testimonials" onClick={(e) => handleSectionClick(e, 'testimonials')} className="hover:text-emerald-700 transition-colors whitespace-nowrap">Reseñas</a>
             </nav>
           </div>
 
@@ -58,13 +58,15 @@ export function AppLayout() {
             </button>
           </div>
         </div>
+      </header>
 
+      <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 left-0 w-full bg-white shadow-lg border-b border-stone-200 z-40 md:hidden flex flex-col p-4 gap-4 text-center font-medium"
+            className="fixed top-20 left-0 w-full bg-white shadow-lg border-b border-stone-200 z-40 lg:hidden flex flex-col p-4 gap-4 text-center font-medium"
           >
             <a href="/#cabins" onClick={(e) => handleSectionClick(e, 'cabins')} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Cabañas</a>
             <a href="/#promociones" onClick={(e) => handleSectionClick(e, 'promociones')} className="py-3 text-stone-700 hover:bg-stone-50 rounded-lg">Promociones</a>
