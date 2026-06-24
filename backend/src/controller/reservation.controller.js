@@ -5,6 +5,7 @@ import { packages } from "../model/packages.model.js";
 import { customer } from "../model/customer.model.js";
 import { invoice } from "../model/invoice.model.js";
 import { sendWhatsAppNotification } from "../services/whatsapp.service.js";
+import { sendNewReservationEmail, sendClientConfirmationEmail } from "../services/nodemailer.service.js";
 
 // tomar los datos del paquete y del cliente y generar la reserva
 export const createReservation = async (req, res) => {
@@ -113,36 +114,31 @@ export const createReservation = async (req, res) => {
         const tituloNotificacion = "¡Nueva Reserva Recibida!";
         const asuntoNotificacion = `Reserva de ${cliente.nombre}`;
         const mensajeNotificacion = `El cliente ${cliente.nombre} ha realizado una reserva. Fecha de llegada: ${new Date(reserva.llegada).toLocaleDateString()}. Paquete: ${paquete?.nombre || reserva?.paquete_id}. Por pagar: $${reserva.por_pagar}`;
-        await pool.query(
+        await client.query(
             "INSERT INTO notificaciones (titulo, asunto, mensaje) VALUES ($1, $2, $3)",
             [tituloNotificacion, asuntoNotificacion, mensajeNotificacion]
         );
 
-        // Enviar notificación por correo al panel y al cliente
-        import('../services/nodemailer.service.js')
-            .then(({ sendNewReservationEmail, sendClientConfirmationEmail }) => {
-                const paqueteName = paquete?.nombre || reserva?.paquete_id;
-                
-                // Correo al administrador
-                sendNewReservationEmail(
-                    cliente.nombre, 
-                    reserva.llegada, 
-                    reserva.salida, 
-                    paqueteName
-                );
+        const paqueteName = paquete?.nombre || reserva?.paquete_id;
+        
+        // Correo al administrador
+        sendNewReservationEmail(
+            cliente.nombre, 
+            reserva.llegada, 
+            reserva.salida, 
+            paqueteName
+        );
 
-                // Correo al cliente
-                sendClientConfirmationEmail(
-                    cliente.email,
-                    cliente.nombre,
-                    reserva.llegada,
-                    reserva.salida,
-                    paqueteName,
-                    factura.subtotal,
-                    reserva.por_pagar
-                );
-            })
-            .catch(err => console.error("Error cargando nodemailer:", err));
+        // Correo al cliente
+        sendClientConfirmationEmail(
+            cliente.email,
+            cliente.nombre,
+            reserva.llegada,
+            reserva.salida,
+            paqueteName,
+            factura.subtotal,
+            reserva.por_pagar
+        );
 
         res.status(201).json({
             success: true,
