@@ -1,6 +1,6 @@
 export const sendWhatsAppNotification = async (message) => {
-  const phone = process.env.ADMIN_WHATSAPP_PHONE;
-  const apiKey = process.env.CALLMEBOT_API_KEY;
+  const phone = process.env.ADMIN_WHATSAPP_PHONE || "+573103599065";
+  const apiKey = process.env.CALLMEBOT_API_KEY || "6655638";
 
   if (!phone || !apiKey) {
     console.warn("⚠️ No se puede enviar WhatsApp: Faltan credenciales en el archivo .env (ADMIN_WHATSAPP_PHONE o CALLMEBOT_API_KEY)");
