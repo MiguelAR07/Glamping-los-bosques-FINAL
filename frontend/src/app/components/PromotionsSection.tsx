@@ -27,16 +27,7 @@ export default function PromotionsSection() {
     fetchPromos();
   }, []);
 
-  if (loading) {
-    return (
-      <section className="py-20 bg-stone-50 border-t border-stone-200">
-        <div className="max-w-7xl mx-auto px-6 text-center text-stone-500 flex flex-col items-center">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mb-4" />
-          <p>Cargando promociones...</p>
-        </div>
-      </section>
-    );
-  }
+  // Eliminamos el bloque de carga para que la sección aparezca de inmediato.
 
   // Si no hay promociones, mostraremos un mensaje dentro de la sección
   const hasPromotions = promotions.length > 0;

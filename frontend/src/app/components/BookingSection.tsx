@@ -306,15 +306,7 @@ export function BookingSection() {
     }
   };
 
-  if (cabins.length === 0) {
-    return (
-      <section id="booking" className="py-24 px-4 sm:px-6 lg:px-12 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-center text-stone-500">Cargando cabañas...</p>
-        </div>
-      </section>
-    );
-  }
+  // Eliminamos el loader para renderizar de inmediato
 
   return (
     <section id="booking" className="py-24 px-4 sm:px-6 lg:px-12 bg-white">
