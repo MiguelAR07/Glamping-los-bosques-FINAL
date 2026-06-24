@@ -15,14 +15,13 @@ const pool = new Pool(config);
 
 export const connectDB = async () => {
   try {
-    // Intentamos obtener un cliente para verificar la conexión
     const client = await pool.connect();
     console.log('PostgreSQL Conectado!');
-    client.release(); // Importante liberar el cliente de prueba
+    client.release();
   } catch (error) {
-    console.error("Error Conectandose a PostgreSQL!");
+    console.error("⚠️ Error inicial conectándose a PostgreSQL, pero la piscina reintentará automáticamente:");
     console.error(error.message);
-    process.exit(1);
+    // process.exit(1); // Eliminado para no tumbar el servidor en Render
   }
 };
 
