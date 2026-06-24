@@ -140,6 +140,11 @@ export const createReservation = async (req, res) => {
             reserva.por_pagar
         );
 
+        // WhatsApp al cliente (usando plantilla hello_world por ahora)
+        if (cliente.contacto) {
+            sendWhatsAppNotification("", cliente.contacto);
+        }
+
         res.status(201).json({
             success: true,
             reserva_id: reservationResult.rows[0].reserva_id,
