@@ -19,4 +19,8 @@ app.get('/', (req, res) => {
     res.send("PostgreSQL corriendo");
 });
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'UP', timestamp: new Date().toISOString(), version: '1.0.1' });
+});
+
 export default app;
