@@ -1,7 +1,7 @@
 import https from 'https';
 
-export const sendWhatsAppNotification = async (message) => {
-  const phone = process.env.ADMIN_WHATSAPP_PHONE || "+573103599065";
+export const sendWhatsAppNotification = async (message, targetPhone = null) => {
+  const phone = targetPhone || process.env.ADMIN_WHATSAPP_PHONE || "+573103599065";
   const apiKey = process.env.CALLMEBOT_API_KEY || "6655638";
 
   if (!phone || !apiKey) {
