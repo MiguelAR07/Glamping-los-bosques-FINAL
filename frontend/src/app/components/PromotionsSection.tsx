@@ -11,7 +11,7 @@ export default function PromotionsSection() {
   useEffect(() => {
     const fetchPromos = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/promociones`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com'}/api/promociones`);
         if (!res.ok) throw new Error("Error cargando promociones");
         const data = await res.json();
         // El backend ya filtra solo activos, pero hacemos doble check

@@ -86,7 +86,7 @@ export function BookingSection() {
         // Intentamos cargar las promociones sin bloquear lo demás
         let activePromos: any[] = [];
         try {
-          const resPromos = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/promociones`).then(res => {
+          const resPromos = await fetch(`${import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com'}/api/promociones`).then(res => {
             if (!res.ok) throw new Error('Promociones no disponibles');
             return res.json();
           });

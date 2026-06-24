@@ -1,6 +1,7 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://backend-landing-x76z.onrender.com/api";
+const baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://backend-landing-x76z.onrender.com";
+export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api`;
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
