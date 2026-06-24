@@ -15,9 +15,9 @@ export const createReservation = async (req, res) => {
         if (typeof factura === "string") factura = JSON.parse(factura);
         if (typeof paquete === "string") paquete = JSON.parse(paquete);
         
-        await pool.query("BEGIN");
+        await client.query("BEGIN");
 
-        const customerResult = await pool.query(customer.createCustomer, [
+        const customerResult = await client.query(customer.createCustomer, [
             cliente.nombre,
             cliente.email,
             cliente.contacto,
@@ -30,20 +30,20 @@ export const createReservation = async (req, res) => {
 
         if (paquete && Object.keys(paquete).length > 0) {
             // Validar que la cabaña exista
-            const cabinCheck = await pool.query("SELECT 1 FROM cabanas WHERE cabana_id = $1", [paquete.cabana_id]);
+            const cabinCheck = await client.query("SELECT 1 FROM cabanas WHERE cabana_id = $1", [paquete.cabana_id]);
             if (cabinCheck.rowCount === 0) {
                 throw new Error(`La cabaña seleccionada (ID: ${paquete.cabana_id}) no existe.`);
             }
 
             // Validar que el tipo de paquete exista
-            const typeCheck = await pool.query("SELECT 1 FROM tipo_paquete WHERE tipo_id = $1", [paquete.tipo_id]);
+            const typeCheck = await client.query("SELECT 1 FROM tipo_paquete WHERE tipo_id = $1", [paquete.tipo_id]);
             if (typeCheck.rowCount === 0) {
                 throw new Error(`El tipo de paquete seleccionado (ID: ${paquete.tipo_id}) no existe.`);
             }
 
             // Crear el paquete
             const nombrePaquete = paquete.nombre || 'Reserva Web';
-            const packageResult = await pool.query(packages.createPackage, [
+            const packageResult = await client.query(packages.createPackage, [
                 paquete.cabana_id,
                 paquete.dias_estadia,
                 paquete.descripcion,
@@ -58,7 +58,7 @@ export const createReservation = async (req, res) => {
             nuevo_paquete_id = packageResult.rows[0].paquete_id;
         } else if (reserva && reserva.paquete_id) {
             // Validar que el paquete existente exista y esté activo
-            const packageCheck = await pool.query("SELECT 1 FROM paquetes WHERE paquete_id = $1 AND estado = 'Activo'", [reserva.paquete_id]);
+            const packageCheck = await client.query("SELECT 1 FROM paquetes WHERE paquete_id = $1 AND estado = 'Activo'", [reserva.paquete_id]);
             if (packageCheck.rowCount === 0) {
                 throw new Error("El paquete seleccionado no existe o no está activo.");
             }
@@ -77,14 +77,14 @@ export const createReservation = async (req, res) => {
         
         if (servicios && Array.isArray(servicios) && servicios.length > 0) {
             for (const s of servicios) {
-                await pool.query(
+                await client.query(
                     "INSERT INTO servicios_por_paquete (paquete_id, servicio_id, cantidad_personas) VALUES ($1, $2, $3)",
                     [nuevo_paquete_id, s.servicio_id, s.cantidad_personas || 1]
                 );
             }
         }
 
-        const reservationResult = await pool.query(reservation.createReservation, [
+        const reservationResult = await client.query(reservation.createReservation, [
             reserva.llegada,    // $1
             reserva.salida,     // $2
             nuevo_cliente_id,    // $3
@@ -99,13 +99,13 @@ export const createReservation = async (req, res) => {
 
         const nueva_reserva_id = reservationResult.rows[0].reserva_id;
 
-        const invoiceResult = await pool.query(invoice.createInvoice, [
+        const invoiceResult = await client.query(invoice.createInvoice, [
             factura.subtotal,
             factura.descuento || 0,
             nueva_reserva_id
         ]);
 
-        await pool.query("COMMIT");
+        await client.query("COMMIT");
 
         // Insertar notificación en el sistema
         const tituloNotificacion = "¡Nueva Reserva Recibida!";
@@ -149,7 +149,7 @@ export const createReservation = async (req, res) => {
             mensaje: "Reserva y factura generadas con éxito"
         });
     } catch (error) {
-        await pool.query("ROLLBACK");
+        await client.query("ROLLBACK");
         console.error("Error en transacción:", error.message);
         res.status(500).json({ 
             success: false, 
@@ -160,6 +160,7 @@ export const createReservation = async (req, res) => {
 
 // cargar el comprobante de pago para la factura de la reserva
 export const uploadPaymentReceipt = async (req, res) => {
+    const client = await pool.connect();
     try {
         const { id } = req.params;
         
@@ -172,9 +173,9 @@ export const uploadPaymentReceipt = async (req, res) => {
 
         const facturaUrl = req.file.path || req.file.secure_url || req.file.url;
 
-        await pool.query("BEGIN");
+        await client.query("BEGIN");
 
-        const result = await pool.query(reservation.updatePaymentReceipt, [
+        const result = await client.query(reservation.updatePaymentReceipt, [
             facturaUrl,
             id
         ]);
@@ -183,7 +184,7 @@ export const uploadPaymentReceipt = async (req, res) => {
             throw new Error("La reserva especificada no existe.");
         }
 
-        await pool.query("COMMIT");
+        await client.query("COMMIT");
 
         // Enviar notificación por WhatsApp al administrador de forma asíncrona
         sendWhatsAppNotification(`🔔 *Nueva Reserva Recibida*\nSe ha subido el comprobante para la reserva ID: ${id}.\nPor favor, ingresa al Panel de Control para validarla.`);
@@ -194,11 +195,13 @@ export const uploadPaymentReceipt = async (req, res) => {
             mensaje: "Comprobante de pago cargado con éxito"
         });
     } catch (error) {
-        await pool.query("ROLLBACK");
+        await client.query("ROLLBACK");
         console.error("Error al cargar comprobante:", error.message);
         res.status(500).json({
             success: false,
             message: error.message
         });
+    } finally {
+        client.release();
     }
 };
