@@ -79,7 +79,7 @@ export function ChatBot() {
   useEffect(() => {
     const fetchCuentas = async () => {
       try {
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
+        const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com';
         const response = await fetch(`${API_BASE_URL}/api/cuentas-bancarias`);
         if (response.ok) {
           const data = await response.json();
