@@ -26,7 +26,7 @@ export const sendWhatsAppNotification = async (message, targetPhone = null) => {
       to: cleanPhone,
       type: "template",
       template: {
-        name: "reserva_confirmada",
+        name: "reserva_exitosa",
         language: { code: "es" }
       }
     });
