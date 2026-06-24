@@ -20,14 +20,14 @@ export const sendWhatsAppNotification = async (message, targetPhone = null) => {
     const url = `https://graph.facebook.com/v19.0/${phoneId}/messages`;
     
     // ATENCIÓN: Si estamos en modo de prueba o fuera de la ventana de 24h,
-    // debemos usar un template (plantilla). Usaremos reserva_confirmada por defecto.
+    // debemos usar un template (plantilla). Usaremos hello_world por defecto.
     const body = JSON.stringify({
       messaging_product: "whatsapp",
       to: cleanPhone,
       type: "template",
       template: {
-        name: "reserva_confirmada",
-        language: { code: "es" }
+        name: "hello_world",
+        language: { code: "en_US" }
       }
     });
 
