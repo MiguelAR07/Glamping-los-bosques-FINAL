@@ -11,7 +11,9 @@ router.get('/test-email', async (req, res) => {
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
     const nodemailer = await import('nodemailer');
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: adminEmail,
         pass: process.env.EMAIL_PASS || 'rewy rlvo bdwi qxqf'
