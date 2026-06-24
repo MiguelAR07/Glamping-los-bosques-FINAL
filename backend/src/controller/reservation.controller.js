@@ -8,7 +8,9 @@ import { sendWhatsAppNotification } from "../services/whatsapp.service.js";
 
 // tomar los datos del paquete y del cliente y generar la reserva
 export const createReservation = async (req, res) => {
+    let client;
     try {
+        client = await pool.connect();
         let { cliente, reserva, factura, paquete } = req.body;
         if (typeof cliente === "string") cliente = JSON.parse(cliente);
         if (typeof reserva === "string") reserva = JSON.parse(reserva);
@@ -149,12 +151,14 @@ export const createReservation = async (req, res) => {
             mensaje: "Reserva y factura generadas con éxito"
         });
     } catch (error) {
-        await client.query("ROLLBACK");
+        if (client) await client.query("ROLLBACK");
         console.error("Error en transacción:", error.message);
         res.status(500).json({ 
             success: false, 
             message: error.message 
         });
+    } finally {
+        if (client) client.release();
     }
 };
 
