@@ -1,6 +1,6 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : `http://localhost:3002/api`; // backend de landing ahora está en 3002
+export const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://backend-landing-x76z.onrender.com/api";
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {

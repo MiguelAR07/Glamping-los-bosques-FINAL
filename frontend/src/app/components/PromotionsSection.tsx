@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Loader2, Calendar, Home } from "lucide-react";
+import { Sparkles, Calendar, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 export default function PromotionsSection() {
   const [promotions, setPromotions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -20,8 +19,6 @@ export default function PromotionsSection() {
         setPromotions(promoData);
       } catch (err) {
         console.error("Error fetching promotions", err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchPromos();
