@@ -345,7 +345,7 @@ export function BookingStep1Details({
       {/* ── Número de Huéspedes ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">
-          Número de personas (Max. {selectedCabin.maxGuests})
+          Número de personas (Max. {selectedCabin?.maxGuests || 4})
         </label>
         <div className="flex items-center gap-4">
           <button
@@ -354,16 +354,16 @@ export function BookingStep1Details({
           >-</button>
           <span className="text-xl font-medium w-6 text-center">{guests}</span>
           <button
-            onClick={() => setGuests(Math.min(selectedCabin.maxGuests, guests + 1))}
-            disabled={guests >= selectedCabin.maxGuests}
+            onClick={() => setGuests(Math.min(selectedCabin?.maxGuests || 4, guests + 1))}
+            disabled={guests >= (selectedCabin?.maxGuests || 4)}
             className={`w-10 h-10 rounded-full border flex items-center justify-center ${
-              guests >= selectedCabin.maxGuests
+              guests >= (selectedCabin?.maxGuests || 4)
                 ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
                 : 'border-stone-300 hover:bg-stone-100'
             }`}
           >+</button>
         </div>
-        {guests > 2 && selectedCabin.additionalPersonPrice > 0 && (
+        {guests > 2 && selectedCabin?.additionalPersonPrice > 0 && (
           <p className="text-xs text-stone-500 mt-2">
             Se aplica cobro por {guests - 2} persona(s) adicional(es) (${selectedCabin.additionalPersonPrice.toLocaleString('es-CO')} c/u)
           </p>
