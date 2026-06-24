@@ -16,7 +16,7 @@ export const sendNewReservationEmail = async (clienteNombre, llegada, salida, pa
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
     
     await transporter.sendMail({
-      from: '"Sistema Glamping" <glampinglosbosques9@gmail.com>',
+      from: '"Sistema Glamping" <' + adminEmail + '>',
       to: adminEmail,
       subject: '🔔 ¡Nueva Reserva Recibida!',
       html: `
@@ -49,8 +49,9 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
   try {
     const deposito = subtotal - por_pagar;
     
+    const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
     await transporter.sendMail({
-      from: '"Glamping Los Bosques" <glampinglosbosques9@gmail.com>',
+      from: '"Glamping Los Bosques" <' + adminEmail + '>',
       to: clienteEmail,
       subject: '🏕️ Confirmación de Reserva - Glamping Los Bosques',
       html: `
