@@ -91,7 +91,10 @@ export function BookingConfirmation() {
       const formDataObj = new FormData();
       if (file) formDataObj.append("comprobante", file);
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com';
+      let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com';
+      if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && API_BASE_URL.includes("localhost")) {
+        API_BASE_URL = "https://backend-landing-x76z.onrender.com";
+      }
       const response = await fetch(`${API_BASE_URL}/api/reservations/${reservaId || 1}/payment`, {
         method: 'PUT',
         body: formDataObj
