@@ -9,21 +9,35 @@ const router = Router();
 router.get('/test-email', async (req, res) => {
   try {
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-    
-    const { Resend } = await import('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    const { data, error } = await resend.emails.send({
-      from: `Sistema Glamping <${fromEmail}>`,
-      to: adminEmail,
-      subject: 'Prueba desde Render API con Resend',
-      text: 'Funcionando correctamente'
+    const apiKey = process.env.BREVO_API_KEY;
+
+    if (!apiKey) {
+      return res.status(400).json({ success: false, error: 'Falta BREVO_API_KEY' });
+    }
+
+    const payload = {
+      sender: { name: 'Sistema Glamping Test', email: adminEmail },
+      to: [{ email: adminEmail, name: 'Administrador' }],
+      subject: 'Prueba desde Render API con Brevo',
+      htmlContent: '<p>Funcionando correctamente desde Brevo API!</p>'
+    };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    if (error) {
-      return res.status(500).json({ success: false, error });
+    if (!response.ok) {
+      const errorData = await response.json();
+      return res.status(500).json({ success: false, error: errorData });
     }
+
+    const data = await response.json();
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message, stack: err.stack });
