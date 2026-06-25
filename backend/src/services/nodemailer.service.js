@@ -1,18 +1,20 @@
-import { Resend } from 'resend';
-
-// Inicializar Resend con la API Key que se debe agregar a las variables de entorno (.env y en Render)
-const resend = new Resend(process.env.RESEND_API_KEY);
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 export const sendNewReservationEmail = async (clienteNombre, llegada, salida, paqueteNombre) => {
   try {
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'; // onboarding@resend.dev es el correo de prueba por defecto
-    
-    const { data, error } = await resend.emails.send({
-      from: `Sistema Glamping <${fromEmail}>`,
-      to: adminEmail,
+    const apiKey = process.env.BREVO_API_KEY;
+
+    if (!apiKey) {
+      console.warn('⚠️ BREVO_API_KEY no está configurada. No se enviará el correo al administrador.');
+      return;
+    }
+
+    const payload = {
+      sender: { name: 'Sistema Glamping', email: adminEmail },
+      to: [{ email: adminEmail, name: 'Administrador' }],
       subject: '🔔 ¡Nueva Reserva Recibida!',
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 10px;">
           <h1 style="color: #059669; text-align: center;">¡Nueva Reserva!</h1>
           <p>Hola Administrador,</p>
@@ -31,28 +33,46 @@ export const sendNewReservationEmail = async (clienteNombre, llegada, salida, pa
           <p>Por favor revisa el panel de control para validar el comprobante de pago de esta reserva.</p>
         </div>
       `
+    };
+
+    const res = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    if (error) {
-      console.error('❌ Error desde la API de Resend enviando email de nueva reserva:', error);
+    if (!res.ok) {
+      const errorData = await res.text();
+      console.error('❌ Error desde la API de Brevo enviando email de nueva reserva:', errorData);
       return;
     }
-    console.log('✅ Email de nueva reserva enviado al administrador vía Resend:', data.id);
+    const data = await res.json();
+    console.log('✅ Email de nueva reserva enviado al administrador vía Brevo:', data.messageId);
   } catch (error) {
-    console.error('❌ Error inesperado enviando email de nueva reserva:', error);
+    console.error('❌ Error inesperado enviando email de nueva reserva:', error.message);
   }
 };
 
 export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, llegada, salida, paqueteNombre, subtotal, por_pagar) => {
   try {
     const deposito = subtotal - por_pagar;
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-    
-    const { data, error } = await resend.emails.send({
-      from: `Glamping Los Bosques <${fromEmail}>`,
-      to: clienteEmail,
+    const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
+    const apiKey = process.env.BREVO_API_KEY;
+
+    if (!apiKey) {
+      console.warn('⚠️ BREVO_API_KEY no está configurada. No se enviará el correo al cliente.');
+      return;
+    }
+
+    const payload = {
+      sender: { name: 'Glamping Los Bosques', email: adminEmail },
+      to: [{ email: clienteEmail, name: clienteNombre }],
       subject: '🏕️ Confirmación de Reserva - Glamping Los Bosques',
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 10px;">
           <h1 style="color: #059669; text-align: center;">¡Gracias por tu reserva, ${clienteNombre}!</h1>
           <p>Hemos recibido tu solicitud de reserva con éxito. Por favor, asegúrate de subir tu comprobante de pago para que un administrador pueda confirmar tu estadía.</p>
@@ -84,14 +104,26 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
           </p>
         </div>
       `
+    };
+
+    const res = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    if (error) {
-      console.error('❌ Error desde la API de Resend enviando confirmación al cliente:', error);
+    if (!res.ok) {
+      const errorData = await res.text();
+      console.error('❌ Error desde la API de Brevo enviando confirmación al cliente:', errorData);
       return;
     }
-    console.log('✅ Email de confirmación enviado al cliente vía Resend:', data.id);
+    const data = await res.json();
+    console.log('✅ Email de confirmación enviado al cliente vía Brevo:', data.messageId);
   } catch (error) {
-    console.error('❌ Error inesperado enviando email de confirmación al cliente:', error);
+    console.error('❌ Error inesperado enviando email de confirmación al cliente:', error.message);
   }
 };
