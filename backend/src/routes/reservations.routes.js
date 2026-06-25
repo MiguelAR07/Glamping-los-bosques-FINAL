@@ -9,23 +9,22 @@ const router = Router();
 router.get('/test-email', async (req, res) => {
   try {
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
-    const nodemailer = await import('nodemailer');
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: adminEmail,
-        pass: process.env.EMAIL_PASS || 'rewy rlvo bdwi qxqf'
-      }
-    });
-    const info = await transporter.sendMail({
-      from: '"Sistema Glamping" <' + adminEmail + '>',
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const { data, error } = await resend.emails.send({
+      from: `Sistema Glamping <${fromEmail}>`,
       to: adminEmail,
-      subject: 'Prueba desde Render API',
+      subject: 'Prueba desde Render API con Resend',
       text: 'Funcionando correctamente'
     });
-    res.json({ success: true, info });
+
+    if (error) {
+      return res.status(500).json({ success: false, error });
+    }
+    res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message, stack: err.stack });
   }
