@@ -1,24 +1,15 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com',
-    pass: process.env.EMAIL_PASS || 'rewy rlvo bdwi qxqf'
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000
-});
+// Inicializar Resend con la API Key que se debe agregar a las variables de entorno (.env y en Render)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendNewReservationEmail = async (clienteNombre, llegada, salida, paqueteNombre) => {
   try {
     const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'; // onboarding@resend.dev es el correo de prueba por defecto
     
-    await transporter.sendMail({
-      from: '"Sistema Glamping" <' + adminEmail + '>',
+    const { data, error } = await resend.emails.send({
+      from: `Sistema Glamping <${fromEmail}>`,
       to: adminEmail,
       subject: '🔔 ¡Nueva Reserva Recibida!',
       html: `
@@ -41,19 +32,24 @@ export const sendNewReservationEmail = async (clienteNombre, llegada, salida, pa
         </div>
       `
     });
-    console.log('✅ Email de nueva reserva enviado al administrador.');
+
+    if (error) {
+      console.error('❌ Error desde la API de Resend enviando email de nueva reserva:', error);
+      return;
+    }
+    console.log('✅ Email de nueva reserva enviado al administrador vía Resend:', data.id);
   } catch (error) {
-    console.error('❌ Error enviando email de nueva reserva:', error);
+    console.error('❌ Error inesperado enviando email de nueva reserva:', error);
   }
 };
 
 export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, llegada, salida, paqueteNombre, subtotal, por_pagar) => {
   try {
     const deposito = subtotal - por_pagar;
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
     
-    const adminEmail = process.env.EMAIL_USER || 'panelglampinglosbosques@gmail.com';
-    await transporter.sendMail({
-      from: '"Glamping Los Bosques" <' + adminEmail + '>',
+    const { data, error } = await resend.emails.send({
+      from: `Glamping Los Bosques <${fromEmail}>`,
       to: clienteEmail,
       subject: '🏕️ Confirmación de Reserva - Glamping Los Bosques',
       html: `
@@ -89,8 +85,13 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
         </div>
       `
     });
-    console.log('✅ Email de confirmación enviado al cliente.');
+
+    if (error) {
+      console.error('❌ Error desde la API de Resend enviando confirmación al cliente:', error);
+      return;
+    }
+    console.log('✅ Email de confirmación enviado al cliente vía Resend:', data.id);
   } catch (error) {
-    console.error('❌ Error enviando email de confirmación al cliente:', error);
+    console.error('❌ Error inesperado enviando email de confirmación al cliente:', error);
   }
 };
