@@ -4,7 +4,7 @@ import { reservation } from '../model/reservation.model.js';
 import { packages } from "../model/packages.model.js";
 import { customer } from "../model/customer.model.js";
 import { invoice } from "../model/invoice.model.js";
-import { sendSmsNotification } from "../services/sms.service.js";
+import { sendWhatsAppNotification } from "../services/whatsapp.service.js";
 import { sendNewReservationEmail, sendClientConfirmationEmail } from "../services/nodemailer.service.js";
 
 // tomar los datos del paquete y del cliente y generar la reserva
@@ -140,10 +140,9 @@ export const createReservation = async (req, res) => {
             reserva.por_pagar
         );
 
-        // SMS al cliente
+        // WhatsApp al cliente (usando plantilla hello_world por ahora)
         if (cliente.contacto) {
-            const smsMessage = `¡Hola ${cliente.nombre}! Hemos recibido tu solicitud de reserva en Glamping Los Bosques. Revisa tu correo para más detalles.`;
-            sendSmsNotification(smsMessage, cliente.contacto);
+            sendWhatsAppNotification("", cliente.contacto);
         }
 
         res.status(201).json({
@@ -192,8 +191,8 @@ export const uploadPaymentReceipt = async (req, res) => {
 
         await client.query("COMMIT");
 
-        // Enviar notificación por SMS al administrador de forma asíncrona
-        sendSmsNotification(`🔔 Nueva Reserva Recibida\nSe ha subido el comprobante para la reserva ID: ${id}.\nPor favor, ingresa al Panel de Control para validarla.`, null);
+        // Enviar notificación por WhatsApp al administrador de forma asíncrona
+        sendWhatsAppNotification(`🔔 *Nueva Reserva Recibida*\nSe ha subido el comprobante para la reserva ID: ${id}.\nPor favor, ingresa al Panel de Control para validarla.`);
 
         res.status(200).json({
             success: true,
