@@ -1,6 +1,6 @@
 import { prefetchCabinsPromise } from "../api";
 import { Cabin } from "../types";
-import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
