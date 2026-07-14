@@ -8,11 +8,6 @@ export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
-}
-export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api`;
-
-// Fetch genérico tipado
-async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
   const response = await fetch(`${API_BASE_URL}/${endpoint}`);
   if (!response.ok) throw new Error(`Error fetching ${endpoint}: ${response.statusText}`);
   const json = await response.json();
