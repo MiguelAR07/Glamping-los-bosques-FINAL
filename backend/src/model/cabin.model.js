@@ -6,5 +6,6 @@ export const cabin = {
     getCabinImgs: `
         SELECT * 
         FROM imagenes_cabana
+        ORDER BY orden ASC, imagen_id ASC
     `,
 }
