@@ -39,7 +39,23 @@ export async function getCabinsFull(): Promise<Cabin[]> {
       }
 
       const mainImage = cabin.img_url ? [cleanUrl(cabin.img_url)] : [];
-      const allCabinImages = [...mainImage, ...cabinImages];
+      
+      // Remove duplicates in case mainImage is also inside cabinImages
+      const uniqueImages = new Set();
+      const allCabinImages = [];
+      
+      // Agregamos primero las imagenes_cabana que YA ESTÁN ordenadas por el backend
+      for (const img of cabinImages) {
+        if (!uniqueImages.has(img)) {
+          uniqueImages.add(img);
+          allCabinImages.push(img);
+        }
+      }
+      
+      // Si no había imágenes, o si falta la principal, la agregamos al final (como fallback)
+      if (mainImage.length > 0 && !uniqueImages.has(mainImage[0])) {
+         allCabinImages.push(mainImage[0]);
+      }
         
       return {
         id: String(cabin.cabana_id),
