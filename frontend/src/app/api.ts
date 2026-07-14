@@ -8,63 +8,70 @@ export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api
 
 // Fetch genérico tipado
 async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
+}
+export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api`;
+
+// Fetch genérico tipado
+async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
   const response = await fetch(`${API_BASE_URL}/${endpoint}`);
   if (!response.ok) throw new Error(`Error fetching ${endpoint}: ${response.statusText}`);
   const json = await response.json();
   return Array.isArray(json) ? json : (json.data ?? []);
 }
 
-// Funciones para obtener cada tipo de dato
+export async function getCabinsFull(): Promise<Cabin[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/cabins/full`);
+    if (!response.ok) throw new Error(`Error fetching cabins/full: ${response.statusText}`);
+    
+    const { cabins, images: allImages } = await response.json();
+    
+    return cabins.map((cabin: any) => {
+      const currentCabinId = Number(cabin.cabana_id);
+
+      const cleanUrl = (url: string) => url ? url.replace('http://localhost:3000', API_BASE_URL.replace('/api', '')) : '';
+
+      const cabinImages = allImages
+        .filter((img: any) => Number(img.cabana_id) === currentCabinId)
+        .map((img: any) => cleanUrl(img.img_url));
+
+      let extractedFeatures: string[] = [];
+      let descText = cabin.descripcion ?? "";
+      if (descText.includes("Incluye:")) {
+        const parts = descText.split("Incluye:");
+        descText = parts[0].trim();
+        extractedFeatures = parts[1].split(",").map((f: string) => f.trim());
+      }
+
+      const mainImage = cabin.img_url ? [cleanUrl(cabin.img_url)] : [];
+      const allCabinImages = [...mainImage, ...cabinImages];
+        
+      return {
+        id: String(cabin.cabana_id),
+        nombre: cabin.nombre,
+        descripcion: descText,
+        img_url: allCabinImages,
+        features: extractedFeatures,
+        precio_noche: Number(cabin.precio_noche ?? 0),
+        plans: {
+          occasional: Number(cabin.precio_noche ?? 0),
+          week: Number(cabin.precio_noche ?? 0),
+          weekend: Number(cabin.precio_noche ?? 0),
+          sun_day: Number(cabin.precio_noche ?? 0),
+        },
+        maxGuests: Number(cabin.capacidad_personas ?? 0),
+        additionalPersonPrice: 70000,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching getCabinsFull:", error);
+    return [];
+  }
+}
+
+// Keep the old function for backwards compatibility but make it use the new combined endpoint
 export async function getCabins(): Promise<Cabin[]> {
-  // 1. Hacemos fetch en paralelo de las cabañas y de todas las imágenes
-  const [cabins, allImages] = await Promise.all([
-    fetchFromApi<any>("cabins"),
-    fetchFromApi<any>("cabins/images") // <-- Pon aquí el endpoint exacto de tu tabla Imagenes_Cabanas
-  ]);
-
-  return cabins.map((cabin) => {
-    const currentCabinId = Number(cabin.cabana_id);
-
-    // 2. Filtramos las imágenes que le pertenecen a ESTA cabaña en específico
-    const cleanUrl = (url: string) => url ? url.replace('http://localhost:3000', API_BASE_URL.replace('/api', '')) : '';
-
-    const cabinImages = allImages
-      .filter((img: any) => Number(img.cabana_id) === currentCabinId)
-      .map((img: any) => cleanUrl(img.img_url)); // Nos quedamos solo con el string de la URL limpo
-
-    let extractedFeatures: string[] = [];
-    let descText = cabin.descripcion ?? "";
-    if (descText.includes("Incluye:")) {
-      const parts = descText.split("Incluye:");
-      descText = parts[0].trim();
-      extractedFeatures = parts[1].split(",").map((f: string) => f.trim());
-    }
-
-    // 3. Le pasamos el array de URLs que recolectamos (incluyendo la imagen principal)
-    const mainImage = cabin.img_url ? [cleanUrl(cabin.img_url)] : [];
-    const allCabinImages = [...mainImage, ...cabinImages];
-      
-    return {
-      id: String(cabin.cabana_id),
-      nombre: cabin.nombre,
-      descripcion: descText,
-      
-      img_url: allCabinImages,
-
-      features: extractedFeatures,
-
-      precio_noche: Number(cabin.precio_noche ?? 0),
-
-      plans: {
-        occasional: Number(cabin.precio_noche ?? 0),
-        week: Number(cabin.precio_noche ?? 0),
-        weekend: Number(cabin.precio_noche ?? 0),
-        sun_day: Number(cabin.precio_noche ?? 0),
-      },
-      maxGuests: Number(cabin.capacidad_personas ?? 0),
-      additionalPersonPrice: 70000,
-    };
-  });
+  return getCabinsFull();
 }
 
 export async function getServices(): Promise<Service[]> {
@@ -222,3 +229,16 @@ export async function getBlockedDates() {
   if (!response.ok) return [];
   return await response.json();
 }
+
+// === PREFETCHING ===
+// Estas promesas se inician inmediatamente cuando se carga el módulo (al abrir la página)
+// reduciendo drásticamente el tiempo de espera.
+export const prefetchCabinsPromise = getCabinsFull().catch(err => {
+  console.error("Prefetch cabins failed:", err);
+  return [];
+});
+
+export const prefetchReviewsPromise = getReviews().catch(err => {
+  console.error("Prefetch reviews failed:", err);
+  return { success: false, data: [] };
+});

@@ -1,6 +1,6 @@
-import { getCabins } from "../api";
+import { prefetchCabinsPromise } from "../api";
 import { Cabin } from "../types";
-import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -165,15 +165,18 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
 
 export function CabinsSection() {
   const [cabins, setCabins] = useState<Cabin[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const cabinsScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadCabins() {
       try {
-        const loaded = await getCabins();
+        const loaded = await prefetchCabinsPromise;
         setCabins(loaded);
       } catch (err) {
         console.error("Error cargando cabañas", err);
+      } finally {
+        setIsLoading(false);
       }
     }
     loadCabins();
@@ -235,14 +238,33 @@ export function CabinsSection() {
           </button>
 
           <div ref={cabinsScrollRef} className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
-            {cabins.map((cabin, index) => (
-              <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[340px] md:w-full flex h-full">
-                <CabinCard cabin={cabin} index={index} />
-              </div>
-            ))}
+            {isLoading ? (
+              // Skeleton Loaders
+              [1, 2, 3].map((skeleton) => (
+                <div key={skeleton} className="snap-center shrink-0 w-[85vw] sm:w-[340px] md:w-full flex h-[500px]">
+                  <div className="bg-stone-200 animate-pulse rounded-3xl w-full h-full border border-stone-100 flex flex-col">
+                    <div className="w-full aspect-[4/3] bg-stone-300 rounded-t-3xl"></div>
+                    <div className="p-6 md:p-8 flex flex-col flex-1">
+                      <div className="h-6 bg-stone-300 rounded-md w-1/2 mb-4"></div>
+                      <div className="h-4 bg-stone-300 rounded-md w-full mb-2"></div>
+                      <div className="h-4 bg-stone-300 rounded-md w-5/6 mb-6"></div>
+                      <div className="h-4 bg-stone-300 rounded-md w-1/3 mb-4"></div>
+                      <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className="h-4 bg-stone-300 rounded-md"></div>
+                        <div className="h-4 bg-stone-300 rounded-md"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              cabins.map((cabin, index) => (
+                <div key={cabin.id} className="snap-center shrink-0 w-[85vw] sm:w-[340px] md:w-full flex h-full">
+                  <CabinCard cabin={cabin} index={index} />
+                </div>
+              ))
+            )}
           </div>
-
-
 
           <button 
             onClick={() => scrollCabins('right')} 

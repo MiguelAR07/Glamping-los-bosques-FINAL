@@ -5,7 +5,7 @@
 import { motion } from "framer-motion";
 import { Star, Quote, X, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { createReview, getReviews } from "../api";
+import { createReview, prefetchReviewsPromise } from "../api";
 
 // 1. Datos reales de las reseñas (extraídos de Google Maps) como respaldo
 const FALLBACK_TESTIMONIALS = [
@@ -88,7 +88,7 @@ export function TestimonialsSection() {
   useEffect(() => {
     async function fetchReviews() {
       try {
-        const json = await getReviews();
+        const json = await prefetchReviewsPromise;
         
         if (json.success && json.data && json.data.length > 0) {
           // Transformar los datos de la BD al formato del frontend
