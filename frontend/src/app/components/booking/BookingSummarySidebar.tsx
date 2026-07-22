@@ -58,12 +58,26 @@ export function BookingSummarySidebar({
                 : (date ? format(date, 'dd/MM/yyyy') : 'Seleccionar fecha')}
             </span>
           </div>
-          {planType === "occasional" && timeBlock && (
+          {planType === "occasional" && timeBlock ? (
             <div className="flex justify-between">
               <span className="text-stone-500 flex items-center gap-2">Horario</span>
               <span className="font-medium text-emerald-700 text-right">{timeBlock}</span>
             </div>
+          ) : planType !== "occasional" && (
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between">
+                <span className="text-stone-500">Check-in</span>
+                <span className="font-medium text-emerald-700">3:00 PM</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-stone-500">Check-out</span>
+                <span className="font-medium text-emerald-700">1:00 PM</span>
+              </div>
+            </div>
           )}
+          <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100">
+            <strong>Nota:</strong> Si se pasan 5 min del Check-out, se cobrará una hora adicional ($50.000).
+          </div>
           <div className="flex justify-between">
             <span className="text-stone-500 flex items-center gap-2"><Users className="w-4 h-4"/> Huéspedes</span>
             <span className="font-medium">{guests} personas</span>

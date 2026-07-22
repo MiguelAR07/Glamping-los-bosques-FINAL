@@ -315,6 +315,14 @@ export function BookingStep1Details({
             </span>
           </div>
         )}
+
+        {/* Nota de horarios y penalidad para planes no ocasionales */}
+        {!isOccasional && (
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs sm:text-sm text-amber-800">
+            <strong>Check-in:</strong> 3:00 PM | <strong>Check-out:</strong> 1:00 PM<br/>
+            <strong>Nota:</strong> Si te pasas 5 minutos del horario de salida, se cobrará una hora adicional ($50.000).
+          </div>
+        )}
       </div>
 
       {/* ── Bloque de horario (solo Ocasional) ── */}
