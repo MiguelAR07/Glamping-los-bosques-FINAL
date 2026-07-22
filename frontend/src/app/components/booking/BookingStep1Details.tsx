@@ -190,7 +190,12 @@ export function BookingStep1Details({
         if (planCategory === 'week') {
           // Máximo 5 noches, no cruzar fin de semana
           if (daysDiff > 5) return true;
-          if (isWeekendCheckin(d)) return true;
+          
+          // No se puede hacer checkout el sábado (implica noche de viernes) ni domingo (noche de sábado)
+          // Pero SÍ se puede el viernes (noche de jueves)
+          const checkOutDay = getDay(d);
+          if (checkOutDay === 6 || checkOutDay === 0) return true;
+          
           return false;
         }
       }

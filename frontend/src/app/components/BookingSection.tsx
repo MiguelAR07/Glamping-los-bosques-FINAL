@@ -165,6 +165,7 @@ export function BookingSection() {
   const selectedPlanObj = useMemo(() => planTypes.find(p => p.id === selectedPlanTypeId) as any, [planTypes, selectedPlanTypeId]);
 
   const isMultiDay =
+    planNameLower.includes('amanecida') ||
     (!planNameLower.includes('ocasional') &&
     (planNameLower.includes('semana') ||
      planNameLower.includes('fin de semana') ||
