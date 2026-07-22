@@ -24,8 +24,8 @@ export const sendNewReservationEmail = async (clienteNombre, llegada, salida, pa
             <h3 style="margin-top: 0; color: #166534;">Detalles:</h3>
             <ul style="list-style: none; padding-left: 0;">
               <li>👤 <strong>Cliente:</strong> ${clienteNombre}</li>
-              <li>📅 <strong>Llegada:</strong> ${llegada}</li>
-              <li>📅 <strong>Salida:</strong> ${salida}</li>
+              <li>📅 <strong>Llegada:</strong> ${new Date(llegada).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</li>
+              <li>📅 <strong>Salida:</strong> ${new Date(salida).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</li>
               <li>🏕️ <strong>Paquete/Cabaña:</strong> ${paqueteNombre || 'N/A'}</li>
             </ul>
           </div>
@@ -81,8 +81,8 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
             <h3 style="margin-top: 0; color: #166534;">Tus Detalles de Reserva:</h3>
             <ul style="list-style: none; padding-left: 0;">
               <li>🏕️ <strong>Plan:</strong> ${paqueteNombre || 'Reserva Glamping'}</li>
-              <li>📅 <strong>Llegada:</strong> ${new Date(llegada).toLocaleDateString('es-CO')}</li>
-              <li>📅 <strong>Salida:</strong> ${new Date(salida).toLocaleDateString('es-CO')}</li>
+              <li>📅 <strong>Llegada:</strong> ${new Date(llegada).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</li>
+              <li>📅 <strong>Salida:</strong> ${new Date(salida).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</li>
               <li>💰 <strong>Total de estadía:</strong> $${subtotal.toLocaleString('es-CO')}</li>
               <li>💳 <strong>Anticipo (50%):</strong> $${deposito.toLocaleString('es-CO')}</li>
               <li>💵 <strong>Saldo por pagar al ingreso:</strong> $${por_pagar.toLocaleString('es-CO')}</li>
