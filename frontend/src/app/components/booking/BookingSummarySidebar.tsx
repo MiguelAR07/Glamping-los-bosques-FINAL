@@ -75,8 +75,8 @@ export function BookingSummarySidebar({
               </div>
             </div>
           )}
-          <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100">
-            <strong>Nota:</strong> Si se pasan 5 min del Check-out, se cobrará una hora adicional ($50.000).
+          <div className="text-xs text-rose-700 bg-rose-50 p-2 rounded-lg border border-rose-200 font-medium">
+            <strong>⚠️ Nota:</strong> Si se pasan 5 min del Check-out, se cobrará una hora adicional ($50.000).
           </div>
           <div className="flex justify-between">
             <span className="text-stone-500 flex items-center gap-2"><Users className="w-4 h-4"/> Huéspedes</span>
