@@ -223,6 +223,34 @@ export function BookingSection() {
         dbTipoId = planTypes.find(p => !p.isPromo)?.id || 4;
       }
 
+      let finalLlegada = isMultiDay ? new Date(dateRange.from as Date) : new Date(date as Date);
+      let finalSalida = isMultiDay ? new Date(dateRange.to as Date) : new Date(date as Date);
+
+      const planNameLowerForTime = planType.toLowerCase();
+      if (planNameLowerForTime.includes('ocasional') && timeBlock) {
+        // timeBlock format: "8:00 AM - 1:00 PM"
+        const block1 = timeBlock.split('-')[0].trim();
+        const block2 = timeBlock.split('-')[1].trim();
+        
+        const isPM1 = block1.includes('PM');
+        let h1 = parseInt(block1.split(':')[0]);
+        if (isPM1 && h1 !== 12) h1 += 12;
+        if (!isPM1 && h1 === 12) h1 = 0;
+        finalLlegada.setHours(h1, 0, 0, 0);
+
+        const isPM2 = block2.includes('PM');
+        let h2 = parseInt(block2.split(':')[0]);
+        if (isPM2 && h2 !== 12) h2 += 12;
+        if (!isPM2 && h2 === 12) h2 = 0;
+        finalSalida.setHours(h2, 0, 0, 0);
+      } else if (planNameLowerForTime.includes('sol')) {
+        finalLlegada.setHours(10, 0, 0, 0);
+        finalSalida.setHours(17, 0, 0, 0);
+      } else {
+        finalLlegada.setHours(15, 0, 0, 0);
+        finalSalida.setHours(13, 0, 0, 0);
+      }
+
       // 2. Preparamos el payload con la estructura requerida, incluyendo el objeto paquete
       const bookingData: BookingPayload = {
         cliente: {
@@ -237,8 +265,8 @@ export function BookingSection() {
           paquete_id: "", // Se deja vacío para que el backend cree el paquete e inserte su ID generado
           cliente_id: "", // Se genera en la transacción del backend
           plan_type: planType,
-          llegada: isMultiDay ? (dateRange.from as Date).toISOString() : (date as Date).toISOString(),
-          salida: isMultiDay ? (dateRange.to as Date).toISOString() : (date as Date).toISOString(),
+          llegada: finalLlegada.toISOString(),
+          salida: finalSalida.toISOString(),
           por_pagar: subtotal - deposit,
         },
         factura: {
