@@ -304,8 +304,8 @@ export function BookingStep1Details({
         </div>
 
         {/* Alerta: selecciona fecha de salida */}
-        {isMultiDay && dateRange.from && !dateRange.to && (
-          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800 font-medium animate-pulse">
+        {isMultiDay && dateRange.from && (!dateRange.to || dateRange.from.getTime() === dateRange.to.getTime()) && (
+          <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-sm text-rose-700 font-medium animate-pulse">
             📅 ¡Ahora selecciona tu <strong>fecha de salida</strong> en el calendario!
           </div>
         )}
@@ -346,13 +346,13 @@ export function BookingStep1Details({
 
         {/* Nota de horarios y penalidad para planes no ocasionales */}
         {!isOccasional && (
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs sm:text-sm text-amber-800">
+          <div className="mt-4 p-3 bg-rose-50 border border-rose-100 rounded-xl text-xs sm:text-sm text-rose-700 font-medium">
             {isSun ? (
               <><strong>Llegada:</strong> 10:00 AM | <strong>Salida:</strong> 5:00 PM<br/></>
             ) : (
               <><strong>Check-in:</strong> 3:00 PM | <strong>Check-out:</strong> 1:00 PM<br/></>
             )}
-            <strong>Nota:</strong> Si te pasas 5 minutos del horario de salida, se cobrará una hora adicional ($50.000).
+            <strong>⚠️ Nota:</strong> Si te pasas 5 minutos del horario de salida, se cobrará una hora adicional ($50.000).
           </div>
         )}
       </div>
