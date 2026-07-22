@@ -109,7 +109,6 @@ export function BookingStep1Details({
 }: any) {
   const planCategory = getPlanCategory(planType);
   const isOccasional = planCategory === 'occasional' || planCategory === 'occasional_weekend';
-  const isSun = planType.toLowerCase().includes('sol');
 
   // ─── HINT visible bajo el calendario ──────────────────────────────────────
   const calendarHint: Record<typeof planCategory, string> = {
