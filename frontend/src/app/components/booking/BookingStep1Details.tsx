@@ -266,6 +266,7 @@ export function BookingStep1Details({
             <DayPicker
               locale={es}
               mode={fixedDays && fixedDays > 0 ? "single" : "range"}
+              min={fixedDays && fixedDays > 0 ? undefined : 2}
               selected={fixedDays && fixedDays > 0 ? dateRange.from : (dateRange as any)}
               onSelect={fixedDays && fixedDays > 0 ? ((d: Date | undefined) => handleRangeSelect({from: d})) : (handleRangeSelect as any)}
               disabled={isDateDisabled}
@@ -385,7 +386,7 @@ export function BookingStep1Details({
 
       <button
         onClick={handleNext}
-        disabled={isMultiDay ? (!dateRange.from || !dateRange.to) : (!date || (isOccasional && !timeBlock))}
+        disabled={isMultiDay ? (!dateRange.from || !dateRange.to || dateRange.from.getTime() === dateRange.to.getTime()) : (!date || (isOccasional && !timeBlock))}
         className="w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 transition-colors mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Continuar a Extras
