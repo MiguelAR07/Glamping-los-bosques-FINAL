@@ -66,12 +66,12 @@ export function BookingSummarySidebar({
           ) : planType !== "occasional" && (
             <div className="flex flex-col gap-1">
               <div className="flex justify-between">
-                <span className="text-stone-500">Check-in</span>
-                <span className="font-medium text-emerald-700">3:00 PM</span>
+                <span className="text-stone-500">{planType.toLowerCase().includes('sol') ? 'Llegada' : 'Check-in'}</span>
+                <span className="font-medium text-emerald-700">{planType.toLowerCase().includes('sol') ? '10:00 AM' : '3:00 PM'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-500">Check-out</span>
-                <span className="font-medium text-emerald-700">1:00 PM</span>
+                <span className="text-stone-500">{planType.toLowerCase().includes('sol') ? 'Salida' : 'Check-out'}</span>
+                <span className="font-medium text-emerald-700">{planType.toLowerCase().includes('sol') ? '5:00 PM' : '1:00 PM'}</span>
               </div>
             </div>
           )}
