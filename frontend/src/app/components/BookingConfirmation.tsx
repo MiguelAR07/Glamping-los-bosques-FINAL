@@ -46,7 +46,7 @@ export function BookingConfirmation() {
     return <Navigate to="/" replace />;
   }
 
-  const { cabin, planType, dateRange, guests, total, deposit, formData, reservaId } = state;
+  const { cabin, planType, dateRange, guests, total, deposit, formData, reservaId, timeBlock } = state;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -177,6 +177,13 @@ export function BookingConfirmation() {
                       ? `${dateRange.from ? format(dateRange.from, 'dd/MM/yyyy') : ''} - ${format(dateRange.to, 'dd/MM/yyyy')}`
                       : (dateRange.from ? format(dateRange.from, 'dd/MM/yyyy') : '')}
                   </p>
+                  <p className="text-sm font-medium text-emerald-700 mt-1">
+                    {planType.toLowerCase().includes('ocasional') 
+                      ? `Horario: ${timeBlock || 'Por confirmar'}` 
+                      : planType.toLowerCase().includes('sol')
+                        ? 'Llegada 10:00 AM / Salida 5:00 PM'
+                        : 'Check-in 3:00 PM / Check-out 1:00 PM'}
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -186,6 +193,13 @@ export function BookingConfirmation() {
                   <p className="text-sm text-stone-500">{guests} personas</p>
                 </div>
               </div>
+              {!planType.toLowerCase().includes('ocasional') && (
+                <div className="flex items-start gap-3 pt-2">
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs sm:text-sm text-amber-800 w-full">
+                    <strong>Nota:</strong> Si te pasas 5 minutos del horario de salida, se cobrará una hora adicional ($50.000).
+                  </div>
+                </div>
+              )}
               <div className="flex items-start gap-3 pt-4 border-t border-stone-200">
                 <div className="space-y-1">
                   <p className="text-xs text-stone-400 uppercase font-bold tracking-wider">A nombre de</p>

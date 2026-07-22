@@ -287,6 +287,7 @@ export function BookingSection() {
           deposit: deposit,
           dateRange: isMultiDay ? dateRange : { from: date, to: date },
           planType: planType,
+          timeBlock: timeBlock,
           guests: guests,
         },
       });
