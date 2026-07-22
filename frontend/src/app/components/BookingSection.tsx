@@ -211,7 +211,35 @@ export function BookingSection() {
   const deposit = subtotal * 0.5;
 
   // --- NAVEGACIÓN ---
-  const handleNext = () => setStep((prev) => prev + 1);
+  const handleNext = () => {
+    // Validación antes de avanzar del paso 1
+    if (step === 1) {
+      const planLower = planType.toLowerCase();
+      const isOcasionalOrSol = planLower.includes('ocasional') || planLower.includes('sol');
+      
+      if (isMultiDay) {
+        if (!dateRange.from || !dateRange.to) {
+          alert('Debes seleccionar fecha de llegada y fecha de salida.');
+          return;
+        }
+      } else if (isOcasionalOrSol) {
+        if (!date) {
+          alert('Debes seleccionar la fecha de tu visita.');
+          return;
+        }
+        if (planLower.includes('ocasional') && !timeBlock) {
+          alert('Debes seleccionar un bloque de horario.');
+          return;
+        }
+      } else {
+        if (!date) {
+          alert('Debes seleccionar una fecha.');
+          return;
+        }
+      }
+    }
+    setStep((prev) => prev + 1);
+  };
   const handleBack = () => setStep((prev) => prev - 1);
 
   const handleCheckout = async () => {
