@@ -303,6 +303,25 @@ export function BookingStep1Details({
           )}
         </div>
 
+        {/* Alerta: selecciona fecha de salida */}
+        {isMultiDay && dateRange.from && !dateRange.to && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800 font-medium animate-pulse">
+            📅 ¡Ahora selecciona tu <strong>fecha de salida</strong> en el calendario!
+          </div>
+        )}
+
+        {/* Alerta: límite de noches por tipo de plan */}
+        {isMultiDay && planCategory === 'weekend' && (
+          <div className="mt-2 p-2 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-600">
+            ⚠️ Plan Fin de Semana / Festivo: máximo <strong>3 noches</strong> por reserva.
+          </div>
+        )}
+        {isMultiDay && planCategory === 'week' && (
+          <div className="mt-2 p-2 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-600">
+            ⚠️ Plan Semana: máximo <strong>5 noches</strong> por reserva.
+          </div>
+        )}
+
         {/* Leyenda de colores para Fin de Semana y Festivos */}
         {planCategory === 'weekend' && (
           <div className="mt-2 flex flex-wrap gap-3 text-xs text-stone-500">
