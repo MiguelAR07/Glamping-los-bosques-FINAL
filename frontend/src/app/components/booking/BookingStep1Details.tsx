@@ -207,9 +207,36 @@ export function BookingStep1Details({
         ⚠️ Nota importante: No se alquilan cabañas a menores de edad si no vienen acompañados por sus padres.
       </div>
 
-      {/* ── Selector de Cabaña ── */}
+      {/* ── 1. Selector de Plan (primero, porque define el calendario) ── */}
       <div>
-        <label className="block text-sm font-semibold text-stone-700 mb-3">Selecciona tu Cabaña</label>
+        <label className="block text-sm font-semibold text-stone-700 mb-3">1. Tipo de Plan</label>
+        <div className="grid grid-cols-2 gap-3">
+          {planTypes.map((pt: PlanType) => (
+            <button
+              key={pt.id}
+              onClick={() => {
+                setSelectedPlanTypeId(pt.id);
+                setPlanType(pt.nombre);
+                // Limpiar fechas al cambiar de plan para evitar selecciones inválidas
+                setDate(undefined);
+                setDateRange({ from: undefined, to: undefined });
+                setTimeBlock('');
+              }}
+              className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                selectedPlanTypeId === pt.id
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
+              }`}
+            >
+              {pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 2. Selector de Cabaña ── */}
+      <div>
+        <label className="block text-sm font-semibold text-stone-700 mb-3">2. Selecciona tu Cabaña</label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {cabins.map((c: Cabin) => (
             <button
@@ -231,35 +258,11 @@ export function BookingStep1Details({
         </div>
       </div>
 
-      {/* ── Selector de Plan ── */}
+      {/* ── 3. Calendario ── */}
       <div>
-        <label className="block text-sm font-semibold text-stone-700 mb-3">Tipo de Plan</label>
-        <div className="grid grid-cols-2 gap-3">
-          {planTypes.map((pt: PlanType) => (
-            <button
-              key={pt.id}
-              onClick={() => {
-                setSelectedPlanTypeId(pt.id);
-                setPlanType(pt.nombre);
-                // Limpiar fechas al cambiar de plan para evitar selecciones inválidas
-                setDate(undefined);
-                setDateRange({ from: undefined, to: undefined });
-              }}
-              className={`p-3 rounded-xl border text-sm font-medium transition-all ${
-                selectedPlanTypeId === pt.id
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
-                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
-              }`}
-            >
-              {pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Calendario ── */}
-      <div>
-        <label className="block text-sm font-semibold text-stone-700 mb-1">Fechas</label>
+        <label className="block text-sm font-semibold text-stone-700 mb-1">
+          3. {isMultiDay ? 'Fechas de Estadía' : 'Fecha de tu Visita'}
+        </label>
         <p className="text-xs text-stone-500 mb-3">{calendarHint[planCategory]}</p>
         <div className="bg-white p-4 rounded-xl border border-stone-200 flex justify-center">
           {isMultiDay || (fixedDays && fixedDays > 0) ? (
@@ -331,10 +334,10 @@ export function BookingStep1Details({
         )}
       </div>
 
-      {/* ── Bloque de horario (solo Ocasional) ── */}
+      {/* ── 4. Bloque de horario (solo Ocasional) ── */}
       {isOccasional && (
         <div>
-          <label className="block text-sm font-semibold text-stone-700 mb-3">Bloque de Horario</label>
+          <label className="block text-sm font-semibold text-stone-700 mb-3">4. Bloque de Horario</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {["8:00 AM - 1:00 PM", "1:00 PM - 6:00 PM", "6:00 PM - 11:00 PM"].map(block => (
               <button
@@ -356,10 +359,10 @@ export function BookingStep1Details({
         </div>
       )}
 
-      {/* ── Número de Huéspedes ── */}
+      {/* ── 5. Número de Huéspedes ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">
-          Número de personas (Max. {selectedCabin?.maxGuests || 4})
+          {isOccasional ? '5' : '4'}. Número de personas (Max. {selectedCabin?.maxGuests || 4})
         </label>
         <div className="flex items-center gap-4">
           <button
