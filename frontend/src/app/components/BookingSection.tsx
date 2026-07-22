@@ -222,6 +222,11 @@ export function BookingSection() {
           alert('Debes seleccionar fecha de llegada y fecha de salida.');
           return;
         }
+        // En react-day-picker, un solo clic setea from Y to al mismo día
+        if (dateRange.from.getTime() === dateRange.to.getTime()) {
+          alert('Debes seleccionar también tu fecha de salida. Haz clic en otro día del calendario.');
+          return;
+        }
       } else if (isOcasionalOrSol) {
         if (!date) {
           alert('Debes seleccionar la fecha de tu visita.');
