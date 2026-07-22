@@ -170,7 +170,7 @@ export function BookingSection() {
     (planNameLower.includes('semana') ||
      planNameLower.includes('fin de semana') ||
      planNameLower.includes('festivo') ||
-     planNameLower.includes('weekend'))) || (selectedPlanObj?.dias_estadia > 0);
+     planNameLower.includes('weekend'))) || (selectedPlanObj?.isPromo && selectedPlanObj?.dias_estadia > 0);
 
   const nights = useMemo(() => {
     if (isMultiDay && dateRange.from && dateRange.to) {
@@ -409,7 +409,7 @@ export function BookingSection() {
                 selectedCabin={selectedCabin}
                 handleNext={handleNext}
                 blockedDates={blockedDates}
-                fixedDays={selectedPlanObj?.dias_estadia}
+                fixedDays={selectedPlanObj?.isPromo ? selectedPlanObj?.dias_estadia : undefined}
               />
             )}
             {step === 2 && (
