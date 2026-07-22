@@ -30,11 +30,13 @@ export const createReservation = async (req, res) => {
         ]);
 
         let nuevo_paquete_id;
+        let cabana_id_check = null;
 
         if (paquete && Object.keys(paquete).length > 0) {
+            cabana_id_check = paquete.cabana_id;
             // Validar que la cabaña exista
-            const cabinCheck = await client.query("SELECT 1 FROM cabanas WHERE cabana_id = $1", [paquete.cabana_id]);
-            if (cabinCheck.rowCount === 0) {
+            const cabanaCheck = await client.query("SELECT 1 FROM cabanas WHERE cabana_id = $1", [paquete.cabana_id]);
+            if (cabanaCheck.rowCount === 0) {
                 throw new Error(`La cabaña seleccionada (ID: ${paquete.cabana_id}) no existe.`);
             }
 
@@ -61,14 +63,32 @@ export const createReservation = async (req, res) => {
             nuevo_paquete_id = packageResult.rows[0].paquete_id;
         } else if (reserva && reserva.paquete_id) {
             // Validar que el paquete existente exista y esté activo
-            const packageCheck = await client.query("SELECT 1 FROM paquetes WHERE paquete_id = $1 AND estado = 'Activo'", [reserva.paquete_id]);
+            const packageCheck = await client.query("SELECT cabana_id FROM paquetes WHERE paquete_id = $1 AND estado = 'Activo'", [reserva.paquete_id]);
             if (packageCheck.rowCount === 0) {
                 throw new Error("El paquete seleccionado no existe o no está activo.");
             }
+            cabana_id_check = packageCheck.rows[0].cabana_id;
             nuevo_paquete_id = reserva.paquete_id;
         } else {
             throw new Error("Se debe especificar un paquete existente (paquete_id) o los datos para crear uno nuevo.");
         }
+
+        // --- ESCUDO ANTI-CHOQUES ---
+        if (cabana_id_check) {
+            const overlapCheck = await client.query(`
+                SELECT r.reserva_id 
+                FROM reservas r
+                JOIN paquetes p ON r.paquete_id = p.paquete_id
+                WHERE p.cabana_id = $1
+                  AND r.estado NOT IN ('Cancelado', 'Cancelada')
+                  AND (r.llegada < $3 AND r.salida > $2)
+            `, [cabana_id_check, reserva.llegada, reserva.salida]);
+
+            if (overlapCheck.rows.length > 0) {
+                throw new Error("El horario seleccionado choca con una reserva existente. Por favor, selecciona otra fecha u horario.");
+            }
+        }
+        // ---------------------------
 
         const nuevo_cliente_id = customerResult.rows[0].cliente_id;
 
