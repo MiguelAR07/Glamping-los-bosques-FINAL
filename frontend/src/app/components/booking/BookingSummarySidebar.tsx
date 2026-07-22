@@ -58,20 +58,20 @@ export function BookingSummarySidebar({
                 : (date ? format(date, 'dd/MM/yyyy') : 'Seleccionar fecha')}
             </span>
           </div>
-          {planType === "occasional" && timeBlock ? (
+          {planType?.toLowerCase().includes("ocasional") && timeBlock ? (
             <div className="flex justify-between">
               <span className="text-stone-500 flex items-center gap-2">Horario</span>
               <span className="font-medium text-emerald-700 text-right">{timeBlock}</span>
             </div>
-          ) : planType !== "occasional" && (
+          ) : !planType?.toLowerCase().includes("ocasional") && (
             <div className="flex flex-col gap-1">
               <div className="flex justify-between">
-                <span className="text-stone-500">{planType.toLowerCase().includes('sol') ? 'Llegada' : 'Check-in'}</span>
-                <span className="font-medium text-emerald-700">{planType.toLowerCase().includes('sol') ? '10:00 AM' : '3:00 PM'}</span>
+                <span className="text-stone-500">{planType?.toLowerCase().includes('sol') ? 'Llegada' : 'Check-in'}</span>
+                <span className="font-medium text-emerald-700">{planType?.toLowerCase().includes('sol') ? '10:00 AM' : '3:00 PM'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-500">{planType.toLowerCase().includes('sol') ? 'Salida' : 'Check-out'}</span>
-                <span className="font-medium text-emerald-700">{planType.toLowerCase().includes('sol') ? '5:00 PM' : '1:00 PM'}</span>
+                <span className="text-stone-500">{planType?.toLowerCase().includes('sol') ? 'Salida' : 'Check-out'}</span>
+                <span className="font-medium text-emerald-700">{planType?.toLowerCase().includes('sol') ? '5:00 PM' : '1:00 PM'}</span>
               </div>
             </div>
           )}
