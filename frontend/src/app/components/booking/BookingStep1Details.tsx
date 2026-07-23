@@ -257,7 +257,10 @@ export function BookingStep1Details({
               key={c.id}
               onClick={() => {
                 setSelectedCabinId(c.id);
-                if (guests > c.maxGuests) setGuests(c.maxGuests);
+                if (guests > c.maxGuests) {
+                  setAdults(c.maxGuests);
+                  setChildrenCount(0);
+                }
               }}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
                 selectedCabinId === c.id
