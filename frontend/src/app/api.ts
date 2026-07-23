@@ -111,7 +111,7 @@ export async function getPackages(): Promise<Package[]> {
 
     descripcion: packages.descripcion,
 
-    precio: Number(packages.precio),
+    precio: Number(packages.precio || packages.precio_promocional || 0),
     
     tipo_id: String(packages.tipo_id),
   }));
