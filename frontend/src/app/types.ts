@@ -37,6 +37,7 @@ export type Package = {
   dias_estadia: number;
   descripcion: string;
   precio: number;
+  tipo_id?: string;
 };
 
 export type Product = {
