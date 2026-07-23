@@ -32,7 +32,7 @@ export function BookingSummarySidebar({
         
         <div className="flex items-center gap-4 mb-6">
           {selectedCabin?.img_url && selectedCabin.img_url.length > 0 ? (
-            <img src={selectedCabin.img_url[1] || selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover shrink-0" />
+            <img src={selectedCabin.img_url[0]} alt={selectedCabin.nombre} className="w-20 h-20 rounded-xl object-cover shrink-0" />
           ) : (
             <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-400 shrink-0 flex items-center justify-center">
               <span className="text-white text-xs font-bold text-center">Cargando...</span>
