@@ -232,7 +232,14 @@ export function BookingStep1Details({
                   : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
               }`}
             >
-              {pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}
+              <div className="font-bold">{pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}</div>
+              <div className="text-[11px] font-normal mt-1 opacity-80 leading-tight">
+                {pt.nombre.toLowerCase().includes('sol') ? 'Uso de instalaciones de 10am a 5pm, sin pernoctar.' :
+                 pt.nombre.toLowerCase().includes('ocasional') ? 'Estadía corta de 6 horas, ideal para escapar un rato.' :
+                 pt.nombre.toLowerCase().includes('semana') && !pt.nombre.toLowerCase().includes('fin') ? 'Aplica de Domingo a Jueves. Perfecto para desconectarse.' :
+                 pt.nombre.toLowerCase().includes('fin de semana') || pt.nombre.toLowerCase().includes('festivo') ? 'Aplica Viernes, Sábados y Festivos. Relajación total.' :
+                 'Disfruta de la mejor experiencia.'}
+              </div>
             </button>
           ))}
         </div>
