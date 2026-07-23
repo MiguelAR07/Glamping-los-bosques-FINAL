@@ -82,6 +82,9 @@ export interface BookingPayload {
     llegada: string;
     salida: string;
     por_pagar: number;
+    adultos?: number;
+    ninos?: number;
+    mascotas?: number;
   };
   factura: {
     reserva_id: number | string;

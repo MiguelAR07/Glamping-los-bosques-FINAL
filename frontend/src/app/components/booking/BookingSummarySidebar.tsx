@@ -16,8 +16,12 @@ export function BookingSummarySidebar({
   timeBlock,
   guests,
   cabinPrice,
+  adults,
+  childrenCount,
+  pets,
   extraGuests,
   extraGuestsPrice,
+  petsPrice,
   selectedServices,
   services,
   subtotal,
@@ -78,9 +82,25 @@ export function BookingSummarySidebar({
           <div className="text-xs text-rose-700 bg-rose-50 p-2 rounded-lg border border-rose-200 font-medium">
             <strong>⚠️ Nota:</strong> Si se pasan 5 min del Check-out, se cobrará una hora adicional ($50.000).
           </div>
-          <div className="flex justify-between">
-            <span className="text-stone-500 flex items-center gap-2"><Users className="w-4 h-4"/> Huéspedes</span>
-            <span className="font-medium">{guests} personas</span>
+          <div className="flex flex-col gap-1 text-stone-500 mt-2 bg-stone-50 p-3 rounded-lg border border-stone-100">
+            <div className="flex justify-between">
+              <span className="flex items-center gap-2"><Users className="w-4 h-4"/> Huéspedes Totales</span>
+              <span className="font-medium text-stone-900">{guests} personas</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span>Adultos / &gt;3 años</span>
+              <span className="font-medium text-stone-900">{adults}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span>Niños &lt;3 años</span>
+              <span className="font-medium text-stone-900">{childrenCount}</span>
+            </div>
+            {pets > 0 && (
+              <div className="flex justify-between text-xs text-amber-700">
+                <span>Mascotas</span>
+                <span className="font-medium">{pets}</span>
+              </div>
+            )}
           </div>
         </div>
  
@@ -93,6 +113,12 @@ export function BookingSummarySidebar({
             <div className="flex justify-between text-stone-600">
               <span className="truncate pr-4">Huéspedes extras ({extraGuests}) x {nights} n.</span>
               <span>${extraGuestsPrice.toLocaleString('es-CO')}</span>
+            </div>
+          )}
+          {pets > 0 && (
+            <div className="flex justify-between text-amber-700 font-medium bg-amber-50 px-2 py-1 rounded">
+              <span className="truncate pr-4">Mascotas ({pets})</span>
+              <span>${petsPrice.toLocaleString('es-CO')}</span>
             </div>
           )}
           

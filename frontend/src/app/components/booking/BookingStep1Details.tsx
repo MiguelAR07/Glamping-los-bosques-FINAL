@@ -96,7 +96,10 @@ const getPlanCategory = (planName: string): 'weekend' | 'week' | 'occasional' | 
 };
 
 export function BookingStep1Details({
-  guests, setGuests, cabins,
+  adults, setAdults,
+  childrenCount, setChildrenCount,
+  pets, setPets,
+  guests, cabins,
   selectedCabinId, setSelectedCabinId,
   planType, setPlanType,
   selectedPlanTypeId, setSelectedPlanTypeId,
@@ -378,30 +381,84 @@ export function BookingStep1Details({
         </div>
       )}
 
-      {/* ── 5. Número de Huéspedes ── */}
+      {/* ── 5. Número de Huéspedes y Mascotas ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">
-          {isOccasional ? '5' : '4'}. Número de personas (Max. {selectedCabin?.maxGuests || 4})
+          {isOccasional ? '5' : '4'}. Huéspedes y Mascotas (Máx {selectedCabin?.maxGuests || 4} personas)
         </label>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setGuests(Math.max(1, guests - 1))}
-            className="w-10 h-10 rounded-full border border-stone-300 flex items-center justify-center hover:bg-stone-100"
-          >-</button>
-          <span className="text-xl font-medium w-6 text-center">{guests}</span>
-          <button
-            onClick={() => setGuests(Math.min(selectedCabin?.maxGuests || 4, guests + 1))}
-            disabled={guests >= (selectedCabin?.maxGuests || 4)}
-            className={`w-10 h-10 rounded-full border flex items-center justify-center ${
-              guests >= (selectedCabin?.maxGuests || 4)
-                ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
-                : 'border-stone-300 hover:bg-stone-100'
-            }`}
-          >+</button>
+        
+        <div className="space-y-4">
+          {/* Adultos */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-stone-900">Adultos y Niños &gt; 3 años</div>
+              <div className="text-xs text-stone-500">A partir de 3 personas: +$70.000 c/u</div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setAdults(Math.max(1, adults - 1))}
+                className="w-10 h-10 rounded-full border border-stone-300 flex items-center justify-center hover:bg-stone-100"
+              >-</button>
+              <span className="text-xl font-medium w-6 text-center">{adults}</span>
+              <button
+                onClick={() => setAdults(Math.min(selectedCabin?.maxGuests || 4, adults + 1))}
+                disabled={guests >= (selectedCabin?.maxGuests || 4)}
+                className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+                  guests >= (selectedCabin?.maxGuests || 4)
+                    ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
+                    : 'border-stone-300 hover:bg-stone-100'
+                }`}
+              >+</button>
+            </div>
+          </div>
+
+          {/* Niños */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-stone-900">Niños &lt; 3 años</div>
+              <div className="text-xs text-stone-500">No pagan adicional</div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                className="w-10 h-10 rounded-full border border-stone-300 flex items-center justify-center hover:bg-stone-100"
+              >-</button>
+              <span className="text-xl font-medium w-6 text-center">{childrenCount}</span>
+              <button
+                onClick={() => setChildrenCount(Math.min(selectedCabin?.maxGuests || 4, childrenCount + 1))}
+                disabled={guests >= (selectedCabin?.maxGuests || 4)}
+                className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+                  guests >= (selectedCabin?.maxGuests || 4)
+                    ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
+                    : 'border-stone-300 hover:bg-stone-100'
+                }`}
+              >+</button>
+            </div>
+          </div>
+
+          {/* Mascotas */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-stone-900">Mascotas</div>
+              <div className="text-xs text-stone-500">+$30.000 adicional</div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setPets(Math.max(0, pets - 1))}
+                className="w-10 h-10 rounded-full border border-stone-300 flex items-center justify-center hover:bg-stone-100"
+              >-</button>
+              <span className="text-xl font-medium w-6 text-center">{pets}</span>
+              <button
+                onClick={() => setPets(pets + 1)}
+                className="w-10 h-10 rounded-full border border-stone-300 flex items-center justify-center hover:bg-stone-100"
+              >+</button>
+            </div>
+          </div>
         </div>
-        {guests > 2 && selectedCabin?.additionalPersonPrice > 0 && (
-          <p className="text-xs text-stone-500 mt-2">
-            Se aplica cobro por {guests - 2} persona(s) adicional(es) (${selectedCabin.additionalPersonPrice.toLocaleString('es-CO')} c/u)
+
+        {adults > 2 && selectedCabin?.additionalPersonPrice > 0 && (
+          <p className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg mt-4 font-medium border border-emerald-100">
+            Se aplica cobro por {adults - 2} adulto(s) adicional(es) (${selectedCabin.additionalPersonPrice.toLocaleString('es-CO')} c/u)
           </p>
         )}
       </div>
