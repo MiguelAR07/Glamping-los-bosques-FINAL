@@ -185,7 +185,9 @@ export function BookingSection() {
 
 
   const matchingPackage = useMemo(() => {
-    return packagesList.find(p => String(p.cabana_id) === String(selectedCabinId) && String(p.tipo_id) === String(selectedPlanTypeId));
+    // Buscamos de atrás hacia adelante (reverse) para agarrar el registro más reciente
+    // por si hay paquetes duplicados con la misma cabaña y tipo en la base de datos
+    return [...packagesList].reverse().find(p => String(p.cabana_id) === String(selectedCabinId) && String(p.tipo_id) === String(selectedPlanTypeId));
   }, [packagesList, selectedCabinId, selectedPlanTypeId]);
 
   const basePrice = selectedPlanObj?.isPromo 
