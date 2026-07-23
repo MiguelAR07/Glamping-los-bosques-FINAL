@@ -394,7 +394,7 @@ export function BookingStep1Details({
           {/* Adultos */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium text-stone-900">Adultos y Niños &gt; 3 años</div>
+              <div className="font-medium text-stone-900">Adultos y Niños mayores a 3 años</div>
               <div className="text-xs text-stone-500">A partir de 3 personas: +$70.000 c/u</div>
             </div>
             <div className="flex items-center gap-4">
@@ -418,7 +418,7 @@ export function BookingStep1Details({
           {/* Niños */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium text-stone-900">Niños &lt; 3 años</div>
+              <div className="font-medium text-stone-900">Niños menores a 3 años</div>
               <div className="text-xs text-stone-500">No pagan adicional</div>
             </div>
             <div className="flex items-center gap-4">

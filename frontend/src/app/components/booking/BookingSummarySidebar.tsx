@@ -88,11 +88,11 @@ export function BookingSummarySidebar({
               <span className="font-medium text-stone-900">{guests} personas</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span>Adultos / &gt;3 años</span>
+              <span>Adultos / mayores a 3 años</span>
               <span className="font-medium text-stone-900">{adults}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span>Niños &lt;3 años</span>
+              <span>Niños menores a 3 años</span>
               <span className="font-medium text-stone-900">{childrenCount}</span>
             </div>
             {pets > 0 && (
