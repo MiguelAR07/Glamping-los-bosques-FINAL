@@ -30,7 +30,10 @@ export function BookingSection() {
     from: undefined,
     to: undefined,
   });
-  const [guests, setGuests] = useState(2);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+  const [pets, setPets] = useState(0);
+  const guests = adults + children;
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -211,16 +214,16 @@ export function BookingSection() {
     }
   }, [filteredCabins, selectedCabinId]);
   const cabinPrice = basePrice * nights;
-  const extraGuests = Math.max(0, guests - 2);
-  const extraGuestsPrice =
-    extraGuests * (selectedCabin?.additionalPersonPrice || 0) * nights;
-
+  const extraGuests = Math.max(0, adults - 2);
+  const extraGuestsPrice = extraGuests * (selectedCabin?.additionalPersonPrice || 0) * nights;
+  const petsPrice = pets * 30000;
+  
   const servicesTotal = selectedServices.reduce((acc, serviceId) => {
     const service = services.find((s) => s.id === serviceId);
     return acc + (service?.precio || 0);
   }, 0);
 
-  const subtotal = cabinPrice + extraGuestsPrice + servicesTotal;
+  const subtotal = cabinPrice + extraGuestsPrice + petsPrice + servicesTotal;
   const deposit = subtotal * 0.5;
 
   // --- NAVEGACIÓN ---
@@ -315,6 +318,9 @@ export function BookingSection() {
           llegada: finalLlegada.toISOString(),
           salida: finalSalida.toISOString(),
           por_pagar: subtotal - deposit,
+          adultos: adults,
+          ninos: children,
+          mascotas: pets,
         },
         factura: {
           reserva_id: "",
@@ -364,6 +370,9 @@ export function BookingSection() {
           planType: planType,
           timeBlock: timeBlock,
           guests: guests,
+          adults: adults,
+          children: children,
+          pets: pets,
         },
       });
 
@@ -435,8 +444,13 @@ export function BookingSection() {
           >
             {step === 1 && (
               <BookingStep1Details
+                adults={adults}
+                setAdults={setAdults}
+                childrenCount={children}
+                setChildrenCount={setChildren}
+                pets={pets}
+                setPets={setPets}
                 guests={guests}
-                setGuests={setGuests}
                 cabins={filteredCabins}
                 selectedCabinId={selectedCabinId}
                 setSelectedCabinId={setSelectedCabinId}
@@ -486,16 +500,19 @@ export function BookingSection() {
         <BookingSummarySidebar
           selectedCabin={selectedCabin}
           planType={planType}
-          planName={planType}
           dateRange={dateRange}
           date={date}
           isMultiDay={isMultiDay}
           nights={nights}
           timeBlock={timeBlock}
-          guests={guests}
+          guests={adults + children}
+          adults={adults}
+          childrenCount={children}
+          pets={pets}
           cabinPrice={cabinPrice}
           extraGuests={extraGuests}
           extraGuestsPrice={extraGuestsPrice}
+          petsPrice={petsPrice}
           selectedServices={selectedServices}
           services={services}
           subtotal={subtotal}
