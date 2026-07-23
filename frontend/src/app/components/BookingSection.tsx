@@ -10,7 +10,7 @@ import { BookingStep3Form } from "./booking/BookingStep3Form";
 import { BookingSummarySidebar } from "./booking/BookingSummarySidebar";
 
 import { Cabin, Service, BookingPayload, PlanType } from "../types.ts";
-import { createReservation, getCabins, getServices, getPackageTypes } from "../api.ts";
+import { createReservation, getCabins, getServices, getPackageTypes, getPackages } from "../api.ts";
 
 export function BookingSection() {
   const navigate = useNavigate();
@@ -23,6 +23,7 @@ export function BookingSection() {
   const [planType, setPlanType] = useState<string>("");
   const [timeBlock, setTimeBlock] = useState<string>("");
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
+  const [packagesList, setPackagesList] = useState<any[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
@@ -76,11 +77,12 @@ export function BookingSection() {
         // Cargamos cabañas, servicios y tipos de plan en paralelo.
         // Las promociones se cargan de forma independiente para que si el endpoint falla,
         // no bloquee la carga principal de las cabañas.
-        const [loadedCabins, loadedServices, loadedPlanTypes, loadedBlockedDates] = await Promise.all([
+        const [loadedCabins, loadedServices, loadedPlanTypes, loadedBlockedDates, loadedPackages] = await Promise.all([
           getCabins(),
           getServices(),
           getPackageTypes(),
-          import("../api.ts").then(m => m.getBlockedDates())
+          import("../api.ts").then(m => m.getBlockedDates()),
+          getPackages()
         ]);
 
         // Intentamos cargar las promociones sin bloquear lo demás
@@ -113,6 +115,7 @@ export function BookingSection() {
         setServices(loadedServices);
         setPlanTypes(combinedPlanTypes);
         setBlockedDates(loadedBlockedDates);
+        setPackagesList(loadedPackages);
 
         // Setear por defecto la primera cabaña o la de la URL:
         if (urlCabinId) {
@@ -181,7 +184,15 @@ export function BookingSection() {
   }, [dateRange, isMultiDay]);
 
 
-  const basePrice = selectedPlanObj?.isPromo ? Number(selectedPlanObj.precio_promocional) : (selectedCabin?.precio_noche || 0);
+  const matchingPackage = useMemo(() => {
+    return packagesList.find(p => String(p.cabana_id) === String(selectedCabinId) && String(p.tipo_id) === String(selectedPlanTypeId));
+  }, [packagesList, selectedCabinId, selectedPlanTypeId]);
+
+  const basePrice = selectedPlanObj?.isPromo 
+    ? Number(selectedPlanObj.precio_promocional) 
+    : (matchingPackage && matchingPackage.precio > 0 
+        ? Number(matchingPackage.precio) / (matchingPackage.dias_estadia || 1) 
+        : (selectedCabin?.precio_noche || 0));
 
   // Filtrar cabañas basado en la promoción seleccionada
   const filteredCabins = useMemo(() => {
