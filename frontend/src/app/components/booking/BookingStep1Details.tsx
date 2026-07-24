@@ -108,7 +108,7 @@ export function BookingStep1Details({
   dateRange, setDateRange,
   timeBlock, setTimeBlock,
   isMultiDay, selectedCabin, handleNext, blockedDates,
-  fixedDays
+  fixedDays, packagesList
 }: any) {
   const planCategory = getPlanCategory(planType);
   const isOccasional = planCategory === 'occasional' || planCategory === 'occasional_weekend';
