@@ -2,8 +2,8 @@ export const packages = {
     getPackages: `
         SELECT p.paquete_id, p.cabana_id, p.dias_estadia, p.descripcion, p.estado, p.tipo_id, p.nombre, p.img_url,
           CASE
-            WHEN p.precio_promocional > 0 THEN p.precio_promocional
-            ELSE c.precio_noche * p.dias_estadia
+            WHEN p.precio_promocional > 0 THEN (CASE WHEN p.precio_promocional < 1000 THEN p.precio_promocional * 1000 ELSE p.precio_promocional END)
+            ELSE (CASE WHEN c.precio_noche < 1000 THEN c.precio_noche * 1000 ELSE c.precio_noche END) * p.dias_estadia
           END AS precio
         FROM paquetes p
         JOIN cabanas c ON c.cabana_id = p.cabana_id
