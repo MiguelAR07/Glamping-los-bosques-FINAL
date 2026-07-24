@@ -85,7 +85,7 @@ export const sendClientConfirmationEmail = async (clienteEmail, clienteNombre, l
               <li>📅 <strong>Salida:</strong> ${new Date(salida).toLocaleString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</li>
               <li>💰 <strong>Total de estadía:</strong> $${subtotal.toLocaleString('es-CO')}</li>
               <li>💳 <strong>Anticipo (50%):</strong> $${deposito.toLocaleString('es-CO')}</li>
-              <li>💵 <strong>Saldo por pagar al ingreso:</strong> $${por_pagar.toLocaleString('es-CO')}</li>
+              <li>💵 <strong>Saldo por pagar:</strong> $${por_pagar.toLocaleString('es-CO')}</li>
             </ul>
           </div>
           
