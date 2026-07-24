@@ -174,7 +174,7 @@ export const createReservation = async (req, res) => {
     } catch (error) {
         if (client) await client.query("ROLLBACK");
         console.error("Error en transacción:", error.message);
-        res.status(500).json({ 
+        res.status(400).json({ 
             success: false, 
             message: error.message 
         });
