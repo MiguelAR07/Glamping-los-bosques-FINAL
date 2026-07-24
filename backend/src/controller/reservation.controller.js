@@ -113,7 +113,10 @@ export const createReservation = async (req, res) => {
             nuevo_cliente_id,    // $3
             nuevo_paquete_id,    // $4
             reserva.por_pagar,   // $5
-            facturaUrl          // $6
+            facturaUrl,         // $6
+            reserva.adultos || 1, // $7
+            reserva.ninos || 0,   // $8
+            reserva.mascotas || 0 // $9
         ])
 
         if (reservationResult.rowCount === 0) {
