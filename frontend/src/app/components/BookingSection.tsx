@@ -499,7 +499,6 @@ export function BookingSection() {
         </div>
 
         <BookingSummarySidebar
-          setStep={setStep}
           selectedCabin={selectedCabin}
           planType={planType}
           dateRange={dateRange}
