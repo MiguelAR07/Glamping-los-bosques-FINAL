@@ -103,3 +103,8 @@ export interface BookingPayload {
     cantidad_personas: number;
   }[];
 }
+
+export function formatCOP(amount: number | string): string {
+  const num = Math.round(Number(amount) || 0);
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

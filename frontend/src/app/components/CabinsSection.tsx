@@ -1,5 +1,5 @@
 import { prefetchCabinsPromise } from "../api";
-import { Cabin } from "../types";
+import { Cabin, formatCOP } from "../types";
 import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
@@ -147,7 +147,7 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
             <div>
               <span className="block text-xs text-stone-500 font-medium mb-1">Desde</span>
               <span className="text-2xl font-bold text-emerald-700">
-                ${(cabin.precio_noche || cabin.plans?.occasional || 0).toLocaleString('es-CO')}
+                ${formatCOP(cabin.precio_noche || cabin.plans?.occasional || 0)}
               </span>
             </div>
           </div>
