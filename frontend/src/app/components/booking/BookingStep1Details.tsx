@@ -494,7 +494,7 @@ export function BookingStep1Details({
 
         {adults > 2 && selectedCabin?.additionalPersonPrice > 0 && (
           <p className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg mt-4 font-medium border border-emerald-100">
-            Se aplica cobro por {adults - 2} adulto(s) adicional(es) (${selectedCabin.additionalPersonPrice.toLocaleString('es-CO')} c/u)
+            Se aplica cobro por {adults - 2} adulto(s) adicional(es) (${formatCOP(selectedCabin.additionalPersonPrice)} c/u)
           </p>
         )}
       </div>

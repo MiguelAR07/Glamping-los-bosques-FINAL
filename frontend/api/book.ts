@@ -70,8 +70,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           <h3 style="color: #059669; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Resumen Financiero</h3>
           <ul>
-            <li><strong>Total de la estadía:</strong> $${reservationDetails.total.toLocaleString('es-CO')}</li>
-            <li style="font-size: 1.1em;"><strong>Anticipo pagado (50%):</strong> <strong style="color: #059669;">$${reservationDetails.deposit.toLocaleString('es-CO')}</strong></li>
+            <li><strong>Total de la estadía:</strong> $${(Number(reservationDetails.total) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</li>
+            <li style="font-size: 1.1em;"><strong>Anticipo pagado (50%):</strong> <strong style="color: #059669;">$${(Number(reservationDetails.deposit) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</strong></li>
           </ul>
         </div>
         <p style="text-align: center; color: #666; font-size: 12px; margin-top: 20px;">
