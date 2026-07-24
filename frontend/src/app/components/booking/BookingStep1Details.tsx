@@ -7,7 +7,7 @@
  *   - "Ocasional"      → cualquier día + selector de bloque horario
  *   - "Día de sol"     → cualquier día, selector único
  */
-import { Cabin, PlanType } from '../../types.ts'
+import { Cabin, PlanType, formatCOP } from '../../types.ts'
 import { DayPicker } from "react-day-picker";
 import { es } from 'date-fns/locale';
 import { isBefore, startOfDay, isSameDay, isWithinInterval, getDay } from 'date-fns';
@@ -268,7 +268,7 @@ export function BookingStep1Details({
                         ? "bg-white/20 text-white border border-white/30"
                         : "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
                     }`}>
-                      ${planPrice.toLocaleString('es-CO')} COP
+                      ${formatCOP(planPrice)} COP
                     </span>
                   </div>
                 )}
@@ -302,7 +302,7 @@ export function BookingStep1Details({
               }`}
             >
               <div className="font-bold text-stone-900">{c.nombre}</div>
-              <div className="text-xs text-emerald-700 font-semibold mt-1">Desde ${c.precio_noche.toLocaleString('es-CO')}</div>
+              <div className="text-xs text-emerald-700 font-semibold mt-1">Desde ${formatCOP(c.precio_noche)}</div>
             </button>
           ))}
         </div>

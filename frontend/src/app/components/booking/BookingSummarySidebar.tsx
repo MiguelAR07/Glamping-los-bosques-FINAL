@@ -4,7 +4,7 @@
  */
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Users } from "lucide-react";
-import { Service } from "../../types.ts";
+import { Service, formatCOP } from "../../types.ts";
 
 export function BookingSummarySidebar({
   selectedCabin,
@@ -118,18 +118,18 @@ export function BookingSummarySidebar({
         <div className="space-y-3 mb-6 pb-6 border-b border-stone-100 text-sm">
           <div className="flex justify-between font-medium">
             <span className="text-stone-700">Estadía ({planDisplay})</span>
-            <span>${cabinPrice.toLocaleString('es-CO')}</span>
+            <span>${formatCOP(cabinPrice)}</span>
           </div>
           {extraGuests > 0 && (
             <div className="flex justify-between text-stone-600">
               <span className="truncate pr-4">Huéspedes extras ({extraGuests}) x {nights} n.</span>
-              <span>${extraGuestsPrice.toLocaleString('es-CO')}</span>
+              <span>${formatCOP(extraGuestsPrice)}</span>
             </div>
           )}
           {pets > 0 && (
             <div className="flex justify-between text-amber-700 font-medium bg-amber-50 px-2 py-1 rounded">
               <span className="truncate pr-4">Mascotas ({pets})</span>
-              <span>${petsPrice.toLocaleString('es-CO')}</span>
+              <span>${formatCOP(petsPrice)}</span>
             </div>
           )}
           
@@ -139,7 +139,7 @@ export function BookingSummarySidebar({
             return (
               <div key={id} className="flex justify-between text-stone-600">
                 <span className="truncate pr-4">{s.nombre}</span>
-                <span>{s.precio === 0 ? '0' : `$${s.precio.toLocaleString('es-CO')}`}</span>
+                <span>{s.precio === 0 ? '0' : `$${formatCOP(s.precio)}`}</span>
               </div>
             )
           })}
@@ -148,14 +148,14 @@ export function BookingSummarySidebar({
         <div className="space-y-2">
           <div className="flex justify-between text-stone-500 text-sm">
             <span>Subtotal</span>
-            <span>${subtotal.toLocaleString('es-CO')}</span>
+            <span>${formatCOP(subtotal)}</span>
           </div>
           <div className="flex justify-between text-lg font-bold text-stone-900 pt-2 border-t border-stone-100">
             <span>Total a pagar (Anticípo 50%)</span>
-            <span className="text-emerald-700">${deposit.toLocaleString('es-CO')}</span>
+            <span className="text-emerald-700">${formatCOP(deposit)}</span>
           </div>
           <p className="text-xs text-stone-400 text-center mt-4">
-            El 50% restante (${(subtotal - deposit).toLocaleString('es-CO')}) se paga en el enlace que aparecerá en la factura de confirmación de reserva.
+            El 50% restante (${formatCOP(subtotal - deposit)}) se paga en el enlace que aparecerá en la factura de confirmación de reserva.
           </p>
         </div>
       </div>
