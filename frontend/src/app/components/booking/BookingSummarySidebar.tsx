@@ -143,9 +143,6 @@ export function BookingSummarySidebar({
             <span>Total a pagar (Anticípo 50%)</span>
             <span className="text-emerald-700">${deposit.toLocaleString('es-CO')}</span>
           </div>
-          <p className="text-xs text-stone-400 text-center mt-4">
-            El saldo restante (${(subtotal - deposit).toLocaleString('es-CO')}) se pagará al momento del check-in.
-          </p>
         </div>
       </div>
     </div>
