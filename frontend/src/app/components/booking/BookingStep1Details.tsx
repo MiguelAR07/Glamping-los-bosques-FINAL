@@ -217,40 +217,73 @@ export function BookingStep1Details({
       {/* ── 1. Selector de Plan (primero, porque define el calendario) ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">1. Tipo de Plan</label>
-        <div className="grid grid-cols-2 gap-3">
-          {planTypes.map((pt: PlanType) => (
-            <button
-              key={pt.id}
-              onClick={() => {
-                setSelectedPlanTypeId(pt.id);
-                setPlanType(pt.nombre);
-                // Limpiar fechas al cambiar de plan para evitar selecciones inválidas
-                setDate(undefined);
-                setDateRange({ from: undefined, to: undefined });
-                setTimeBlock('');
-              }}
-              className={`p-3 rounded-xl border text-sm font-medium transition-all ${
-                selectedPlanTypeId === pt.id
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
-                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
-              }`}
-            >
-              <div className="font-bold">{pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}</div>
-              <div className="text-[11px] font-normal mt-1 opacity-80 leading-tight">
-                {pt.nombre.toLowerCase().includes('sol') ? 'Uso de instalaciones de 10am a 5pm, sin pernoctar.' :
-                 pt.nombre.toLowerCase().includes('ocasional') ? 'Estadía corta de 6 horas, ideal para escapar un rato.' :
-                 pt.nombre.toLowerCase().includes('semana') && !pt.nombre.toLowerCase().includes('fin') ? 'Aplica de Domingo a Jueves. Perfecto para desconectarse.' :
-                 pt.nombre.toLowerCase().includes('fin de semana') || pt.nombre.toLowerCase().includes('festivo') ? 'Aplica Viernes, Sábados y Festivos. Relajación total.' :
-                 'Disfruta de la mejor experiencia.'}
-              </div>
-            </button>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {planTypes.map((pt: PlanType) => {
+            let planPrice = 0;
+            if ((pt as any).isPromo && (pt as any).precio_promocional) {
+              planPrice = Number((pt as any).precio_promocional);
+            } else if (packagesList && packagesList.length > 0) {
+              const match = packagesList.find(
+                (pkg: any) => String(pkg.cabana_id) === String(selectedCabinId) && String(pkg.tipo_id) === String(pt.id)
+              );
+              if (match && match.precio > 0) {
+                planPrice = Number(match.precio);
+              }
+            }
+            if (planPrice === 0 && selectedCabin) {
+              planPrice = Number(selectedCabin.precio_noche || 0);
+            }
+
+            return (
+              <button
+                key={pt.id}
+                onClick={() => {
+                  setSelectedPlanTypeId(pt.id);
+                  setPlanType(pt.nombre);
+                  // Limpiar fechas al cambiar de plan para evitar selecciones inválidas
+                  setDate(undefined);
+                  setDateRange({ from: undefined, to: undefined });
+                  setTimeBlock('');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                  selectedPlanTypeId === pt.id
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                    : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:border-emerald-200"
+                }`}
+              >
+                <div>
+                  <div className="font-bold text-base">{pt.nombre.toLowerCase().includes('ocasional') && !pt.nombre.includes('6 horas') && !pt.nombre.toLowerCase().includes('promo') ? `${pt.nombre} (6 horas)` : pt.nombre}</div>
+                  <div className="text-xs font-normal mt-1 opacity-85 leading-relaxed">
+                    {pt.nombre.toLowerCase().includes('sol') ? 'Uso de instalaciones de 10am a 5pm, sin pernoctar.' :
+                     pt.nombre.toLowerCase().includes('ocasional') ? 'Estadía corta de 6 horas, ideal para escapar un rato.' :
+                     pt.nombre.toLowerCase().includes('semana') && !pt.nombre.toLowerCase().includes('fin') ? 'Aplica de Domingo a Jueves. Perfecto para desconectarse.' :
+                     pt.nombre.toLowerCase().includes('fin de semana') || pt.nombre.toLowerCase().includes('festivo') ? 'Aplica Viernes, Sábados y Festivos. Relajación total.' :
+                     'Disfruta de la mejor experiencia.'}
+                  </div>
+                </div>
+                {planPrice > 0 && (
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                      selectedPlanTypeId === pt.id
+                        ? "bg-white/20 text-white border border-white/30"
+                        : "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
+                    }`}>
+                      ${planPrice.toLocaleString('es-CO')} COP
+                    </span>
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── 2. Selector de Cabaña ── */}
       <div>
-        <label className="block text-sm font-semibold text-stone-700 mb-3">2. Selecciona tu Cabaña</label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-stone-700">2. Selecciona tu Cabaña</label>
+          <span className="text-xs text-stone-400 font-normal">Puedes cambiar de cabaña en cualquier momento</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {cabins.map((c: Cabin) => (
             <button
@@ -269,7 +302,7 @@ export function BookingStep1Details({
               }`}
             >
               <div className="font-bold text-stone-900">{c.nombre}</div>
-              <div className="text-xs text-stone-500 mt-1">Desde ${c.precio_noche.toLocaleString('es-CO')}</div>
+              <div className="text-xs text-emerald-700 font-semibold mt-1">Desde ${c.precio_noche.toLocaleString('es-CO')}</div>
             </button>
           ))}
         </div>

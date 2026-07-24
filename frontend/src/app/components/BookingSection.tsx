@@ -469,6 +469,7 @@ export function BookingSection() {
                 selectedCabin={selectedCabin}
                 handleNext={handleNext}
                 blockedDates={blockedDates}
+                packagesList={packagesList}
                 fixedDays={selectedPlanObj?.isPromo ? selectedPlanObj?.dias_estadia : undefined}
               />
             )}
@@ -517,6 +518,7 @@ export function BookingSection() {
           services={services}
           subtotal={subtotal}
           deposit={deposit}
+          setStep={setStep}
         />
       </div>
     </section>
