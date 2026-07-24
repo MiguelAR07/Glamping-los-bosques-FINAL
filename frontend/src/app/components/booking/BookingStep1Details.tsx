@@ -137,6 +137,17 @@ export function BookingStep1Details({
     }
   };
 
+  const parseLocalDate = (dateStr: any): Date => {
+    if (!dateStr) return new Date();
+    if (dateStr instanceof Date) return startOfDay(dateStr);
+    const str = String(dateStr).split('T')[0];
+    const parts = str.split('-');
+    if (parts.length === 3) {
+      return startOfDay(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
+    }
+    return startOfDay(new Date(dateStr));
+  };
+
   // ─── FECHAS DESHABILITADAS ─────────────────────────────────────────────────
   const isNightBlocked = (nightDate: Date): boolean => {
     const current = startOfDay(nightDate);
@@ -144,8 +155,8 @@ export function BookingStep1Details({
     if (blockedDates && blockedDates.length > 0) {
       const isBlocked = blockedDates.some((b: any) => {
         if (!b.cabana_id || String(b.cabana_id) === String(selectedCabinId) || b.cabana_id === "all") {
-          const start = startOfDay(new Date(b.fecha_inicio));
-          const end = startOfDay(new Date(b.fecha_fin));
+          const start = parseLocalDate(b.fecha_inicio);
+          const end = parseLocalDate(b.fecha_fin);
           return current.getTime() >= start.getTime() && current.getTime() < end.getTime();
         }
         return false;
