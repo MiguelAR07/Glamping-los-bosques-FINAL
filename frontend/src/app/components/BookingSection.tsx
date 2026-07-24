@@ -451,7 +451,7 @@ export function BookingSection() {
                 pets={pets}
                 setPets={setPets}
                 guests={guests}
-                cabins={filteredCabins}
+                cabins={cabins}
                 selectedCabinId={selectedCabinId}
                 setSelectedCabinId={setSelectedCabinId}
                 planType={planType}
@@ -499,6 +499,7 @@ export function BookingSection() {
         </div>
 
         <BookingSummarySidebar
+          setStep={setStep}
           selectedCabin={selectedCabin}
           planType={planType}
           dateRange={dateRange}
@@ -518,7 +519,6 @@ export function BookingSection() {
           services={services}
           subtotal={subtotal}
           deposit={deposit}
-          setStep={setStep}
         />
       </div>
     </section>
