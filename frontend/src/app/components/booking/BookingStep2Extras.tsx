@@ -2,7 +2,7 @@
  * Subcomponente: Paso 2 del Wizard de Reservas
  * Renderiza la lista de servicios adicionales opcionales.
  */
-import { Service } from "../../types.ts";
+import { Service, formatCOP } from "../../types.ts";
 import { Check } from "lucide-react";
 
 export function BookingStep2Extras({
@@ -21,7 +21,7 @@ export function BookingStep2Extras({
               <div className="flex-1">
                 <div className="font-bold text-stone-900 flex justify-between">
                   {s.nombre}
-                  <span>{s.precio === 0 ? 'Gratis*' : `$${s.precio.toLocaleString('es-CO')}`}</span>
+                  <span>{s.precio === 0 ? 'Gratis*' : `$${formatCOP(s.precio)}`}</span>
                 </div>
                 <div className="text-sm text-stone-500 mt-1">{s.descripcion}</div>
               </div>

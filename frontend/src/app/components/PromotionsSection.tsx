@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatCOP } from "../types";
 import { motion } from "framer-motion";
 import { Sparkles, Calendar, Home } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -169,7 +170,7 @@ export default function PromotionsSection() {
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-xs text-stone-500 font-medium">Precio promocional</span>
                     <span className="text-2xl font-bold text-emerald-700">
-                      ${(Number(promo.precio) < 1000 ? Number(promo.precio) * 1000 : Number(promo.precio)).toLocaleString("es-CO")}
+                      ${formatCOP(Number(promo.precio) < 1000 ? Number(promo.precio) * 1000 : Number(promo.precio))}
                     </span>
                     <span className="text-xs text-stone-400">/noche</span>
                   </div>

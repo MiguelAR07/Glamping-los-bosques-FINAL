@@ -3,6 +3,7 @@
  * Formulario de captura de datos personales y ejecución de la reserva.
  */
 import { useState } from "react";
+import { formatCOP } from "../../types.ts";
 import { FileText, Loader2 } from "lucide-react";
 import { TermsModal } from "../TermsModal";
 
@@ -202,7 +203,7 @@ export function BookingStep3Form({
               Al continuar, se registrarán tus datos y se generará la factura. 
               Recuerda que para asegurar tu cupo debes abonar el 50%: 
               <span className="font-bold text-emerald-700 ml-1">
-                ${deposit.toLocaleString("es-CO")}
+                ${formatCOP(deposit)}
               </span>.
             </p>
           </div>
