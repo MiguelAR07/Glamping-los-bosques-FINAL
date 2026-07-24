@@ -26,13 +26,24 @@ export function BookingSummarySidebar({
   services,
   subtotal,
   deposit,
+  setStep,
 }: any) {
   const planDisplay = planType || "Sin plan";
 
   return (
     <div className="w-full lg:w-[400px]">
       <div className="bg-white rounded-3xl border border-stone-200 shadow-xl shadow-stone-100 p-6 sm:p-8 sticky top-28">
-        <h3 className="text-xl font-bold text-stone-900 mb-6 border-b border-stone-100 pb-4">Resumen de Reserva</h3>
+        <div className="flex items-center justify-between mb-6 border-b border-stone-100 pb-4">
+          <h3 className="text-xl font-bold text-stone-900">Resumen de Reserva</h3>
+          {setStep && (
+            <button
+              onClick={() => setStep(1)}
+              className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition-colors"
+            >
+              Cambiar cabaña
+            </button>
+          )}
+        </div>
         
         <div className="flex items-center gap-4 mb-6">
           {selectedCabin?.img_url && selectedCabin.img_url.length > 0 ? (
