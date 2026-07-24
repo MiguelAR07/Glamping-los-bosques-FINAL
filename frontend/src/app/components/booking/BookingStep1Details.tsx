@@ -138,22 +138,14 @@ export function BookingStep1Details({
   };
 
   // ─── FECHAS DESHABILITADAS ─────────────────────────────────────────────────
-  const isDateDisabled = (d: Date): boolean => {
-    // 1. Siempre bloquear el pasado
-    if (isBefore(d, startOfDay(new Date()))) return true;
-
-    // 2. Bloqueos dinámicos desde la base de datos (Admin Panel)
+  const isNightBlocked = (nightDate: Date): boolean => {
+    const current = startOfDay(nightDate);
+    // Bloqueos dinámicos desde la base de datos
     if (blockedDates && blockedDates.length > 0) {
       const isBlocked = blockedDates.some((b: any) => {
-        // Aplica a todas las cabañas o a la seleccionada
         if (!b.cabana_id || String(b.cabana_id) === String(selectedCabinId) || b.cabana_id === "all") {
           const start = startOfDay(new Date(b.fecha_inicio));
           const end = startOfDay(new Date(b.fecha_fin));
-          
-          // Bloqueamos si el día D es mayor o igual a START y MENOR estricto que END
-          // Esto permite que el día de salida (END) pueda ser seleccionado como día de entrada
-          // por otro cliente.
-          const current = startOfDay(d);
           return current.getTime() >= start.getTime() && current.getTime() < end.getTime();
         }
         return false;
@@ -161,51 +153,64 @@ export function BookingStep1Details({
       if (isBlocked) return true;
     }
 
-    // 3. Bloqueos específicos por cabaña / temporada (Hardcoded legacy)
+    // Bloqueos específicos por cabaña / temporada (Hardcoded legacy)
     const isPalmas = selectedCabin?.nombre?.toLowerCase().includes('palmas');
     if (isPalmas) {
-      if (isSameDay(d, new Date(2026, 4, 25))) return true;
-      if (isSameDay(d, new Date(2026, 4, 27))) return true;
+      if (isSameDay(current, new Date(2026, 4, 25))) return true;
+      if (isSameDay(current, new Date(2026, 4, 27))) return true;
     }
-    if (isSameDay(d, new Date(2026, 4, 30))) return true;
-    if (isWithinInterval(d, { start: new Date(2026, 5, 5), end: new Date(2026, 5, 11) })) return true;
+    if (isSameDay(current, new Date(2026, 4, 30))) return true;
+    if (isWithinInterval(current, { start: new Date(2026, 5, 5), end: new Date(2026, 5, 11) })) return true;
 
-    // 4. Restricciones por tipo de plan
-    // Comportamiento base (para check-in)
-    let isBaseDisabled = false;
-    if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
-      isBaseDisabled = !isWeekendCheckin(d) && !isColombianoHoliday(d);
-    } else if (planCategory === 'week') {
-      isBaseDisabled = !isWeekdayCheckin(d) || isColombianoHoliday(d);
-    }
+    return false;
+  };
 
-    // Si hay un 'from' seleccionado, evaluamos las reglas de rango para fechas posteriores a 'from'
+  const isDateDisabled = (d: Date): boolean => {
+    const target = startOfDay(d);
+
+    // 1. Siempre bloquear el pasado
+    if (isBefore(target, startOfDay(new Date()))) return true;
+
+    // 2. Si ya hay una fecha de entrada seleccionada (dateRange.from)
     if (dateRange?.from) {
-      const daysDiff = (startOfDay(d).getTime() - startOfDay(dateRange.from).getTime()) / (1000 * 60 * 60 * 24);
-      
-      // Si es una fecha posterior al check-in (buscando checkout o ya seleccionado)
-      if (daysDiff > 0) {
+      const from = startOfDay(dateRange.from);
+
+      // Si el día d es posterior a la fecha de entrada (posible día de salida / checkout):
+      if (target.getTime() > from.getTime()) {
+        // Es válido como checkout SI NO HAY NINGUNA NOCHE BLOQUEADA en las noches intermedias [from, target)
+        let checkDate = new Date(from.getTime());
+        while (checkDate.getTime() < target.getTime()) {
+          if (isNightBlocked(checkDate)) {
+            return true; // Noche intermedia bloqueada
+          }
+          checkDate.setDate(checkDate.getDate() + 1);
+        }
+
+        // Restricciones por tipo de plan para la fecha de salida
+        const daysDiff = (target.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
         if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
-          // Máximo 3 noches, permitir checkout en días deshabilitados para check-in
-          return daysDiff > 3;
-        }
-        if (planCategory === 'week') {
-          // Máximo 5 noches, no cruzar fin de semana
+          if (daysDiff > 3) return true;
+        } else if (planCategory === 'week') {
           if (daysDiff > 5) return true;
-          
-          // No se puede hacer checkout el sábado (implica noche de viernes) ni domingo (noche de sábado)
-          // Pero SÍ se puede el viernes (noche de jueves)
-          const checkOutDay = getDay(d);
+          const checkOutDay = getDay(target);
           if (checkOutDay === 6 || checkOutDay === 0) return true;
-          
-          return false;
         }
+
+        return false; // Salida válida
       }
-      // Si es anterior o igual a 'from', usamos la regla base (para poder reiniciar la selección)
-      return isBaseDisabled;
     }
 
-    return isBaseDisabled;
+    // 3. Si se evalúa como fecha de entrada (check-in)
+    if (isNightBlocked(target)) return true;
+
+    // 4. Restricciones por tipo de plan para fecha de entrada
+    if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
+      return !isWeekendCheckin(target) && !isColombianoHoliday(target);
+    } else if (planCategory === 'week') {
+      return !isWeekdayCheckin(target) || isColombianoHoliday(target);
+    }
+
+    return false;
   };
 
   return (
