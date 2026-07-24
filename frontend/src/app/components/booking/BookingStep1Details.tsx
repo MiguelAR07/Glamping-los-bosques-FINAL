@@ -405,9 +405,9 @@ export function BookingStep1Details({
               <span className="text-xl font-medium w-6 text-center">{adults}</span>
               <button
                 onClick={() => setAdults(Math.min(selectedCabin?.maxGuests || 4, adults + 1))}
-                disabled={adults >= (selectedCabin?.maxGuests || 4) || (selectedCabin?.id !== 'roble' && guests >= (selectedCabin?.maxGuests || 4))}
+                disabled={adults >= (selectedCabin?.maxGuests || 4) || (!(selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && guests >= (selectedCabin?.maxGuests || 4))}
                 className={`w-10 h-10 rounded-full border flex items-center justify-center ${
-                  adults >= (selectedCabin?.maxGuests || 4) || (selectedCabin?.id !== 'roble' && guests >= (selectedCabin?.maxGuests || 4))
+                  adults >= (selectedCabin?.maxGuests || 4) || (!(selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && guests >= (selectedCabin?.maxGuests || 4))
                     ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
                     : 'border-stone-300 hover:bg-stone-100'
                 }`}
@@ -428,10 +428,10 @@ export function BookingStep1Details({
               >-</button>
               <span className="text-xl font-medium w-6 text-center">{childrenCount}</span>
               <button
-                onClick={() => setChildrenCount(Math.min(selectedCabin?.id === 'roble' ? 1 : (selectedCabin?.maxGuests || 4), childrenCount + 1))}
-                disabled={(selectedCabin?.id === 'roble' && childrenCount >= 1) || (selectedCabin?.id !== 'roble' && guests >= (selectedCabin?.maxGuests || 4))}
+                onClick={() => setChildrenCount(Math.min((selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) ? 1 : (selectedCabin?.maxGuests || 4), childrenCount + 1))}
+                disabled={((selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && childrenCount >= 1) || (!(selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && guests >= (selectedCabin?.maxGuests || 4))}
                 className={`w-10 h-10 rounded-full border flex items-center justify-center ${
-                  (selectedCabin?.id === 'roble' && childrenCount >= 1) || (selectedCabin?.id !== 'roble' && guests >= (selectedCabin?.maxGuests || 4))
+                  ((selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && childrenCount >= 1) || (!(selectedCabin?.id === 'roble' || selectedCabin?.nombre?.toLowerCase().includes('roble')) && guests >= (selectedCabin?.maxGuests || 4))
                     ? 'opacity-50 cursor-not-allowed bg-stone-100 border-stone-200'
                     : 'border-stone-300 hover:bg-stone-100'
                 }`}
