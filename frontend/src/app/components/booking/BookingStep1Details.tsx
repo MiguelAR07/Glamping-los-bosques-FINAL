@@ -7,7 +7,7 @@
  *   - "Ocasional"      → cualquier día + selector de bloque horario
  *   - "Día de sol"     → cualquier día, selector único
  */
-import { Cabin, PlanType, formatCOP } from '../../types.ts'
+import { PlanType, formatCOP } from '../../types.ts'
 import { DayPicker } from "react-day-picker";
 import { es } from 'date-fns/locale';
 import { isBefore, startOfDay, isSameDay, isWithinInterval, getDay } from 'date-fns';
@@ -99,8 +99,8 @@ export function BookingStep1Details({
   adults, setAdults,
   childrenCount, setChildrenCount,
   pets, setPets,
-  guests, cabins,
-  selectedCabinId, setSelectedCabinId,
+  guests,
+  selectedCabinId,
   planType, setPlanType,
   selectedPlanTypeId, setSelectedPlanTypeId,
   planTypes,
@@ -294,40 +294,12 @@ export function BookingStep1Details({
         </div>
       </div>
 
-      {/* ── 2. Selector de Cabaña ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-semibold text-stone-700">2. Selecciona tu Cabaña</label>
-          <span className="text-xs text-stone-400 font-normal">Puedes cambiar de cabaña en cualquier momento</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {cabins.map((c: Cabin) => (
-            <button
-              key={c.id}
-              onClick={() => {
-                setSelectedCabinId(c.id);
-                if (guests > c.maxGuests) {
-                  setAdults(c.maxGuests);
-                  setChildrenCount(0);
-                }
-              }}
-              className={`p-4 rounded-xl border-2 text-left transition-all ${
-                selectedCabinId === c.id
-                  ? 'border-emerald-500 bg-emerald-50 shadow-md'
-                  : 'border-stone-200 bg-white hover:border-emerald-200'
-              }`}
-            >
-              <div className="font-bold text-stone-900">{c.nombre}</div>
-              <div className="text-xs text-emerald-700 font-semibold mt-1">Desde ${formatCOP(c.precio_noche)}</div>
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* ── 3. Calendario ── */}
+
+      {/* ── 2. Calendario ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-1">
-          3. {isMultiDay ? 'Fechas de Estadía' : 'Fecha de tu Visita'}
+          2. {isMultiDay ? 'Fechas de Estadía' : 'Fecha de tu Visita'}
         </label>
         <p className="text-xs text-stone-500 mb-3">{calendarHint[planCategory]}</p>
         <div className="bg-white p-4 rounded-xl border border-stone-200 flex justify-center">
@@ -408,10 +380,10 @@ export function BookingStep1Details({
 
       </div>
 
-      {/* ── 4. Bloque de horario (solo Ocasional) ── */}
+      {/* ── 3. Bloque de horario (solo Ocasional) ── */}
       {isOccasional && (
         <div>
-          <label className="block text-sm font-semibold text-stone-700 mb-3">4. Bloque de Horario</label>
+          <label className="block text-sm font-semibold text-stone-700 mb-3">3. Bloque de Horario</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {["8:00 AM - 1:00 PM", "1:00 PM - 6:00 PM", "6:00 PM - 11:00 PM"].map(block => (
               <button
@@ -433,10 +405,10 @@ export function BookingStep1Details({
         </div>
       )}
 
-      {/* ── 5. Número de Huéspedes y Mascotas ── */}
+      {/* ── 4. Número de Huéspedes y Mascotas ── */}
       <div>
         <label className="block text-sm font-semibold text-stone-700 mb-3">
-          {isOccasional ? '5' : '4'}. Huéspedes y Mascotas (Máx {selectedCabin?.maxGuests || 4} personas)
+          {isOccasional ? '4' : '3'}. Huéspedes y Mascotas (Máx {selectedCabin?.maxGuests || 4} personas)
         </label>
         
         <div className="space-y-4">
