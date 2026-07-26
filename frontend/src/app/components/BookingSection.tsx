@@ -399,20 +399,14 @@ export function BookingSection() {
     <section id="booking" className="py-24 px-4 sm:px-6 lg:px-12 bg-white">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12">
         <div className="flex-1">
-          <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-stone-900 mb-4">
-                Reserva tu experiencia
-              </h2>
-            </div>
-            {step > 1 && (
-              <button 
-                onClick={() => setStep(1)}
-                className="px-4 py-2 bg-stone-100 text-stone-700 rounded-xl font-bold hover:bg-stone-200 transition-colors text-sm shrink-0"
-              >
-                Cambiar Cabaña o Plan
-              </button>
-            )}
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-stone-900 mb-2">
+              Reserva tu experiencia
+            </h2>
+            <p className="text-sm text-stone-500 flex items-center gap-1.5 flex-wrap">
+              Estás reservando en <span className="font-semibold text-emerald-700">{selectedCabin?.nombre || 'tu cabaña'}</span>.
+              ¿Deseas otra cabaña? <a href="#cabins" className="text-emerald-600 font-semibold underline hover:text-emerald-700 transition-colors">Volver a elegir</a>
+            </p>
           </div>
           <div className="flex items-center gap-2 text-sm font-medium text-stone-500 mb-8">
               <span
