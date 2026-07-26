@@ -26,7 +26,6 @@ export function BookingSummarySidebar({
   services,
   subtotal,
   deposit,
-  setStep,
 }: any) {
   const planDisplay = planType || "Sin plan";
 
@@ -48,14 +47,6 @@ export function BookingSummarySidebar({
           <div>
             <h4 className="font-bold text-stone-900">{selectedCabin?.nombre || "Cargando..."}</h4>
             <div className="text-sm text-stone-500 capitalize">{planDisplay}</div>
-            {setStep && (
-              <button
-                onClick={() => setStep(1)}
-                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline mt-1 block"
-              >
-                Cambiar cabaña o plan
-              </button>
-            )}
             {selectedCabin?.es_promocion && cabinPrice > 0 && (
               <div className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold mt-1 inline-block">
                 Precio Especial Aplicado
