@@ -420,8 +420,8 @@ export function BookingStep1Details({
           {/* Adultos */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium text-stone-900">Adultos y Niños mayores a 3 años</div>
-              <div className="text-xs text-stone-500">A partir de 3 personas: +$70.000 c/u</div>
+              <div className="font-medium text-stone-900">Adultos y Personas Adicionales (Mayores a 3 años)</div>
+              <div className="text-xs text-stone-500">Base: 2 personas. A partir de la 3ra: +$70.000 c/u</div>
             </div>
             <div className="flex items-center gap-4">
               <button
