@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { differenceInDays } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 
 import { BookingStep1Details } from "./booking/BookingStep1Details";
 import { BookingStep2Extras } from "./booking/BookingStep2Extras";
@@ -412,7 +412,7 @@ export function BookingSection() {
             </h2>
             <p className="text-sm text-stone-500 flex items-center gap-1.5 flex-wrap">
               Estás reservando en <span className="font-semibold text-emerald-700">{selectedCabin?.nombre || 'tu cabaña'}</span>.
-              ¿Deseas otra cabaña? <a href="#cabins" className="text-emerald-600 font-semibold underline hover:text-emerald-700 transition-colors">Volver a elegir</a>
+              ¿Deseas otra cabaña? <Link to="/#cabins" className="text-emerald-600 font-semibold underline hover:text-emerald-700 transition-colors">Volver a elegir</Link>
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm font-medium text-stone-500 mb-8">
