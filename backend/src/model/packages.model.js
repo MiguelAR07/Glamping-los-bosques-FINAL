@@ -1,6 +1,7 @@
 export const packages = {
     getPackages: `
         SELECT p.paquete_id, p.cabana_id, p.dias_estadia, p.descripcion, p.estado, p.tipo_id, p.nombre, p.img_url,
+          COALESCE(p.precio_promocional, 0) as precio_promocional_raw,
           CASE
             WHEN p.precio_promocional > 0 THEN (CASE WHEN p.precio_promocional < 1000 THEN p.precio_promocional * 1000 ELSE p.precio_promocional END)
             ELSE (CASE WHEN c.precio_noche < 1000 THEN c.precio_noche * 1000 ELSE c.precio_noche END) * p.dias_estadia

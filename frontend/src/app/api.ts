@@ -113,6 +113,8 @@ export async function getPackages(): Promise<Package[]> {
 
     precio: Number(packages.precio || packages.precio_promocional || 0),
     
+    hasExplicitPrice: Number(packages.precio_promocional_raw || 0) > 0,
+    
     tipo_id: String(packages.tipo_id),
   }));
 }
