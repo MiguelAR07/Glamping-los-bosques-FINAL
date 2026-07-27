@@ -188,15 +188,22 @@ export function BookingSection() {
 
 
   const matchingPackage = useMemo(() => {
-    // Buscamos de atrás hacia adelante (reverse) para agarrar el registro más reciente
-    // por si hay paquetes duplicados con la misma cabaña y tipo en la base de datos
-    return [...packagesList].reverse().find(p => String(p.cabana_id) === String(selectedCabinId) && String(p.tipo_id) === String(selectedPlanTypeId));
+    // Filtrar todos los paquetes que coinciden con la cabaña y tipo seleccionados
+    const matches = packagesList.filter(p => String(p.cabana_id) === String(selectedCabinId) && String(p.tipo_id) === String(selectedPlanTypeId) && Number(p.precio) > 0);
+    if (matches.length === 0) return null;
+    // Preferir paquetes con precio explícito (precio_promocional) sobre los auto-calculados
+    const withExplicit = matches.filter(p => p.hasExplicitPrice);
+    const candidates = withExplicit.length > 0 ? withExplicit : matches;
+    // De los candidatos, tomar el de mayor paquete_id (el más reciente)
+    return candidates.reduce((best, current) => Number(current.id) > Number(best.id) ? current : best);
   }, [packagesList, selectedCabinId, selectedPlanTypeId]);
 
+  // El precio del paquete ya viene calculado por noche desde la API (precio total / dias_estadia)
+  // Para paquetes con dias_estadia=1, el precio ES el precio por noche
   const basePrice = selectedPlanObj?.isPromo 
     ? Number(selectedPlanObj.precio_promocional) 
-    : (matchingPackage && matchingPackage.precio > 0 
-        ? Number(matchingPackage.precio) / (matchingPackage.dias_estadia || 1) 
+    : (matchingPackage && Number(matchingPackage.precio) > 0 
+        ? Number(matchingPackage.precio) / Math.max(1, matchingPackage.dias_estadia || 1) 
         : (selectedCabin?.precio_noche || 0));
 
   // Filtrar cabañas basado en la promoción seleccionada
