@@ -239,11 +239,16 @@ export function BookingStep1Details({
             if ((pt as any).isPromo && (pt as any).precio_promocional) {
               planPrice = Number((pt as any).precio_promocional);
             } else if (packagesList && packagesList.length > 0) {
-              const match = packagesList.find(
+              const matches = packagesList.filter(
                 (pkg: any) => String(pkg.cabana_id) === String(selectedCabinId) && String(pkg.tipo_id) === String(pt.id)
               );
-              if (match && match.precio > 0) {
-                planPrice = Number(match.precio);
+              if (matches.length > 0) {
+                const withExplicit = matches.filter((p: any) => p.hasExplicitPrice);
+                const candidates = withExplicit.length > 0 ? withExplicit : matches;
+                const match = candidates.reduce((best: any, current: any) => Number(current.id) > Number(best.id) ? current : best);
+                if (match && match.precio > 0) {
+                  planPrice = Number(match.precio);
+                }
               }
             }
             if (planPrice === 0 && selectedCabin) {
