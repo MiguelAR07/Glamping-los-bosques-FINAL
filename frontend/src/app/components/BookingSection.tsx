@@ -402,6 +402,18 @@ export function BookingSection() {
 
   // Eliminamos el loader para renderizar de inmediato
 
+  const handleVolver = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("/");
+    // We give it a short delay to ensure the DOM of the home page is rendered
+    setTimeout(() => {
+      const cabinsSection = document.getElementById("cabins");
+      if (cabinsSection) {
+        cabinsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 150);
+  };
+
   return (
     <section id="booking" className="py-24 px-4 sm:px-6 lg:px-12 bg-white">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12">
@@ -412,7 +424,7 @@ export function BookingSection() {
             </h2>
             <p className="text-sm text-stone-500 flex items-center gap-1.5 flex-wrap">
               Estás reservando en <span className="font-semibold text-emerald-700">{selectedCabin?.nombre || 'tu cabaña'}</span>.
-              ¿Deseas otra cabaña? <a href="/#cabins" className="text-emerald-600 font-semibold underline hover:text-emerald-700 transition-colors">Volver a elegir</a>
+              ¿Deseas otra cabaña? <a href="/#cabins" onClick={handleVolver} className="text-emerald-600 font-semibold underline hover:text-emerald-700 transition-colors cursor-pointer">Volver a elegir</a>
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm font-medium text-stone-500 mb-8">
