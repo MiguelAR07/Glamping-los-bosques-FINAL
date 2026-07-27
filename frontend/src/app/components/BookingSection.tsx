@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { differenceInDays } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { BookingStep1Details } from "./booking/BookingStep1Details";
 import { BookingStep2Extras } from "./booking/BookingStep2Extras";
