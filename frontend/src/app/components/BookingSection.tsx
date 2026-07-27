@@ -343,7 +343,7 @@ export function BookingSection() {
         },
         servicios: selectedServices.map(s => ({
           servicio_id: parseInt(s, 10),
-          cantidad_personas: guests
+          cantidad_personas: 1
         }))
       };
       
