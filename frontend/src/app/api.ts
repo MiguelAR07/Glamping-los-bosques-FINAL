@@ -257,3 +257,15 @@ export const prefetchReviewsPromise = getReviews().catch(err => {
   console.error("Prefetch reviews failed:", err);
   return { success: false, data: [] };
 });
+
+export async function getTerms() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/terms`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error fetching terms:", error);
+    return [];
+  }
+}
