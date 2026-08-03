@@ -10,6 +10,7 @@ import reviewsRouter from './reviews.routes.js';
 import promocionesRouter from './promociones.routes.js';
 import availabilityRouter from './availability.routes.js';
 import cuentasBancariasRouter from './cuentasBancarias.routes.js';
+import termsRouter from './terms.routes.js';
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/reviews', reviewsRouter);
 router.use('/promociones', promocionesRouter);
 router.use('/availability', availabilityRouter);
 router.use('/cuentas-bancarias', cuentasBancariasRouter);
+router.use('/terms', termsRouter);
 
 export default router;

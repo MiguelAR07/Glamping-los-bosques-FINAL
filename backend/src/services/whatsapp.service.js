@@ -1,8 +1,8 @@
 import https from 'https';
 
 export const sendWhatsAppNotification = async (message, targetPhone = null) => {
-  const token = process.env.WHATSAPP_TOKEN || "EAAOvP0dmtNEBR5ZABsh8xj6AF3kursZAV4oAU5M4CbbvpSsyDPYTZA4voaEtPYEGBYnNL9tsxIEejA1JPyGwlRZCBnbWXt8VCxFQZCe585jICtdz0RyddrvoXy74y27LFYpXHZB0vOlRjh6iOSZBqXVvZCzjiUM6Ojr9RA8FV9UdsdHFNLGZBkYvlrYZCTVUhS8J2qwGRT17h35VZAgAmdjO7CH3jsg4bORicAHsk3sN8J90twSFB3Tdsek5eAP0JxAmSUW74vLpOaGZCxOdhsPwZAiY2";
-  const phoneId = process.env.WHATSAPP_PHONE_ID || "1084740744732269";
+  const token = process.env.WHATSAPP_TOKEN;
+  const phoneId = process.env.WHATSAPP_PHONE_ID;
   const rawPhone = targetPhone || process.env.ADMIN_WHATSAPP_PHONE || "573103599065";
   let cleanPhone = String(rawPhone).replace(/\D/g, '');
   
@@ -12,22 +12,21 @@ export const sendWhatsAppNotification = async (message, targetPhone = null) => {
   }
 
   if (!token || !phoneId) {
-    console.warn("⚠️ Meta WhatsApp API no está configurada.");
+    console.warn("⚠️ Meta WhatsApp API no está configurada. Variables faltantes:", !token ? "WHATSAPP_TOKEN" : "", !phoneId ? "WHATSAPP_PHONE_ID" : "");
     return;
   }
 
   try {
     const url = `https://graph.facebook.com/v19.0/${phoneId}/messages`;
     
-    // ATENCIÓN: Si estamos en modo de prueba o fuera de la ventana de 24h,
-    // debemos usar un template (plantilla).
+    // Usar template aprobado por Meta para poder enviar fuera de la ventana de 24 horas
     const body = JSON.stringify({
       messaging_product: "whatsapp",
       to: cleanPhone,
       type: "template",
       template: {
-        name: "reserva_confirmada",
-        language: { code: "es" }
+        name: "hello_world",
+        language: { code: "en_US" }
       }
     });
 
@@ -45,7 +44,7 @@ export const sendWhatsAppNotification = async (message, targetPhone = null) => {
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          console.log(`✅ WhatsApp de Meta enviado a ${cleanPhone}`);
+          console.log(`✅ WhatsApp enviado a ${cleanPhone}`);
         } else {
           console.error(`❌ Error Meta WhatsApp (${res.statusCode}):`, data);
         }
