@@ -31,43 +31,52 @@ const FALLBACK_TESTIMONIALS = [
 
 // 2. Componente Individual de la Reseña (Tarjeta)
 function ReviewCard({ testimonial, index }: { testimonial: any, index: number }) {
+  const name = testimonial.name || testimonial.nombre || "Huésped";
+  const text = testimonial.text || testimonial.texto || "";
+  const rating = Number(testimonial.rating || 5);
+  const date = testimonial.date || (testimonial.fecha_creacion ? new Date(testimonial.fecha_creacion).toLocaleDateString('es-CO') : "Reciente");
+  const initials = name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'H';
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.15 }}
-      className="bg-stone-800 rounded-2xl p-8 border border-stone-700 flex flex-col relative h-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      className="bg-stone-800 rounded-2xl p-8 border border-stone-700 flex flex-col relative h-full text-left"
     >
-      <Quote className="absolute top-6 right-6 w-10 h-10 text-stone-700" />
+      <Quote className="absolute top-6 right-6 w-10 h-10 text-stone-700 pointer-events-none" />
       
       {/* Estrellas */}
       <div className="flex gap-1 mb-6">
         {[...Array(5)].map((_, i) => (
           <Star 
             key={i} 
-            className={`w-5 h-5 ${i < testimonial.rating ? 'fill-emerald-500 text-emerald-500' : 'fill-stone-600 text-stone-600'}`} 
+            className={`w-5 h-5 ${i < rating ? 'fill-emerald-500 text-emerald-500' : 'fill-stone-600 text-stone-600'}`} 
           />
         ))}
       </div>
       
       {/* Texto principal */}
-      <p className="text-stone-300 italic mb-8 flex-1 leading-relaxed">
-        "{testimonial.text}"
+      <p className="text-stone-300 italic mb-8 flex-1 leading-relaxed text-sm md:text-base">
+        "{text}"
       </p>
       
       {/* Autor */}
       <div className="mt-auto flex items-center gap-4">
-        {testimonial.profile_photo_url && (
+        {testimonial.profile_photo_url ? (
           <img 
             src={testimonial.profile_photo_url} 
-            alt={testimonial.name} 
-            className="w-10 h-10 rounded-full"
+            alt={name} 
+            className="w-10 h-10 rounded-full object-cover"
           />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs shrink-0">
+            {initials}
+          </div>
         )}
         <div>
-          <p className="font-bold text-white">{testimonial.name}</p>
-          <p className="text-sm text-stone-500">{testimonial.date}</p>
+          <p className="font-bold text-white text-sm md:text-base">{name}</p>
+          <p className="text-xs text-stone-400">{date}</p>
         </div>
       </div>
     </motion.div>
@@ -90,13 +99,14 @@ export function TestimonialsSection() {
       try {
         const json = await prefetchReviewsPromise;
         
-        if (json.success && json.data && json.data.length > 0) {
-          // Transformar los datos de la BD al formato del frontend
-          const formattedReviews = json.data.map((r: any) => ({
-            name: r.nombre,
-            text: r.texto,
-            rating: r.rating,
-            date: "Reciente"
+        const rawList = (json && json.success && Array.isArray(json.data)) ? json.data : (Array.isArray(json) ? json : []);
+        
+        if (rawList.length > 0) {
+          const formattedReviews = rawList.map((r: any) => ({
+            name: r.nombre || r.name,
+            text: r.texto || r.text,
+            rating: Number(r.rating || 5),
+            date: r.fecha_creacion ? new Date(r.fecha_creacion).toLocaleDateString('es-CO') : (r.date || "Reciente")
           }));
           setReviews(formattedReviews);
         }
@@ -110,33 +120,30 @@ export function TestimonialsSection() {
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.nombre || !formData.texto) return;
+    if (!formData.nombre.trim() || !formData.texto.trim()) return;
     
     setIsSubmitting(true);
     try {
       const res = await createReview({
-        nombre: formData.nombre,
-        rating: formData.rating,
-        texto: formData.texto
+        nombre: formData.nombre.trim(),
+        rating: Number(formData.rating),
+        texto: formData.texto.trim()
       });
       
-      // Añadir la reseña al principio de la lista
-      setReviews(prev => [
-        {
-          name: res.data.nombre,
-          text: res.data.texto,
-          rating: res.data.rating,
-          date: "Justo ahora"
-        },
-        ...prev
-      ]);
-      
-      // Cerrar modal y limpiar
+      const newReview = {
+        name: res?.data?.nombre || formData.nombre.trim(),
+        text: res?.data?.texto || formData.texto.trim(),
+        rating: Number(res?.data?.rating || formData.rating),
+        date: "Justo ahora"
+      };
+
+      setReviews(prev => [newReview, ...prev]);
       setIsModalOpen(false);
       setFormData({ nombre: "", rating: 5, texto: "" });
-    } catch (error) {
+      alert("¡Muchas gracias! Tu reseña ha sido publicada con éxito.");
+    } catch (error: any) {
       console.error("Error al enviar reseña:", error);
-      alert("Hubo un error al enviar tu reseña. Intenta de nuevo.");
+      alert("Hubo un error al enviar tu reseña: " + (error?.message || "Inténtalo de nuevo"));
     } finally {
       setIsSubmitting(false);
     }
