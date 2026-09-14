@@ -1,8 +1,8 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://backend-landing-x76z.onrender.com";
+let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://glamping-los-bosques-final1-9asb.onrender.com";
 if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && baseEnv.includes("localhost")) {
-  baseEnv = "https://backend-landing-x76z.onrender.com";
+  baseEnv = "https://glamping-los-bosques-final1-9asb.onrender.com";
 }
 export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api`;
 
@@ -16,15 +16,21 @@ async function fetchFromApi<T>(endpoint: string): Promise<T[]> {
 
 export async function getCabinsFull(): Promise<Cabin[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/cabins/full`);
-    if (!response.ok) throw new Error(`Error fetching cabins/full: ${response.statusText}`);
-    
-    const { cabins, images: allImages } = await response.json();
+    const [cabins, allImages] = await Promise.all([
+      fetchFromApi<any>("cabins"),
+      fetchFromApi<any>("cabins/images").catch(() => [])
+    ]);
     
     return cabins.map((cabin: any) => {
-      const currentCabinId = Number(cabin.cabana_id);
+      const currentCabinId = Number(cabin.id || cabin.cabana_id);
 
-      const cleanUrl = (url: string) => url ? url.replace('http://localhost:3000', API_BASE_URL.replace('/api', '')) : '';
+      const cleanUrl = (url: string) => {
+        if (!url) return '';
+        if (url.startsWith('http://localhost:3000')) {
+          return url.replace('http://localhost:3000', API_BASE_URL.replace('/api', ''));
+        }
+        return url;
+      };
 
       const cabinImages = allImages
         .filter((img: any) => Number(img.cabana_id) === currentCabinId)
@@ -40,11 +46,9 @@ export async function getCabinsFull(): Promise<Cabin[]> {
 
       const mainImage = cabin.img_url ? [cleanUrl(cabin.img_url)] : [];
       
-      // Remove duplicates in case mainImage is also inside cabinImages
       const uniqueImages = new Set();
       const allCabinImages = [];
       
-      // Agregamos primero las imagenes_cabana que YA ESTÁN ordenadas por el backend
       for (const img of cabinImages) {
         if (!uniqueImages.has(img)) {
           uniqueImages.add(img);
@@ -52,25 +56,26 @@ export async function getCabinsFull(): Promise<Cabin[]> {
         }
       }
       
-      // Si no había imágenes, o si falta la principal, la agregamos al final (como fallback)
       if (mainImage.length > 0 && !uniqueImages.has(mainImage[0])) {
          allCabinImages.push(mainImage[0]);
       }
         
+      const precioBase = Number(cabin.precio_noche || cabin["Precio desde"] || 0);
+
       return {
-        id: String(cabin.cabana_id),
+        id: String(cabin.id || cabin.cabana_id),
         nombre: cabin.nombre,
         descripcion: descText,
         img_url: allCabinImages,
         features: extractedFeatures,
-        precio_noche: Number(cabin.precio_noche ?? 0),
+        precio_noche: precioBase,
         plans: {
-          occasional: Number(cabin.precio_noche ?? 0),
-          week: Number(cabin.precio_noche ?? 0),
-          weekend: Number(cabin.precio_noche ?? 0),
-          sun_day: Number(cabin.precio_noche ?? 0),
+          occasional: precioBase > 0 ? (precioBase === 280000 ? 160000 : precioBase === 260000 ? 160000 : 150000) : 150000,
+          week: precioBase > 0 ? precioBase : 250000,
+          weekend: precioBase > 0 ? (precioBase === 280000 ? 350000 : precioBase === 260000 ? 350000 : 290000) : 290000,
+          sun_day: precioBase > 0 ? (precioBase === 280000 ? 220000 : precioBase === 260000 ? 220000 : 180000) : 180000,
         },
-        maxGuests: Number(cabin.capacidad_personas ?? 0),
+        maxGuests: Number(cabin.capacidad || cabin.capacidad_personas || 2),
         additionalPersonPrice: 70000,
       };
     });
