@@ -26,6 +26,12 @@ export async function getCabinsFull(): Promise<Cabin[]> {
 
       const cleanUrl = (url: string) => {
         if (!url) return '';
+        if (url.includes('/public/cabins/')) {
+          return url.substring(url.indexOf('/public/cabins/') + 7);
+        }
+        if (url.includes('/cabins/')) {
+          return url.substring(url.indexOf('/cabins/'));
+        }
         if (url.startsWith('http://localhost:3000')) {
           return url.replace('http://localhost:3000', API_BASE_URL.replace('/api', ''));
         }
