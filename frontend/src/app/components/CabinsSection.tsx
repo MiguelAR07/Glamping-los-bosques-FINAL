@@ -1,4 +1,5 @@
 import { prefetchCabinsPromise } from "../api";
+import { CABINS } from "../data";
 import { Cabin, formatCOP } from "../types";
 import { Trees, Wifi, Tv, Coffee, Flame, CheckCircle2, Car, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -164,19 +165,19 @@ const CabinCard = ({ cabin, index }: { cabin: any, index: number }) => {
 };
 
 export function CabinsSection() {
-  const [cabins, setCabins] = useState<Cabin[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [cabins, setCabins] = useState<Cabin[]>(CABINS as any);
+  const [isLoading] = useState(false);
   const cabinsScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadCabins() {
       try {
         const loaded = await prefetchCabinsPromise;
-        setCabins(loaded);
+        if (loaded && loaded.length > 0) {
+          setCabins(loaded);
+        }
       } catch (err) {
-        console.error("Error cargando cabañas", err);
-      } finally {
-        setIsLoading(false);
+        console.error("Error cargando cabañas del backend, usando datos locales:", err);
       }
     }
     loadCabins();
