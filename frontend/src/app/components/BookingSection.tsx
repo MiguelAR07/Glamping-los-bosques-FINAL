@@ -91,8 +91,8 @@ export function BookingSection() {
         // Intentamos cargar las promociones sin bloquear lo demás
         let activePromos: any[] = [];
         try {
-          let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://backend-landing-x76z.onrender.com';
-          if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && baseEnv.includes("localhost")) baseEnv = "https://backend-landing-x76z.onrender.com";
+          let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://glamping-los-bosques-final1-9asb.onrender.com';
+          if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && baseEnv.includes("localhost")) baseEnv = "https://glamping-los-bosques-final1-9asb.onrender.com";
           const resPromos = await fetch(`${baseEnv}/api/promociones`).then(res => {
             if (!res.ok) throw new Error('Promociones no disponibles');
             return res.json();
