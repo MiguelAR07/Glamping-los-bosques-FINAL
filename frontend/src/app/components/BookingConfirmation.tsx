@@ -3,6 +3,7 @@ import { formatCOP } from "../types.ts";
 import { CheckCircle2, UploadCloud, Calendar, MapPin, Users, Building2, Send } from "lucide-react";
 import { format } from "date-fns";
 import { useState, useRef, useEffect } from "react";
+import { getCuentasBancarias, CuentaBancaria } from "../api.ts";
 
 /**
  * Página de Confirmación de Reserva
@@ -20,26 +21,23 @@ export function BookingConfirmation() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [cuentasBancarias, setCuentasBancarias] = useState<any[]>([]);
+  const [cuentasBancarias, setCuentasBancarias] = useState<CuentaBancaria[]>([]);
+  const [cuentasStatus, setCuentasStatus] = useState<"loading" | "ok" | "error">("loading");
 
   // Hacer scroll al inicio al cargar la página para que el usuario vea el resumen
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Cargar cuentas bancarias
-    const fetchCuentas = async () => {
-      try {
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
-        const response = await fetch(`${API_BASE_URL}/api/cuentas-bancarias`);
-        if (response.ok) {
-          const data = await response.json();
-          setCuentasBancarias(data);
-        }
-      } catch (err) {
+    getCuentasBancarias()
+      .then((data) => {
+        setCuentasBancarias(data);
+        setCuentasStatus(data.length > 0 ? "ok" : "error");
+      })
+      .catch((err) => {
         console.error("Error cargando cuentas bancarias:", err);
-      }
-    };
-    fetchCuentas();
+        setCuentasStatus("error");
+      });
   }, []);
 
   // Si alguien entra a la URL directamente sin haber reservado, lo mandamos al inicio
@@ -240,8 +238,12 @@ export function BookingConfirmation() {
                       {cuenta.titular && <p className="text-xs text-stone-500">A nombre de {cuenta.titular}</p>}
                     </div>
                   </div>
-                )) : (
+                )) : cuentasStatus === "loading" ? (
                   <p className="text-sm text-stone-500 italic">Cargando métodos de pago...</p>
+                ) : (
+                  <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl p-4">
+                    No pudimos cargar las cuentas bancarias. Escríbenos por WhatsApp al <b>310 359 9065</b> y te las enviamos.
+                  </p>
                 )}
               </div>
 
