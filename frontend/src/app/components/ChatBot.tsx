@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getCuentasBancarias, CuentaBancaria } from '../api.ts';
 
 type Message = {
   id: string;
@@ -35,7 +36,7 @@ const getFAQResponse = (text: string, cuentasBancarias: any[] = []): string => {
     if (cuentasBancarias.length > 0) {
       metodosTexto = cuentasBancarias.map(c => `   • **${c.banco} (${c.tipo_cuenta}):** ${c.numero_cuenta} ${c.titular ? `(${c.titular})` : ''}`).join('\n');
     } else {
-      metodosTexto = `   • **Bancolombia (Ahorros):** 123-456789-00 (Glamping Los Bosques SAS)\n   • **Nequi:** 310 359 9065`;
+      metodosTexto = `   • Escríbenos por WhatsApp al **310 359 9065** y te enviamos los datos de las cuentas.`;
     }
     
     return `📅 **¿Cómo reservar paso a paso?**\n\nReservar es muy sencillo y lo puedes hacer directamente desde nuestra plataforma:\n\n1️⃣ **Ingresa a la sección de Reservas:** Ve a la pestaña **"Reservas"** en el menú de navegación superior.\n2️⃣ **Elige los detalles:** Selecciona la cabaña (Palmas, Bambú o Roble), el tipo de plan, las fechas de tu estadía y la cantidad de huéspedes.\n3️⃣ **Selecciona servicios adicionales (opcional):** Puedes agregar decoraciones especiales de cumpleaños o aniversario si lo deseas.\n4️⃣ **Completa tus datos:** Llena el formulario con tu nombre, teléfono y documento de identidad.\n5️⃣ **Realiza el pago del anticipo:** Para asegurar tu reserva, debes transferir el **50% del valor total** a través de:\n${metodosTexto}\n6️⃣ **Sube tu comprobante:** Toma una captura de pantalla del pago y súbela en el paso final de la página de reservas.\n7️⃣ **¡Listo!** Verificaremos tu pago y te enviaremos la confirmación oficial a tu correo.`;
@@ -66,7 +67,7 @@ export function ChatBot() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const [cuentasBancarias, setCuentasBancarias] = useState<any[]>([]);
+  const [cuentasBancarias, setCuentasBancarias] = useState<CuentaBancaria[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,20 +78,9 @@ export function ChatBot() {
   }, [messages, isTyping, isOpen]);
 
   useEffect(() => {
-    const fetchCuentas = async () => {
-      try {
-        let API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://glamping-los-bosques-final1-9asb.onrender.com';
-        if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && API_BASE_URL.includes("localhost")) API_BASE_URL = "https://glamping-los-bosques-final1-9asb.onrender.com";
-        const response = await fetch(`${API_BASE_URL}/api/cuentas-bancarias`);
-        if (response.ok) {
-          const data = await response.json();
-          setCuentasBancarias(data);
-        }
-      } catch (err) {
-        console.error("Error cargando cuentas bancarias:", err);
-      }
-    };
-    fetchCuentas();
+    getCuentasBancarias()
+      .then(setCuentasBancarias)
+      .catch((err) => console.error("Error cargando cuentas bancarias:", err));
   }, []);
   
   const handleSendMessage = (text: string) => {

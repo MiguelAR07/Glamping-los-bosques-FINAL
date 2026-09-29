@@ -250,6 +250,20 @@ export async function createReview(data: { nombre: string, texto: string, rating
   return await response.json();
 }
 
+export type CuentaBancaria = {
+  banco: string;
+  tipo_cuenta: string;
+  numero_cuenta: string;
+  titular: string | null;
+};
+
+export async function getCuentasBancarias(): Promise<CuentaBancaria[]> {
+  const response = await fetch(`${API_BASE_URL}/cuentas-bancarias/activas`);
+  if (!response.ok) throw new Error('Error fetching bank accounts');
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
 export async function getBlockedDates() {
   const response = await fetch(`${API_BASE_URL}/availability`);
   if (!response.ok) return [];
