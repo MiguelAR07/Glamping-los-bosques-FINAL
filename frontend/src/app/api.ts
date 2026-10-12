@@ -99,10 +99,11 @@ export async function getCabins(): Promise<Cabin[]> {
 export async function getServices(): Promise<Service[]> {
   const services = await fetchFromApi<any>("services");
 
+  // La API (vista_servicios) devuelve `id` y `servicio`
   return services.map((service) => ({
-    id: String(service.servicio_id),
+    id: String(service.id ?? service.servicio_id),
 
-    nombre: service.nombre,
+    nombre: service.servicio ?? service.nombre,
 
     precio: Number(service.precio),
 
