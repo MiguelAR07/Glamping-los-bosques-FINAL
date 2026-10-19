@@ -1,8 +1,8 @@
 import { Cabin, Package, Product, Service, Reservation, BookingPayload, PlanType } from './types'
 
-let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://glamping-los-bosques-final1-9asb.onrender.com";
+let baseEnv = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://glamping-los-bosques-final1.onrender.com";
 if (baseEnv.includes("backend-landing-x76z") || (typeof window !== "undefined" && window.location.hostname !== "localhost" && baseEnv.includes("localhost"))) {
-  baseEnv = "https://glamping-los-bosques-final1-9asb.onrender.com";
+  baseEnv = "https://glamping-los-bosques-final1.onrender.com";
 }
 export const API_BASE_URL = baseEnv.endsWith('/api') ? baseEnv : `${baseEnv}/api`;
 
