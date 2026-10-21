@@ -14,7 +14,7 @@ export function Privacidad() {
 
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-8 text-stone-700 leading-relaxed">
         <Section title="1. Responsable del tratamiento">
-          <p><strong>Glamping Los Bosques</strong>, Marinilla, Antioquia, Colombia. Correo: <a className="text-emerald-700 underline" href="mailto:glampinglosbosques@gmail.com">glampinglosbosques@gmail.com</a> · WhatsApp: 310 359 9065.</p>
+          <p><strong>Glamping Los Bosques</strong>, establecimiento de Miguel Ángel Arcila Rodríguez, NIT 1034990060-3, Marinilla, Antioquia, Colombia. Correo: <a className="text-emerald-700 underline" href="mailto:glampinglosbosques@gmail.com">glampinglosbosques@gmail.com</a> · WhatsApp: 310 359 9065.</p>
         </Section>
 
         <Section title="2. Datos que recopilamos">
