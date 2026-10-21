@@ -138,6 +138,7 @@ export function AppLayout() {
               >
                 Términos y Condiciones
               </button>
+              <Link to="/privacidad" className="text-sm hover:text-white transition-colors text-center md:text-left">Política de Privacidad</Link>
             </div>
           </div>
         </div>
