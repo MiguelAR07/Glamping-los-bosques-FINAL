@@ -141,15 +141,15 @@ export function AppLayout() {
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-r from-[#3B5BFF] to-[#22D3EE] px-4 py-3 text-white text-sm">
+        <div className="border-t border-stone-800 px-4 py-4 text-stone-400 text-sm">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-center">
             <span>© {new Date().getFullYear()} Glamping Los Bosques - Todos los derechos reservados</span>
-            <span className="hidden sm:inline opacity-70">|</span>
+            <span className="hidden sm:inline text-stone-600">|</span>
             {/* TODO: convertir en <a href="..."> cuando Imagia tenga dominio */}
             <span className="inline-flex items-center gap-2">
               Desarrollado por
-              <img src="/imagia-isotipo.svg" alt="" className="w-6 h-6 brightness-0 invert" />
-              <span className="font-bold tracking-wide">IMAGIA</span>
+              <img src="/imagia-isotipo.svg" alt="" className="w-6 h-6" />
+              <span className="font-bold tracking-wide text-white">IMAGIA</span>
             </span>
           </div>
         </div>
