@@ -5,6 +5,7 @@ import { Home } from "./app/pages/Home";
 
 // Rutas con carga diferida (lazy loading) para optimizar el rendimiento
 const Reservas = lazy(() => import("./app/pages/Reservas").then(module => ({ default: module.Reservas })));
+const Privacidad = lazy(() => import("./app/pages/Privacidad").then(module => ({ default: module.Privacidad })));
 const BookingConfirmation = lazy(() => import("./app/components/BookingConfirmation").then(module => ({ default: module.BookingConfirmation })));
 
 // Interfaz de respaldo temporal para la carga diferida
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/reservas" element={<Reservas />} />
             <Route path="/confirmacion" element={<BookingConfirmation />} />
+            <Route path="/privacidad" element={<Privacidad />} />
           </Route>
         </Routes>
       </Suspense>
