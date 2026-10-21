@@ -141,6 +141,11 @@ export function AppLayout() {
         </div>
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-sm">
           <p>© {new Date().getFullYear()} Glamping Los Bosques. Todos los derechos reservados.</p>
+          {/* TODO: convertir en <a href="..."> cuando Imagia tenga dominio */}
+          <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-stone-700 bg-stone-800/60 px-3 py-1.5 text-xs text-stone-400 hover:border-stone-500 hover:text-white transition-colors">
+            <img src="/imagia-isotipo.svg" alt="Logo Imagia" className="w-5 h-5" />
+            <span>Desarrollado por <span className="font-semibold text-white">IMAGIA</span></span>
+          </span>
         </div>
       </footer>
       <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
