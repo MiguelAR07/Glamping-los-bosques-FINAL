@@ -87,65 +87,71 @@ export function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className="bg-stone-900 text-stone-400 py-12 px-4 sm:px-6 lg:px-8 mt-auto">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-          <div className="flex flex-col items-center md:items-start gap-4">
-            <div className="flex items-center gap-3 text-white">
-              <img 
-                src={logoImg} 
-                alt="Logo Glamping Los Bosques" 
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white object-cover ring-2 ring-emerald-500/50 shadow-md"
-              />
-              <span className="text-xl font-bold">Glamping Los Bosques</span>
+      <footer className="bg-stone-900 text-stone-400 mt-auto">
+        <div className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <div className="flex items-center gap-3 text-white">
+                <img 
+                  src={logoImg} 
+                  alt="Logo Glamping Los Bosques" 
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white object-cover ring-2 ring-emerald-500/50 shadow-md"
+                />
+                <span className="text-xl font-bold">Glamping Los Bosques</span>
+              </div>
+              <p className="max-w-xs text-stone-400 text-sm">
+                Una experiencia única de desconexión en medio de la naturaleza con todas las comodidades.
+              </p>
             </div>
-            <p className="max-w-xs text-stone-400 text-sm">
-              Una experiencia única de desconexión en medio de la naturaleza con todas las comodidades.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4 items-center md:items-start">
-            <h4 className="text-white font-semibold mb-2">Contacto</h4>
-            <a href="https://wa.me/573103599065" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
-              <MessageCircle className="w-5 h-5 text-emerald-500" />
-              <span className="text-sm">WhatsApp: 3103599065</span>
-            </a>
-            <a href="https://www.instagram.com/glampinglosbosques/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
-              <Instagram className="w-5 h-5 text-emerald-500" />
-              <span className="text-sm">Instagram: @glampinglosbosques</span>
-            </a>
-            <a href="https://www.tiktok.com/@glampinglosbosques" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
-              <svg 
-                className="w-4 h-4 fill-current text-emerald-500" 
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
+            <div className="flex flex-col gap-4 items-center md:items-start">
+              <h4 className="text-white font-semibold mb-2">Contacto</h4>
+              <a href="https://wa.me/573103599065" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
+                <MessageCircle className="w-5 h-5 text-emerald-500" />
+                <span className="text-sm">WhatsApp: 3103599065</span>
+              </a>
+              <a href="https://www.instagram.com/glampinglosbosques/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
+                <Instagram className="w-5 h-5 text-emerald-500" />
+                <span className="text-sm">Instagram: @glampinglosbosques</span>
+              </a>
+              <a href="https://www.tiktok.com/@glampinglosbosques" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
+                <svg 
+                  className="w-4 h-4 fill-current text-emerald-500" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.31a8.498 8.498 0 01-1.87-1.44v7.71a8.49 8.49 0 01-1.3 4.54 8.5 8.5 0 11-5.71-8.21v4.03a4.469 4.469 0 00-2.76 4.18 4.5 4.5 0 109.01 0V0h-3.15z"/>
+                </svg>
+                <span className="text-sm">TikTok: glampinglosbosques</span>
+              </a>
+              <a href="mailto:glampinglosbosques@gmail.com" className="text-sm flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
+                <Mail className="w-5 h-5 text-emerald-500" />
+                <span>glampinglosbosques@gmail.com</span>
+              </a>
+            </div>
+            <div className="flex flex-col gap-3 items-center md:items-start">
+              <h4 className="text-white font-semibold mb-2">Enlaces</h4>
+              <a href="#cabins" className="text-sm hover:text-white transition-colors text-center md:text-left">Nuestras Cabañas</a>
+              <Link to="/reservas" className="text-sm hover:text-white transition-colors text-center md:text-left">Reserva tu estadía</Link>
+              <button
+                onClick={() => setIsTermsOpen(true)}
+                className="text-sm hover:text-white transition-colors text-center md:text-left"
               >
-                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.31a8.498 8.498 0 01-1.87-1.44v7.71a8.49 8.49 0 01-1.3 4.54 8.5 8.5 0 11-5.71-8.21v4.03a4.469 4.469 0 00-2.76 4.18 4.5 4.5 0 109.01 0V0h-3.15z"/>
-              </svg>
-              <span className="text-sm">TikTok: glampinglosbosques</span>
-            </a>
-            <a href="mailto:glampinglosbosques@gmail.com" className="text-sm flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors">
-              <Mail className="w-5 h-5 text-emerald-500" />
-              <span>glampinglosbosques@gmail.com</span>
-            </a>
-          </div>
-          <div className="flex flex-col gap-3 items-center md:items-start">
-            <h4 className="text-white font-semibold mb-2">Enlaces</h4>
-            <a href="#cabins" className="text-sm hover:text-white transition-colors text-center md:text-left">Nuestras Cabañas</a>
-            <Link to="/reservas" className="text-sm hover:text-white transition-colors text-center md:text-left">Reserva tu estadía</Link>
-            <button
-              onClick={() => setIsTermsOpen(true)}
-              className="text-sm hover:text-white transition-colors text-center md:text-left"
-            >
-              Términos y Condiciones
-            </button>
+                Términos y Condiciones
+              </button>
+            </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-stone-800 text-center text-sm">
-          <p>© {new Date().getFullYear()} Glamping Los Bosques. Todos los derechos reservados.</p>
-          {/* TODO: convertir en <a href="..."> cuando Imagia tenga dominio */}
-          <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-stone-700 bg-stone-800/60 px-3 py-1.5 text-xs text-stone-400 hover:border-stone-500 hover:text-white transition-colors">
-            <img src="/imagia-isotipo.svg" alt="Logo Imagia" className="w-5 h-5" />
-            <span>Desarrollado por <span className="font-semibold text-white">IMAGIA</span></span>
-          </span>
+        <div className="bg-gradient-to-r from-[#3B5BFF] to-[#22D3EE] px-4 py-3 text-white text-sm">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-center">
+            <span>© {new Date().getFullYear()} Glamping Los Bosques - Todos los derechos reservados</span>
+            <span className="hidden sm:inline opacity-70">|</span>
+            {/* TODO: convertir en <a href="..."> cuando Imagia tenga dominio */}
+            <span className="inline-flex items-center gap-2">
+              Desarrollado por
+              <img src="/imagia-isotipo.svg" alt="" className="w-6 h-6 brightness-0 invert" />
+              <span className="font-bold tracking-wide">IMAGIA</span>
+            </span>
+          </div>
         </div>
       </footer>
       <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
