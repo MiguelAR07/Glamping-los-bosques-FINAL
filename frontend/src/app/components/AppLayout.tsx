@@ -146,12 +146,16 @@ export function AppLayout() {
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-center">
             <span>© {new Date().getFullYear()} Glamping Los Bosques - Todos los derechos reservados</span>
             <span className="hidden sm:inline text-stone-600">|</span>
-            {/* TODO: convertir en <a href="..."> cuando Imagia tenga dominio */}
-            <span className="inline-flex items-center gap-2">
+            <a
+              href="https://imagia-mu.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 hover:text-white transition-colors"
+            >
               Desarrollado por
               <img src="/imagia-isotipo.svg" alt="" className="w-6 h-6" />
               <span className="font-bold tracking-wide text-white">IMAGIA</span>
-            </span>
+            </a>
           </div>
         </div>
       </footer>
