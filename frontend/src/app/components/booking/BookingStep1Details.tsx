@@ -108,7 +108,7 @@ export function BookingStep1Details({
   dateRange, setDateRange,
   timeBlock, setTimeBlock,
   isMultiDay, selectedCabin, handleNext, blockedDates,
-  fixedDays, packagesList
+  fixedDays, packagesList, allowedNights
 }: any) {
   const planCategory = getPlanCategory(planType);
   const isOccasional = planCategory === 'occasional' || planCategory === 'occasional_weekend';
@@ -176,6 +176,14 @@ export function BookingStep1Details({
     return false;
   };
 
+  // Promos limitadas a ciertos días: cada noche de la estadía debe caer en un día permitido
+  const NOMBRES_DIA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const isNightAllowedByPromo = (nightDate: Date): boolean =>
+    !allowedNights || allowedNights.length === 0 || allowedNights.includes(getDay(nightDate));
+  const promoDaysHint = allowedNights && allowedNights.length > 0 && allowedNights.length < 7
+    ? `🏷️ Esta promoción solo aplica para noches de ${[1, 2, 3, 4, 5, 6, 0].filter(d => allowedNights.includes(d)).map(d => NOMBRES_DIA[d]).join(', ')}.`
+    : null;
+
   const isDateDisabled = (d: Date): boolean => {
     const target = startOfDay(d);
 
@@ -191,8 +199,8 @@ export function BookingStep1Details({
         // Es válido como checkout SI NO HAY NINGUNA NOCHE BLOQUEADA en las noches intermedias [from, target)
         let checkDate = new Date(from.getTime());
         while (checkDate.getTime() < target.getTime()) {
-          if (isNightBlocked(checkDate)) {
-            return true; // Noche intermedia bloqueada
+          if (isNightBlocked(checkDate) || !isNightAllowedByPromo(checkDate)) {
+            return true; // Noche intermedia bloqueada o fuera de los días de la promo
           }
           checkDate.setDate(checkDate.getDate() + 1);
         }
@@ -213,6 +221,13 @@ export function BookingStep1Details({
 
     // 3. Si se evalúa como fecha de entrada (check-in)
     if (isNightBlocked(target)) return true;
+    if (!isNightAllowedByPromo(target)) return true;
+    if (fixedDays && fixedDays > 1) {
+      // Con estadía fija, todas las noches deben caer en días permitidos
+      for (let i = 1; i < fixedDays; i++) {
+        if (!isNightAllowedByPromo(new Date(target.getFullYear(), target.getMonth(), target.getDate() + i))) return true;
+      }
+    }
 
     // 4. Restricciones por tipo de plan para fecha de entrada
     if (planCategory === 'weekend' || planCategory === 'occasional_weekend') {
@@ -307,6 +322,7 @@ export function BookingStep1Details({
           2. {isMultiDay ? 'Fechas de Estadía' : 'Fecha de tu Visita'}
         </label>
         <p className="text-xs text-stone-500 mb-3">{calendarHint[planCategory]}</p>
+        {promoDaysHint && <p className="text-xs font-semibold text-emerald-700 mb-3">{promoDaysHint}</p>}
         <div className="bg-white p-4 rounded-xl border border-stone-200 flex justify-center">
           {isMultiDay || (fixedDays && fixedDays > 0) ? (
             <DayPicker

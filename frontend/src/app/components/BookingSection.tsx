@@ -105,6 +105,8 @@ export function BookingSection() {
               isPromo: true,
               precio_promocional: p.precio,
               dias_estadia: p.dias_estadia,
+              // "1,2,3" (0=Dom) -> [1,2,3]; null = todos los días
+              dias_semana: p.dias_semana ? String(p.dias_semana).split(',').map(Number) : null,
               cabanas_permitidas: p.cabanas.map((c: any) => String(c.id))
             }));
         } catch {
@@ -494,6 +496,7 @@ export function BookingSection() {
                 blockedDates={blockedDates}
                 packagesList={packagesList}
                 fixedDays={selectedPlanObj?.isPromo ? selectedPlanObj?.dias_estadia : undefined}
+                allowedNights={selectedPlanObj?.isPromo ? selectedPlanObj?.dias_semana : null}
               />
             )}
             {step === 2 && (
