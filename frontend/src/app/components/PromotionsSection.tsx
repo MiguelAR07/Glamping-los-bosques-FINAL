@@ -114,7 +114,16 @@ export default function PromotionsSection() {
 
               {/* Imagen / placeholder */}
               <div className="relative overflow-hidden bg-gradient-to-br from-emerald-100 to-stone-100 min-h-[200px] flex items-center justify-center">
-                {promo.img_url ? (
+                {promo.img_url?.includes('/video/upload/') ? (
+                  <video
+                    src={promo.img_url}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                ) : promo.img_url ? (
                   <img
                     src={promo.img_url}
                     alt={promo.nombre}
